@@ -1,12 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="android" name="Android">
+      <configuration>
+        <option name="MANIFEST_FILE_RELATIVE_PATH" value="/../AndroidManifest.xml" />
+        <option name="LIBRARY_PROJECT" value="true" />
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/.idea/gen" isTestSource="false" generated="true" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../android-store/SoomlaAndroidStore/src">
+      <sourceFolder url="file://$MODULE_DIR$/../../android-store/SoomlaAndroidStore/src" isTestSource="false" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../android-store/submodules/android-store-google-play/src">
+      <sourceFolder url="file://$MODULE_DIR$/../../android-store/submodules/android-store-google-play/src" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../build-soomla/build-android-store/out/artifacts/square-otto-1.3.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 

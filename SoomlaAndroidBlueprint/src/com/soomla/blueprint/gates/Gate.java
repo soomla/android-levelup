@@ -1,12 +1,23 @@
 package com.soomla.blueprint.gates;
 
-import java.util.List;
-
 /**
  * Created by refaelos on 06/05/14.
  */
 public abstract class Gate {
-    private GatesList mGatesAfter;
+    private String mGateId;
     protected boolean mOpen;
-    public abstract List<Gate> canPass();
+
+    public Gate(String gateId) {
+        this.mGateId = gateId;
+    }
+
+    public abstract void open();
+
+    public String getGateId() {
+        return mGateId;
+    }
+
+    public boolean isOpen() {
+        return mOpen;
+    }
 }

@@ -5,6 +5,7 @@ import com.soomla.blueprint.events.MissionCompletedEvent;
 import com.soomla.blueprint.rewards.Reward;
 import com.soomla.store.BusProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
 public abstract class Mission {
     private String mMissionId;
     private String mName;
-    private List<Reward> mRewards;
+    private List<Reward> mRewards = new ArrayList<Reward>();
 
     public Mission(String name, String missionId) {
         mName = name;

@@ -10,21 +10,21 @@ import java.util.HashMap;
 public class Blueprint {
     public static final String DB_KEY_PREFIX = "soomla.blueprint.";
 
-    private HashMap<String, World>   mInitialWorlds;
+    private static HashMap<String, World>   mInitialWorlds;
 
     public Blueprint(HashMap<String, World> initialWorlds) {
         mInitialWorlds = initialWorlds;
     }
 
-    public Score getScore(String scoreId) {
+    public static Score getScore(String scoreId) {
         return fetchScoreFromWorlds(scoreId, mInitialWorlds);
     }
 
-    public World getWorld(String worldId) {
+    public static World getWorld(String worldId) {
         return fetchWorld(worldId, mInitialWorlds);
     }
 
-    private Score fetchScoreFromWorlds(String scoreId, HashMap<String, World> worlds) {
+    private static Score fetchScoreFromWorlds(String scoreId, HashMap<String, World> worlds) {
         Score retScore = null;
         for (World world : worlds.values()) {
             retScore = world.getScores().get(scoreId);
@@ -39,7 +39,7 @@ public class Blueprint {
         return retScore;
     }
 
-    private World fetchWorld(String worldId, HashMap<String, World> worlds) {
+    private static World fetchWorld(String worldId, HashMap<String, World> worlds) {
         World retWorld = worlds.get(worldId);
         if (retWorld == null) {
             for (World world : worlds.values()) {

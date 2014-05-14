@@ -24,3 +24,8 @@ proguard/
 
 .idea/workspace.xml
 .DS_Store
+
+SoomlaAndroidBlueprint/.classpath
+SoomlaAndroidBlueprint/.project
+SoomlaAndroidBlueprint/diagrams
+SoomlaAndroidBlueprint/project.properties

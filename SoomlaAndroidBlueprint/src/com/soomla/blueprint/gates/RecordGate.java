@@ -29,29 +29,21 @@ public class RecordGate extends Gate {
         }
     }
 
-    @Override
-    public void open() {
-        mOpen = true;
-        BusProvider.getInstance().post(new GateOpenedEvent(this));
+    public boolean canPass() {
+        Score score = Blueprint.getScore(mAssociatedScoreId);
+        if (score == null) {
+            StoreUtils.LogError(TAG, "(isOpen) couldn't find score with scoreId: " + mAssociatedScoreId);
+            return false;
+        }
+
+        return score.hasRecordReached(mDesiredRecord);
     }
 
     @Override
-    public boolean isOpen() {
-        if (!mOpen) {
-            Score score = Blueprint.getScore(mAssociatedScoreId);
-            if (score == null) {
-                StoreUtils.LogError(TAG, "(isOpen) couldn't find score with scoreId: " + mAssociatedScoreId);
-                return false;
-            }
-
-            if (!score.hasRecordReached(mDesiredRecord)) {
-                return false;
-            }
-
-            mOpen = true;
+    public void tryOpenInner() {
+        if (canPass()) {
+            forceOpen(true);
         }
-
-        return true;
     }
 
     @Subscribe

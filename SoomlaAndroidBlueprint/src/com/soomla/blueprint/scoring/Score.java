@@ -1,5 +1,6 @@
 package com.soomla.blueprint.scoring;
 
+import com.soomla.blueprint.data.ScoresStorage;
 import com.soomla.blueprint.events.ScoreRecordChangedEvent;
 import com.soomla.store.BusProvider;
 
@@ -8,9 +9,7 @@ import com.soomla.store.BusProvider;
  */
 public class Score {
     private String mScoreId;
-    private double mScore;
-    private double mRecord;
-    private double mLatest;
+    private double mTempScore;
     protected double mStartValue;
     protected String mName;
     private boolean mHigherBetter;
@@ -32,14 +31,14 @@ public class Score {
     public String getScoreId() {
         return mScoreId;
     }
-    public double getScore() {
-        return mScore;
+    public double getTempScore() {
+        return mTempScore;
     }
     public double getRecord() {
-        return mRecord;
+        return ScoresStorage.getRecordScore(this);
     }
     public double getLatest() {
-        return mLatest;
+        return ScoresStorage.getLatestScore(this);
     }
 
     public String getName() {
@@ -53,34 +52,42 @@ public class Score {
         this.mHigherBetter = mHigherBetter;
     }
 
+
     public void setStartValue(double startValue) {
         mStartValue = startValue;
     }
 
-    public void setScore(double score) {
-        this.mScore = score;
-        if (hasCurrentReached(mRecord)) {
-            mRecord = mScore;
-            BusProvider.getInstance().post(new ScoreRecordChangedEvent(this));
-        }
+    public void setTempScore(double tempScore) {
+        this.mTempScore = tempScore;
     }
     public void inc(double amount) {
-        setScore(mScore+amount);
+        setTempScore(mTempScore + amount);
     }
     public void dec(double amount) {
-        setScore(mScore-amount);
+        setTempScore(mTempScore - amount);
+    }
+    public void saveAndReset() {
+        double record = ScoresStorage.getRecordScore(this);
+        if (hasTempReached(record)) {
+            ScoresStorage.setRecordScore(this, mTempScore);
+            BusProvider.getInstance().post(new ScoreRecordChangedEvent(this));
+        }
+        ScoresStorage.setLatestScore(this, mTempScore);
+        setTempScore(mStartValue);
     }
     public void reset() {
-        mLatest = mScore;
-        setScore(mStartValue);
+        mTempScore = mStartValue;
+        ScoresStorage.setRecordScore(this, 0);
+        ScoresStorage.setLatestScore(this, 0);
     }
 
-    public boolean hasCurrentReached(double scoreVal) {
-        return hasScoreReached(mScore, scoreVal);
+    public boolean hasTempReached(double scoreVal) {
+        return hasScoreReached(mTempScore, scoreVal);
     }
 
     public boolean hasRecordReached(double scoreVal) {
-        return hasScoreReached(mRecord, scoreVal);
+        double record = ScoresStorage.getRecordScore(this);
+        return hasScoreReached(record, scoreVal);
     }
 
     private boolean hasScoreReached(double score1, double score2) {

@@ -18,7 +18,7 @@ public class RangeNumberScore extends Score {
 
     @Override
     public void inc(double amount) {
-        if (getScore() == mRange.getHigh()) {
+        if (getTempScore() == mRange.getHigh()) {
             return;
         }
         super.inc(amount);
@@ -26,21 +26,21 @@ public class RangeNumberScore extends Score {
 
     @Override
     public void dec(double amount) {
-        if (getScore() == mRange.getLow()) {
+        if (getTempScore() == mRange.getLow()) {
             return;
         }
         super.dec(amount);
     }
 
     @Override
-    public void setScore(double score) {
+    public void setTempScore(double score) {
         if (score > mRange.getHigh()) {
             score = mRange.getHigh();
         }
         if (score < mRange.getLow()) {
             score = mRange.getLow();
         }
-        super.setScore(score);
+        super.setTempScore(score);
     }
 
     public class Range {

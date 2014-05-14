@@ -40,9 +40,9 @@ public abstract class GatesList extends Gate {
     }
 
     @Override
-    public void open() {
+    public void tryOpenInner() {
         for (Gate gate : mGates) {
-            gate.open();
+            gate.tryOpen();
         }
     }
 

@@ -1,5 +1,6 @@
 package com.soomla.blueprint.gates;
 
+import com.soomla.blueprint.data.GatesStorage;
 import com.soomla.blueprint.events.GateCanBeOpenedEvent;
 import com.soomla.blueprint.events.GateOpenedEvent;
 import com.soomla.store.BusProvider;
@@ -29,7 +30,7 @@ public class BalanceGate extends Gate {
     }
 
     public boolean canPass() {
-        if (mOpen) {
+        if (GatesStorage.isOpen(this)) {
             return true;
         }
         try {
@@ -44,8 +45,8 @@ public class BalanceGate extends Gate {
     }
 
     @Override
-    public void open() {
-        if (!mOpen && canPass()) {
+    public void tryOpenInner() {
+        if (canPass()) {
             try {
                 StoreInventory.takeVirtualItem(mAssociatedItemId, mDesiredBalance);
             } catch (VirtualItemNotFoundException e) {
@@ -53,8 +54,7 @@ public class BalanceGate extends Gate {
                 return;
             }
 
-            mOpen = true;
-            BusProvider.getInstance().post(new GateOpenedEvent(this));
+            forceOpen(true);
         }
     }
 

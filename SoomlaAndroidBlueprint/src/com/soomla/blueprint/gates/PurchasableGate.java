@@ -1,6 +1,5 @@
 package com.soomla.blueprint.gates;
 
-import com.soomla.blueprint.events.GateOpenedEvent;
 import com.soomla.store.BusProvider;
 import com.soomla.store.StoreInventory;
 import com.soomla.store.StoreUtils;
@@ -23,32 +22,29 @@ public class PurchasableGate extends Gate {
 
         // We can't put the registration in the 'open' function b/c we want to make sure this gate
         // "listens" to MarketPurchaseEvents even if the app was closed and opened again.
-        if (!mOpen) {
+        if (!isOpen()) {
             BusProvider.getInstance().register(this);
         }
     }
 
     @Override
-    public void open() {
-        if (!mOpen) {
-            try {
-                StoreInventory.buy(mAssociatedItemId);
-            } catch (InsufficientFundsException e) {
-                StoreUtils.LogError(TAG, "Not enough funds to purchase this gate.  gateId: + " +
-                        getGateId() + "  itemId: " + mAssociatedItemId);
-            } catch (VirtualItemNotFoundException e) {
-                StoreUtils.LogError(TAG, "The item needed for purchase doesn't exist. itemId: " +
-                        mAssociatedItemId);
-            }
+    public void tryOpenInner() {
+        try {
+            StoreInventory.buy(mAssociatedItemId);
+        } catch (InsufficientFundsException e) {
+            StoreUtils.LogError(TAG, "Not enough funds to purchase this gate.  gateId: + " +
+                    getGateId() + "  itemId: " + mAssociatedItemId);
+        } catch (VirtualItemNotFoundException e) {
+            StoreUtils.LogError(TAG, "The item needed for purchase doesn't exist. itemId: " +
+                    mAssociatedItemId);
         }
     }
 
     @Subscribe
     public void onMarketPurchaseEvent(MarketPurchaseEvent marketPurchaseEvent) {
-        if (!mOpen && marketPurchaseEvent.getPayload().equals(getGateId())) {
+        if (marketPurchaseEvent.getPayload().equals(getGateId())) {
             BusProvider.getInstance().unregister(this);
-            mOpen = true;
-            BusProvider.getInstance().post(new GateOpenedEvent(this));
+            forceOpen(true);
         }
     }
 }

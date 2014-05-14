@@ -1,5 +1,6 @@
 package com.soomla.blueprint.gates;
 
+import com.soomla.blueprint.data.BPJSONConsts;
 import com.soomla.store.BusProvider;
 import com.soomla.store.StoreInventory;
 import com.soomla.store.StoreUtils;
@@ -7,6 +8,9 @@ import com.soomla.store.events.MarketPurchaseEvent;
 import com.soomla.store.exceptions.InsufficientFundsException;
 import com.soomla.store.exceptions.VirtualItemNotFoundException;
 import com.squareup.otto.Subscribe;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by refaelos on 07/05/14.
@@ -25,6 +29,27 @@ public class PurchasableGate extends Gate {
         if (!isOpen()) {
             BusProvider.getInstance().register(this);
         }
+    }
+
+    public PurchasableGate(JSONObject jsonObject) throws JSONException {
+        super(jsonObject);
+        mAssociatedItemId = jsonObject.getString(BPJSONConsts.BP_ASSOCITEMID);
+
+        if (!isOpen()) {
+            BusProvider.getInstance().register(this);
+        }
+    }
+
+    public JSONObject toJSONObject(){
+        JSONObject jsonObject = super.toJSONObject();
+        try {
+            jsonObject.put(BPJSONConsts.BP_ASSOCITEMID, mAssociatedItemId);
+            jsonObject.put(BPJSONConsts.BP_TYPE, "purchasable");
+        } catch (JSONException e) {
+            StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
+        }
+
+        return jsonObject;
     }
 
     @Override

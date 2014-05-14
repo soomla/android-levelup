@@ -17,20 +17,10 @@ android {
         }
     }
 
-    // todo: this actually not the best way to do the gradle config/dependencies
-    // todo: but I don't want to organize all this until everyone is on board
-    // todo: with the change (Ori)
     sourceSets {
         main {
             manifest.srcFile 'SoomlaAndroidBlueprint/AndroidManifest.xml'
-
-            java.srcDirs = ['SoomlaAndroidBlueprint/src',
-                            '../android-store/SoomlaAndroidStore/src',
-                            '../android-store/SoomlaAndroidStore/submodules/android-store-google-play/src']
-
-            aidl.srcDirs = ['../android-store/SoomlaAndroidStore/src',
-                            '../android-store/submodules/android-store-google-play/src']
-
+            java.srcDirs = ['SoomlaAndroidBlueprint/src']
             renderscript.srcDirs = ['SoomlaAndroidBlueprint/src']
             res.srcDirs = ['SoomlaAndroidBlueprint/res']
             assets.srcDirs = ['SoomlaAndroidBlueprint/assets']
@@ -42,5 +32,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'SoomlaAndroidBlueprint/libs', include: ['*.jar'])
-    compile fileTree(dir: '../android-store/SoomlaAndroidStore/libs', include: ['*.jar'])
+
+    compile project(':android-store')
 }

@@ -1,5 +1,7 @@
 package com.soomla.blueprint;
 
+import com.soomla.blueprint.challenges.Challenge;
+import com.soomla.blueprint.data.LevelsStorage;
 import com.soomla.blueprint.events.LevelEndedEvent;
 import com.soomla.blueprint.events.LevelStartedEvent;
 import com.soomla.blueprint.gates.GatesList;
@@ -11,46 +13,41 @@ import com.soomla.store.StoreUtils;
 import com.soomla.store.exceptions.VirtualItemNotFoundException;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by refaelos on 07/05/14.
  */
 public class Level extends World {
     private static String TAG = "SOOMLA Level";
-
-    private int mTimesStarted;
-    private int mTimesPlayed;
-    private double mLowestDuration = Double.MAX_VALUE;
-    private double mHighestDuration = Double.MIN_VALUE;
-
     private long mStartTime;
 
     public Level(String worldId) {
         super(worldId);
     }
 
-    public Level(String worldId, GatesList gates, HashMap<String, Score> scores) {
-        super(worldId, gates, new HashMap<String, World>(), scores);
+    public Level(String worldId, GatesList gates, HashMap<String, Score> scores, List<Challenge> challenges) {
+        super(worldId, gates, new HashMap<String, World>(), scores, challenges);
     }
 
-    public Level(String worldId, GatesList gates, HashMap<String, World> innerWorlds, HashMap<String, Score> scores) {
-        super(worldId, gates, innerWorlds, scores);
+    public Level(String worldId, GatesList gates, HashMap<String, World> innerWorlds, HashMap<String, Score> scores, List<Challenge> challenges) {
+        super(worldId, gates, innerWorlds, scores, challenges);
     }
 
     public int getTimesStarted() {
-        return mTimesStarted;
+        return LevelsStorage.getTimesStarted(this);
     }
 
     public int getTimesPlayed() {
-        return mTimesPlayed;
+        return LevelsStorage.getTimesPlayed(this);
     }
 
-    public double getLowestDuration() {
-        return mLowestDuration;
+    public double getSlowestDuration() {
+        return LevelsStorage.getSlowestDuration(this);
     }
 
-    public double getHighestDuration() {
-        return mHighestDuration;
+    public double getFastestDuration() {
+        return LevelsStorage.getFastestDuration(this);
     }
 
     public void decScore(String scoreId, double amount) {
@@ -68,7 +65,7 @@ public class Level extends World {
             return false;
         }
 
-        mTimesStarted++;
+        LevelsStorage.incTimesStarted(this);
 
         mStartTime = System.currentTimeMillis();
 
@@ -77,32 +74,31 @@ public class Level extends World {
     }
 
     public void end() {
-        mTimesPlayed++;
+        LevelsStorage.incTimesPlayed(this);
 
         long endTime = System.currentTimeMillis();
         double duration = (endTime-mStartTime) / 1000.0;
 
-        if (duration < mLowestDuration) {
-            mLowestDuration = duration;
+        if (duration < getSlowestDuration()) {
+            LevelsStorage.setSlowestDuration(this, duration);
         }
 
-        if (duration > mHighestDuration) {
-            mHighestDuration = duration;
+        if (duration > getFastestDuration()) {
+            LevelsStorage.setFastestDuration(this, duration);
         }
 
         for(Score score : mScores.values()) {
-
-            score.reset(); // resetting scores
-
-            if (score instanceof VirtualItemScore) {
+            if (score instanceof VirtualItemScore) { // giving the user the items he collected
                 String associatedItemId = ((VirtualItemScore) score).getAssociatedItemId();
                 try {
-                    StoreInventory.giveVirtualItem(associatedItemId, (int) score.getScore());
+                    StoreInventory.giveVirtualItem(associatedItemId, (int) score.getTempScore());
                 } catch (VirtualItemNotFoundException e) {
                     StoreUtils.LogError(TAG, "Couldn't find item associated with a given " +
                             "VirtualItemScore. itemId: " + associatedItemId);
                 }
             }
+
+            score.saveAndReset(); // resetting scores
         }
 
         BusProvider.getInstance().post(new LevelEndedEvent(this));

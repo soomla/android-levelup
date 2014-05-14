@@ -1,5 +1,6 @@
 package com.soomla.blueprint.challenges;
 
+import com.soomla.blueprint.data.MissionsStorage;
 import com.soomla.blueprint.events.MissionCompletedEvent;
 import com.soomla.blueprint.rewards.Reward;
 import com.soomla.store.BusProvider;
@@ -11,7 +12,6 @@ import java.util.List;
  */
 public abstract class Mission {
     private String mMissionId;
-    private boolean mCompleted;
     private String mName;
     private List<Reward> mRewards;
 
@@ -26,7 +26,7 @@ public abstract class Mission {
         mRewards = rewards;
     }
 
-    public List<Reward> getReward() {
+    public List<Reward> getRewards() {
         return mRewards;
     }
 
@@ -39,14 +39,13 @@ public abstract class Mission {
     }
 
     public boolean isCompleted() {
-        return mCompleted;
+        return MissionsStorage.isCompleted(this);
     }
 
     public void setCompleted(boolean completed) {
-        mCompleted = completed;
+        MissionsStorage.setCompleted(this, completed);
         if (completed) {
             giveRewards();
-            BusProvider.getInstance().post(new MissionCompletedEvent(this));
         }
     }
 

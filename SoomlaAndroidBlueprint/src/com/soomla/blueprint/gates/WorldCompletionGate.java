@@ -23,24 +23,16 @@ public class WorldCompletionGate extends Gate {
         }
     }
 
-    @Override
-    public void open() {
-        mOpen = true;
-        BusProvider.getInstance().post(new GateOpenedEvent(this));
+    private boolean canPass() {
+        World world = Blueprint.getWorld(mAssociatedWorldId);
+        return world != null && world.isCompleted();
     }
 
     @Override
-    public boolean isOpen() {
-        if (!mOpen) {
-            World world = Blueprint.getWorld(mAssociatedWorldId);
-            if (world  != null && !world.isCompleted()) {
-                return false;
-            }
-
-            mOpen = true;
+    public void tryOpenInner() {
+        if (canPass()) {
+            forceOpen(true);
         }
-
-        return true;
     }
 
     @Subscribe

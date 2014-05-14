@@ -1,11 +1,21 @@
 package com.soomla.blueprint;
 
 import com.soomla.blueprint.challenges.Challenge;
+import com.soomla.blueprint.data.BPJSONConsts;
 import com.soomla.blueprint.data.WorldsStorage;
 import com.soomla.blueprint.gates.GatesList;
+import com.soomla.blueprint.gates.GatesListAND;
+import com.soomla.blueprint.gates.GatesListOR;
+import com.soomla.blueprint.scoring.RangeScore;
 import com.soomla.blueprint.scoring.Score;
+import com.soomla.blueprint.scoring.VirtualItemScore;
 import com.soomla.store.StoreUtils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,6 +44,91 @@ public class World {
         this.mScores = scores;
         this.mGates = gates;
         mChallenges = challenges;
+    }
+
+    public World(JSONObject jsonObject) throws JSONException {
+
+        mWorldId = jsonObject.getString(BPJSONConsts.BP_WORLD_WORLDID);
+
+        mInnerWorldIds = new HashMap<String, World>();
+        JSONArray worldsArr = jsonObject.getJSONArray(BPJSONConsts.BP_WORLDS);
+        for (int i=0; i<worldsArr.length(); i++) {
+            JSONObject worldJSON = worldsArr.getJSONObject(i);
+            String type = worldJSON.getString(BPJSONConsts.BP_TYPE);
+            if (type.equals("world")) {
+                World world = new World(worldJSON);
+                mInnerWorldIds.put(world.getWorldId(), world);
+            } else if (type.equals("level")) {
+                Level level = new Level(worldJSON);
+                mInnerWorldIds.put(level.getWorldId(), level);
+            } else {
+                StoreUtils.LogError(TAG, "Unknown world type: " + type);
+            }
+        }
+
+        mScores = new HashMap<String, Score>();
+        JSONArray scoresArr = jsonObject.getJSONArray(BPJSONConsts.BP_SCORES);
+        for (int i=0; i<scoresArr.length(); i++) {
+            JSONObject scoreJSON = scoresArr.getJSONObject(i);
+            String type = scoreJSON.getString(BPJSONConsts.BP_TYPE);
+            if (type.equals("range")) {
+                Score score = new RangeScore(scoreJSON);
+                mScores.put(score.getScoreId(), score);
+            } else if (type.equals("item")) {
+                Score score = new VirtualItemScore(scoreJSON);
+                mScores.put(score.getScoreId(), score);
+            } else {
+                StoreUtils.LogError(TAG, "Unknown score type: " + type);
+            }
+        }
+
+        mChallenges = new ArrayList<Challenge>();
+        JSONArray challengesArr = jsonObject.getJSONArray(BPJSONConsts.BP_CHALLENGES);
+        for (int i=0; i<challengesArr.length(); i++) {
+            JSONObject challengesJSON = challengesArr.getJSONObject(i);
+            mChallenges.add(new Challenge(challengesJSON));
+        }
+
+        JSONObject gateListJSON = jsonObject.getJSONObject(BPJSONConsts.BP_GATES);
+        String type = gateListJSON.getString(BPJSONConsts.BP_TYPE);
+        if (type.equals("listOR")) {
+            mGates = new GatesListOR(gateListJSON);
+        } else if (type.equals("listAND")) {
+            mGates = new GatesListAND(gateListJSON);
+        } else {
+            StoreUtils.LogError(TAG, "Unknown gates-list type: " + type);
+        }
+    }
+
+    public JSONObject toJSONObject(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(BPJSONConsts.BP_WORLD_WORLDID, mWorldId);
+            jsonObject.put(BPJSONConsts.BP_GATES, mGates.toJSONObject());
+
+            JSONArray worldsArr = new JSONArray();
+            for (World world : mInnerWorldIds.values()) {
+                worldsArr.put(world.toJSONObject());
+            }
+            jsonObject.put(BPJSONConsts.BP_WORLDS, worldsArr);
+
+            JSONArray scoresArr = new JSONArray();
+            for (Score score : mScores.values()) {
+                scoresArr.put(score.toJSONObject());
+            }
+            jsonObject.put(BPJSONConsts.BP_SCORES, scoresArr);
+
+            JSONArray challengesArr = new JSONArray();
+            for (Challenge challenge : mChallenges) {
+                challengesArr.put(challenge.toJSONObject());
+            }
+            jsonObject.put(BPJSONConsts.BP_CHALLENGES, challengesArr);
+
+        } catch (JSONException e) {
+            StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
+        }
+
+        return jsonObject;
     }
 
     public List<Challenge> getChallenges() {

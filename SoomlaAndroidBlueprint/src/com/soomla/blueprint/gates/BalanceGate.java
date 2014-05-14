@@ -1,8 +1,8 @@
 package com.soomla.blueprint.gates;
 
+import com.soomla.blueprint.data.BPJSONConsts;
 import com.soomla.blueprint.data.GatesStorage;
 import com.soomla.blueprint.events.GateCanBeOpenedEvent;
-import com.soomla.blueprint.events.GateOpenedEvent;
 import com.soomla.store.BusProvider;
 import com.soomla.store.StoreInventory;
 import com.soomla.store.StoreUtils;
@@ -10,6 +10,9 @@ import com.soomla.store.events.CurrencyBalanceChangedEvent;
 import com.soomla.store.events.GoodBalanceChangedEvent;
 import com.soomla.store.exceptions.VirtualItemNotFoundException;
 import com.squareup.otto.Subscribe;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by refaelos on 07/05/14.
@@ -27,6 +30,29 @@ public class BalanceGate extends Gate {
         if (!isOpen()) {
             BusProvider.getInstance().register(this);
         }
+    }
+
+    public BalanceGate(JSONObject jsonObject) throws JSONException {
+        super(jsonObject);
+        mAssociatedItemId = jsonObject.getString(BPJSONConsts.BP_ASSOCITEMID);
+        mDesiredBalance = jsonObject.getInt(BPJSONConsts.BP_DESIRED_BALANCE);
+
+        if (!isOpen()) {
+            BusProvider.getInstance().register(this);
+        }
+    }
+
+    public JSONObject toJSONObject(){
+        JSONObject jsonObject = super.toJSONObject();
+        try {
+            jsonObject.put(BPJSONConsts.BP_ASSOCITEMID, mAssociatedItemId);
+            jsonObject.put(BPJSONConsts.BP_DESIRED_BALANCE, mDesiredBalance);
+            jsonObject.put(BPJSONConsts.BP_TYPE, "balance");
+        } catch (JSONException e) {
+            StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
+        }
+
+        return jsonObject;
     }
 
     public boolean canPass() {

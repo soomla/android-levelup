@@ -14,11 +14,11 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/.idea/gen" isTestSource="false" generated="true" />
     </content>
-    <content url="file://$MODULE_DIR$/../../android-store/SoomlaAndroidStore/src">
-      <sourceFolder url="file://$MODULE_DIR$/../../android-store/SoomlaAndroidStore/src" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/../submodules/android-store/SoomlaAndroidStore/src">
+      <sourceFolder url="file://$MODULE_DIR$/../submodules/android-store/SoomlaAndroidStore/src" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/../../android-store/submodules/android-store-google-play/src">
-      <sourceFolder url="file://$MODULE_DIR$/../../android-store/submodules/android-store-google-play/src" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/../submodules/android-store/submodules/android-store-google-play/src">
+      <sourceFolder url="file://$MODULE_DIR$/../submodules/android-store/submodules/android-store-google-play/src" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

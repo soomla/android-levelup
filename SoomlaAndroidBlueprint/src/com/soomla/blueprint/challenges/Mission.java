@@ -51,7 +51,7 @@ public abstract class Mission {
         mMissionId = missionId;
         mRewards = new ArrayList<Reward>();
     }
-    
+
     /**
      * Constructor.
      *

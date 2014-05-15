@@ -1,8 +1,11 @@
 package com.soomla.blueprint;
 
+import android.text.TextUtils;
+
 import com.soomla.blueprint.challenges.Challenge;
 import com.soomla.blueprint.data.BPJSONConsts;
 import com.soomla.blueprint.data.WorldsStorage;
+import com.soomla.blueprint.gates.Gate;
 import com.soomla.blueprint.gates.GatesList;
 import com.soomla.blueprint.gates.GatesListAND;
 import com.soomla.blueprint.gates.GatesListOR;
@@ -18,6 +21,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by refaelos on 06/05/14.
@@ -35,7 +39,7 @@ public class World {
         this.mGates = null;
         this.mInnerWorldIds = new HashMap<String, World>();
         this.mScores = new HashMap<String, Score>();
-        this.mChallenges = null;
+        this.mChallenges = new ArrayList<Challenge>();
     }
 
     public World(String worldId, GatesList gates, HashMap<String, World> innerWorlds, HashMap<String, Score> scores, List<Challenge> challenges) {
@@ -43,7 +47,7 @@ public class World {
         this.mInnerWorldIds = innerWorlds;
         this.mScores = scores;
         this.mGates = gates;
-        mChallenges = challenges;
+        this.mChallenges = challenges;
     }
 
     public World(JSONObject jsonObject) throws JSONException {
@@ -89,14 +93,20 @@ public class World {
             mChallenges.add(new Challenge(challengesJSON));
         }
 
-        JSONObject gateListJSON = jsonObject.getJSONObject(BPJSONConsts.BP_GATES);
-        String type = gateListJSON.getString(BPJSONConsts.BP_TYPE);
-        if (type.equals("listOR")) {
-            mGates = new GatesListOR(gateListJSON);
-        } else if (type.equals("listAND")) {
-            mGates = new GatesListAND(gateListJSON);
-        } else {
-            StoreUtils.LogError(TAG, "Unknown gates-list type: " + type);
+        try {
+            JSONObject gateListJSON = jsonObject.getJSONObject(BPJSONConsts.BP_GATES);
+            String type = gateListJSON.getString(BPJSONConsts.BP_TYPE);
+            if (!TextUtils.isEmpty(type)) {
+                if (type.equals("listOR")) {
+                    mGates = new GatesListOR(gateListJSON);
+                } else if (type.equals("listAND")) {
+                    mGates = new GatesListAND(gateListJSON);
+                } else {
+                    StoreUtils.LogError(TAG, "Unknown gates-list type: " + type);
+                }
+            }
+        } catch (JSONException ignored) {
+            mGates = null;
         }
     }
 
@@ -104,7 +114,7 @@ public class World {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(BPJSONConsts.BP_WORLD_WORLDID, mWorldId);
-            jsonObject.put(BPJSONConsts.BP_GATES, mGates.toJSONObject());
+            jsonObject.put(BPJSONConsts.BP_GATES, (mGates==null ? new JSONObject() : mGates.toJSONObject()));
 
             JSONArray worldsArr = new JSONArray();
             for (World world : mInnerWorldIds.values()) {
@@ -134,6 +144,9 @@ public class World {
     public List<Challenge> getChallenges() {
         return mChallenges;
     }
+    public void addChallenge(Challenge challenge) {
+        mChallenges.add(challenge);
+    }
 
     public HashMap<String, Double> getRecordScores() {
         HashMap<String, Double> records = new HashMap<String, Double>();
@@ -162,13 +175,26 @@ public class World {
         }
         score.setTempScore(scoreVal);
     }
+    public void addScore(Score score) {
+        mScores.put(score.getScoreId(), score);
+    }
+
+    public void addGate(Gate gate) {
+        if (mGates == null) {
+            mGates = new GatesListAND(UUID.randomUUID().toString());
+        }
+        mGates.addGate(gate);
+    }
+
+    public void addInnerWorld(World world) {
+        mInnerWorldIds.put(world.getWorldId(), world);
+    }
 
     public boolean isCompleted() {
         return WorldsStorage.isCompleted(this);
     }
     public void setCompleted(boolean mCompleted) {
         setCompleted(mCompleted, false);
-
     }
     public void setCompleted(boolean completed, boolean recursive) {
         if (recursive) {

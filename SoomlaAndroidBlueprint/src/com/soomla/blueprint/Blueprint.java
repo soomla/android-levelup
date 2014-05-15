@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by refaelos on 06/05/14.
@@ -21,8 +22,12 @@ public class Blueprint {
 
     private HashMap<String, World>   mInitialWorlds;
 
-    public void initialize(HashMap<String, World> initialWorlds) {
-        mInitialWorlds = initialWorlds;
+    public void initialize(List<World> initialWorlds) {
+        HashMap<String, World> worldMap = new HashMap<String, World>();
+        for (World world : initialWorlds) {
+            worldMap.put(world.getWorldId(), world);
+        }
+        mInitialWorlds = worldMap;
         save();
     }
 

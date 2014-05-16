@@ -20,6 +20,7 @@ import com.soomla.blueprint.data.BPJSONConsts;
 import com.soomla.blueprint.data.MissionsStorage;
 import com.soomla.blueprint.events.MissionCompletedEvent;
 import com.soomla.blueprint.rewards.BadgeReward;
+import com.soomla.blueprint.rewards.RandomReward;
 import com.soomla.blueprint.rewards.Reward;
 import com.soomla.blueprint.rewards.VirtualItemReward;
 import com.soomla.store.BusProvider;
@@ -85,6 +86,8 @@ public abstract class Mission {
                 mRewards.add(new BadgeReward(rewardJSON));
             } else if (type.equals("item")) {
                 mRewards.add(new VirtualItemReward(rewardJSON));
+            } else if (type.equals("random")) {
+                mRewards.add(new RandomReward(rewardJSON));
             } else {
                 StoreUtils.LogError(TAG, "Unknown reward type: " + type);
             }

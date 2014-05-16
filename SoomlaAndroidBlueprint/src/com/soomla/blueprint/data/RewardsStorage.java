@@ -20,6 +20,10 @@ public class RewardsStorage {
         return keyRewards(rewardId, "given");
     }
 
+    private static String keyRewardIdxSeqGiven(String rewardId) {
+        return keyRewards(rewardId, "seq.idx");
+    }
+
 
     /** Badges **/
 
@@ -51,4 +55,25 @@ public class RewardsStorage {
         return val != null;
     }
 
+
+    /** Sequence Reward **/
+
+    public static int getLastSeqIdxGiven(Reward reward) {
+        String rewardId = reward.getRewardId();
+        String key = keyRewardIdxSeqGiven(rewardId);
+
+        String val = StorageManager.getKeyValueStorage().getValue(key);
+
+        if (val == null) {
+            return -1;
+        }
+        return Integer.parseInt(val);
+    }
+
+    public static void setLastSeqIdxGiven(Reward reward, int idx) {
+        String rewardId = reward.getRewardId();
+        String key = keyRewardIdxSeqGiven(rewardId);
+
+        StorageManager.getKeyValueStorage().setValue(key, String.valueOf(idx));
+    }
 }

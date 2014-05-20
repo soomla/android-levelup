@@ -7,6 +7,11 @@ import com.soomla.store.BusProvider;
 import com.soomla.store.data.StorageManager;
 
 /**
+ * A utility class for persisting and querying the state of missions.
+ * Use this class to check if a certain mission is complete, and to
+ * set its completion state.
+ * This class uses the <code>KeyValueStorage</code> internally for storage.
+ *
  * Created by refaelos on 13/05/14.
  */
 public class MissionsStorage {
@@ -19,6 +24,12 @@ public class MissionsStorage {
         return keyMissions(missionId, "completed");
     }
 
+    /**
+     * Sets the completion status of the given mission.
+     *
+     * @param mission the mission to complete
+     * @param completed the completed status
+     */
     public static void setCompleted(Mission mission, boolean completed) {
         setCompleted(mission, completed, true);
     }
@@ -38,6 +49,13 @@ public class MissionsStorage {
         }
     }
 
+    /**
+     * Checks whether the given mission is complete.
+     *
+     * @param mission the mission to check
+     * @return <code>true</code> if the mission's status is complete,
+     * <code>false</code> otherwise
+     */
     public static boolean isCompleted(Mission mission) {
         String missionId = mission.getMissionId();
         String key = keyMissionsCompleted(missionId);

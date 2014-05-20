@@ -17,15 +17,28 @@ package com.soomla.blueprint.events;
 
 import com.soomla.blueprint.Level;
 
+/**
+ * This event is fired when a level has started, i.e. when
+ * <code>start()</code> is called on an instance of {@link com.soomla.blueprint.Level}
+ */
 public class LevelStartedEvent {
 
+    /**
+     * Constructor
+     *
+     * @param level the level which just started
+     */
     public LevelStartedEvent(Level level) {
         mLevel = level;
     }
 
+    /** Setters and Getters */
+
     public Level getLevel() {
         return mLevel;
     }
+
+    /** Private Members */
 
     private Level mLevel;
 }

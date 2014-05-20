@@ -17,15 +17,28 @@ package com.soomla.blueprint.events;
 
 import com.soomla.blueprint.Level;
 
+/**
+ * This event is fired when a <code>Level</code> has ended, i.e. when
+ * <code>end()</code> is called on an instance of {@link com.soomla.blueprint.Level}
+ */
 public class LevelEndedEvent {
 
+    /**
+     * Constructor
+     *
+     * @param level the level which just ended
+     */
     public LevelEndedEvent(Level level) {
         mLevel = level;
     }
 
+    /** Setters and Getters */
+
     public Level getLevel() {
         return mLevel;
     }
+
+    /** Private Members */
 
     private Level mLevel;
 }

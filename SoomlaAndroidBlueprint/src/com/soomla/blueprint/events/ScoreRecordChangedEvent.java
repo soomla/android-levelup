@@ -17,15 +17,27 @@ package com.soomla.blueprint.events;
 
 import com.soomla.blueprint.scoring.Score;
 
+/**
+ * This event is fired when a new record has been reached for a <code>Score</code>.
+ */
 public class ScoreRecordChangedEvent {
 
-    private Score mScore;
-
+    /**
+     * Constructor
+     *
+     * @param score the score which has reached a new record
+     */
     public ScoreRecordChangedEvent(Score score) {
         mScore = score;
     }
 
+    /** Setters and Getters */
+
     public Score getScore() {
         return mScore;
     }
+
+    /** Private Members */
+
+    private Score mScore;
 }

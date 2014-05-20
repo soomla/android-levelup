@@ -13,12 +13,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * A specific type of <code>Gate</code> that has an associated
+ * purchasable item. The gate opens once the item has been purchased.
+ *
  * Created by refaelos on 07/05/14.
  */
 public class PurchasableGate extends Gate {
-    private static String TAG = "SOOMLA PurchasableGate";
-    private String mAssociatedItemId;
 
+    /**
+     * Constructor
+     *
+     * @param gateId see parent
+     * @param associatedItemId the ID of the item which will open the gate once purchased
+     */
     public PurchasableGate(String gateId, String associatedItemId) {
         super(gateId);
 
@@ -31,6 +38,13 @@ public class PurchasableGate extends Gate {
         }
     }
 
+    /**
+     * Constructor
+     * Generates an instance of <code>PurchasableGate</code> from the given <code>JSONObject</code>.
+     *
+     * @param jsonObject see parent
+     * @throws JSONException
+     */
     public PurchasableGate(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
         mAssociatedItemId = jsonObject.getString(BPJSONConsts.BP_ASSOCITEMID);
@@ -40,6 +54,11 @@ public class PurchasableGate extends Gate {
         }
     }
 
+    /**
+     * Converts the current <code>PurchasableGate</code> to a <code>JSONObject</code>.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>PurchasableGate</code>.
+     */
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -52,6 +71,9 @@ public class PurchasableGate extends Gate {
         return jsonObject;
     }
 
+    /**
+     * Attempts to open the gate by purchasing the associated item
+     */
     @Override
     public void tryOpenInner() {
         try {
@@ -65,6 +87,11 @@ public class PurchasableGate extends Gate {
         }
     }
 
+    /**
+     * Handle market purchases and opens the gate.
+     *
+     * @param marketPurchaseEvent
+     */
     @Subscribe
     public void onMarketPurchaseEvent(MarketPurchaseEvent marketPurchaseEvent) {
         if (marketPurchaseEvent.getPayload().equals(getGateId())) {
@@ -72,4 +99,11 @@ public class PurchasableGate extends Gate {
             forceOpen(true);
         }
     }
+
+
+    /** Private Members */
+
+    private static String TAG = "SOOMLA PurchasableGate";
+
+    private String mAssociatedItemId;
 }

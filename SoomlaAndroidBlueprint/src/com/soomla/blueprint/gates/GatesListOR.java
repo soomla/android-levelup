@@ -9,27 +9,62 @@ import org.json.JSONObject;
 import java.util.List;
 
 /**
+ * A specific type of <code>GatesList</code> which can be opened
+ * if <b>AT LEAST ONE</b> gate in its list is open.
+ *
+ * Inheritance: GatesListOR >
+ * {@link com.soomla.blueprint.gates.GatesList} >
+ * {@link com.soomla.blueprint.gates.Gate}
+ *
  * Created by refaelos on 07/05/14.
  */
 public class GatesListOR extends GatesList {
-    private static final String TAG = "SOOMLA GatesListOR";
 
+    /**
+     * Constructor
+     *
+     * @param gateId see parent
+     */
     public GatesListOR(String gateId) {
         super(gateId);
     }
 
+    /**
+     * Constructor
+     *
+     * @param gateId see parent
+     * @param singleGate see parent
+     */
     public GatesListOR(String gateId, Gate singleGate) {
         super(gateId, singleGate);
     }
 
+    /**
+     * Constructor
+     *
+     * @param gateId see parent
+     * @param gates see parent
+     */
     public GatesListOR(String gateId, List<Gate> gates) {
         super(gateId, gates);
     }
 
+    /**
+     * Constructor
+     * Generates an instance of <code>GatesListOR</code> from the given <code>JSONObject</code>.
+     *
+     * @param jsonObject see parent
+     * @throws JSONException
+     */
     public GatesListOR(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
     }
 
+    /**
+     * Converts the current <code>GatesListOR</code> to a <code>JSONObject</code>.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>GatesListOR</code>.
+     */
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -41,6 +76,9 @@ public class GatesListOR extends GatesList {
         return jsonObject;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isOpen() {
         for (Gate gate : mGates) {
@@ -50,4 +88,9 @@ public class GatesListOR extends GatesList {
         }
         return false;
     }
+
+
+    /** Private Members */
+
+    private static final String TAG = "SOOMLA GatesListOR";
 }

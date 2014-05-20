@@ -17,15 +17,27 @@ package com.soomla.blueprint.events;
 
 import com.soomla.blueprint.gates.Gate;
 
+/**
+ * This event is fired when a <code>Gate</code> can be opened.
+ */
 public class GateCanBeOpenedEvent {
 
+    /**
+     * Constructor
+     *
+     * @param gate the gate that can be opened
+     */
     public GateCanBeOpenedEvent(Gate gate) {
         mGate = gate;
     }
 
+    /** Setters and Getters */
+
     public Gate getGate() {
         return mGate;
     }
+
+    /** Private Members */
 
     private Gate mGate;
 }

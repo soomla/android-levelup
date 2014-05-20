@@ -18,18 +18,30 @@ package com.soomla.blueprint.events;
 import com.soomla.blueprint.rewards.BadgeReward;
 import com.soomla.blueprint.rewards.Reward;
 
+/**
+ * This event is fired when a <code>Reward</code> has been given.
+ */
 public class RewardGivenEvent {
 
-    private Reward mReward;
-
-    public Reward getReward() {
-        return mReward;
-    }
-
+    /**
+     * Constructor
+     *
+     * @param reward the reward that was given
+     */
     public RewardGivenEvent(Reward reward) {
         mReward = reward;
         IsBadge = reward instanceof BadgeReward;
     }
 
+    /** Setters and Getters */
+
+    public Reward getReward() {
+        return mReward;
+    }
+
     public final boolean IsBadge;
+
+    /** Private Members */
+
+    private Reward mReward;
 }

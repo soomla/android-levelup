@@ -17,15 +17,27 @@ package com.soomla.blueprint.events;
 
 import com.soomla.blueprint.World;
 
+/**
+ * This event is fired when a <code>World</code> has been completed.
+ */
 public class WorldCompletedEvent {
 
-    private World mWorld;
-
+    /**
+     * Constructor
+     *
+     * @param world the world which was completed
+     */
     public WorldCompletedEvent(World world) {
         mWorld = world;
     }
 
+    /** Setters and Getters */
+
     public World getWorld() {
         return mWorld;
     }
+
+    /** Private Members */
+
+    private World mWorld;
 }

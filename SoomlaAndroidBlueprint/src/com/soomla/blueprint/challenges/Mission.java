@@ -18,12 +18,10 @@ package com.soomla.blueprint.challenges;
 
 import com.soomla.blueprint.data.BPJSONConsts;
 import com.soomla.blueprint.data.MissionsStorage;
-import com.soomla.blueprint.events.MissionCompletedEvent;
 import com.soomla.blueprint.rewards.BadgeReward;
 import com.soomla.blueprint.rewards.RandomReward;
 import com.soomla.blueprint.rewards.Reward;
 import com.soomla.blueprint.rewards.VirtualItemReward;
-import com.soomla.store.BusProvider;
 import com.soomla.store.StoreUtils;
 
 import org.json.JSONArray;
@@ -34,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Mission is a task your users needs to complete in your game. Missions are usually associated
+ * A mission is a task your users needs to complete in your game. Missions are usually associated
  * with rewards meaning that you can give your users something for completing them.
  * You can create missions and use them as single, independent, entities OR you can create a
  * <code>Challenge</code> to handle several missions and monitor their completion.
@@ -44,8 +42,8 @@ public abstract class Mission {
     /**
      * Constructor.
      *
-     * @param name is the name of the mission (something you might want to display on the screen.
-     * @param missionId is the id of the mission
+     * @param name the mission's name (something you might want to display on the screen).
+     * @param missionId the mission's ID
      */
     public Mission(String name, String missionId) {
         mName = name;
@@ -56,9 +54,9 @@ public abstract class Mission {
     /**
      * Constructor.
      *
-     * @param name is the name of the mission (something you might want to display on the screen.
-     * @param missionId is the id of the mission.
-     * @param rewards is the rewards that you want to give your users on mission completion.
+     * @param name the mission's name (something you might want to display on the screen).
+     * @param missionId the mission's ID
+     * @param rewards the rewards that you want to give your users on mission completion.
      */
     public Mission(String missionId, String name, List<Reward> rewards) {
         mMissionId = missionId;
@@ -79,6 +77,9 @@ public abstract class Mission {
 
         mRewards = new ArrayList<Reward>();
         JSONArray rewardsArr = jsonObject.getJSONArray(BPJSONConsts.BP_REWARDS);
+
+        // Iterate over all missions in the JSON array and for each one create
+        // an instance according to the mission type
         for (int i=0; i<rewardsArr.length(); i++) {
             JSONObject rewardJSON = rewardsArr.getJSONObject(i);
             String type = rewardJSON.getString(BPJSONConsts.BP_TYPE);
@@ -117,7 +118,7 @@ public abstract class Mission {
     }
 
     /**
-     * Check weather the current mission is completed or not.
+     * Check whether the current mission is completed or not.
      *
      * @return the completion status of the current mission.
      */
@@ -126,11 +127,11 @@ public abstract class Mission {
     }
 
     /**
-     * Use this function to force the completion status of the mission.
+     * Forces the completion status of the mission.
      * The completion status will be saved to the database.
      * In case of a successful completion, the associated rewards will be given.
      *
-     * @param completed is the completion status you want to set to the mission.
+     * @param completed the completion status you want to set to the mission.
      */
     public void setCompleted(boolean completed) {
         MissionsStorage.setCompleted(this, completed);
@@ -144,11 +145,11 @@ public abstract class Mission {
     }
 
     /**
-     * Checks if the given Object is equal to this Mission, by comparing the given object's
-     * mission id with this <code>Mission</code>'s missionId.
+     * Checks if the given Object is equal to this mission, by comparing the given object's
+     * <code>missionId</code> with this mission's <code>missionId</code>.
      *
      * @param o the object to compare
-     * @return true if the objects are equal, otherwise false
+     * @return <code>true</code> if the objects are equal, <code>false</code> otherwise
      */
     @Override
     public boolean equals(Object o) {

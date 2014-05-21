@@ -98,11 +98,11 @@ public class Level extends World {
         long endTime = System.currentTimeMillis();
         double duration = (endTime-mStartTime) / 1000.0;
 
-        if (duration < getSlowestDuration()) {
+        if (duration > getSlowestDuration()) {
             LevelsStorage.setSlowestDuration(this, duration);
         }
 
-        if (duration > getFastestDuration()) {
+        if (duration < getFastestDuration()) {
             LevelsStorage.setFastestDuration(this, duration);
         }
 

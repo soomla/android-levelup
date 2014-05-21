@@ -24,7 +24,9 @@ public class BadgeReward extends Reward {
 
     public BadgeReward(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-        mIconUrl = jsonObject.getString(BPJSONConsts.BP_REWARD_ICONURL);
+        try {
+            mIconUrl = jsonObject.getString(BPJSONConsts.BP_REWARD_ICONURL);
+        } catch (JSONException ignored) {}
     }
 
     public JSONObject toJSONObject(){

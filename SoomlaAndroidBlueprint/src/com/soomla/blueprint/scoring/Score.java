@@ -104,7 +104,7 @@ public class Score {
     }
 
     /**
-     * Increments the score with the given amount
+     * Increments the score of the current game session with the given amount
      *
      * @param amount the amount to increment
      */
@@ -113,7 +113,7 @@ public class Score {
     }
 
     /**
-     * Decrements the score with the given amount
+     * Decrements the score of the current game session with the given amount
      *
      * @param amount the amount to decrement
      */
@@ -146,7 +146,7 @@ public class Score {
     }
 
     /**
-     * Checks if the current score has reached a certain value
+     * Checks if the score in the current game session has reached a certain value
      *
      * @param scoreVal the value to check
      * @return <code>true</code> if the score has reached the desired value,
@@ -180,12 +180,15 @@ public class Score {
     public String getScoreId() {
         return mScoreId;
     }
+
     public double getTempScore() {
         return mTempScore;
     }
+
     public double getRecord() {
         return ScoresStorage.getRecordScore(this);
     }
+
     public double getLatest() {
         return ScoresStorage.getLatestScore(this);
     }
@@ -197,7 +200,6 @@ public class Score {
     public void setHigherBetter(boolean mHigherBetter) {
         this.mHigherBetter = mHigherBetter;
     }
-
 
     public void setStartValue(double startValue) {
         mStartValue = startValue;

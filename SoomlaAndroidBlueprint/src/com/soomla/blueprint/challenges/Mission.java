@@ -18,12 +18,10 @@ package com.soomla.blueprint.challenges;
 
 import com.soomla.blueprint.data.BPJSONConsts;
 import com.soomla.blueprint.data.MissionsStorage;
-import com.soomla.blueprint.events.MissionCompletedEvent;
 import com.soomla.blueprint.rewards.BadgeReward;
 import com.soomla.blueprint.rewards.RandomReward;
 import com.soomla.blueprint.rewards.Reward;
 import com.soomla.blueprint.rewards.VirtualItemReward;
-import com.soomla.store.BusProvider;
 import com.soomla.store.StoreUtils;
 
 import org.json.JSONArray;

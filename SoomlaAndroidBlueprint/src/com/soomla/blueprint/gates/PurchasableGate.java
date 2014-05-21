@@ -30,7 +30,9 @@ import org.json.JSONObject;
 
 /**
  * A specific type of <code>Gate</code> that has an associated
- * purchasable item. The gate opens once the item has been purchased.
+ * market item. The gate opens once the item has been purchased.
+ * This gate is useful when you want to allow unlocking of certain levels
+ * or worlds only if they are purchased.
  *
  * Created by refaelos on 07/05/14.
  */

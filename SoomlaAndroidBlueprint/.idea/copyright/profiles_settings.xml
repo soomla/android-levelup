@@ -1,3 +1,5 @@
 <component name="CopyrightManager">
-  <settings default="SOOMLA - Android" />
+  <settings default="SOOMLA - Android">
+    <module2copyright />
+  </settings>
 </component>

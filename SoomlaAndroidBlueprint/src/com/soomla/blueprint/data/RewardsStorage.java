@@ -2,12 +2,16 @@ package com.soomla.blueprint.data;
 
 import com.soomla.blueprint.Blueprint;
 import com.soomla.blueprint.events.RewardGivenEvent;
-import com.soomla.blueprint.rewards.BadgeReward;
 import com.soomla.blueprint.rewards.Reward;
 import com.soomla.store.BusProvider;
 import com.soomla.store.data.StorageManager;
 
 /**
+ * A utility class for persisting and querying the state of rewards.
+ * Use this class to check if a certain reward was given, or to
+ * set its state.
+ * This class uses the <code>KeyValueStorage</code> internally for storage.
+ *
  * Created by refaelos on 13/05/14.
  */
 public class RewardsStorage {
@@ -27,6 +31,12 @@ public class RewardsStorage {
 
     /** Badges **/
 
+    /**
+     * Sets the reward status of the given reward\
+     *
+     * @param reward the reward to set status
+     * @param give <code>true</code>
+     */
     public static void setRewardStatus(Reward reward, boolean give) {
         setRewardStatus(reward, give, true);
     }
@@ -46,6 +56,13 @@ public class RewardsStorage {
         }
     }
 
+    /**
+     * Checks whether the given reward was given.
+     *
+     * @param reward the reward to check
+     * @return <code>true</code> if the reward was already given,
+     * <code>false</code> otherwise
+     */
     public static boolean isRewardGiven(Reward reward) {
         String rewardId = reward.getRewardId();
         String key = keyRewardGiven(rewardId);
@@ -58,6 +75,12 @@ public class RewardsStorage {
 
     /** Sequence Reward **/
 
+    /**
+     * Retrieves the index of the last reward given in a sequence of rewards.
+     *
+     * @param reward the reward to check
+     * @return the index of the reward in the sequence
+     */
     public static int getLastSeqIdxGiven(Reward reward) {
         String rewardId = reward.getRewardId();
         String key = keyRewardIdxSeqGiven(rewardId);
@@ -70,6 +93,12 @@ public class RewardsStorage {
         return Integer.parseInt(val);
     }
 
+    /**
+     * Sets the index of the last reward given in a sequence of rewards.
+     *
+     * @param reward the reward who's index is to be set
+     * @param idx the index to set
+     */
     public static void setLastSeqIdxGiven(Reward reward, int idx) {
         String rewardId = reward.getRewardId();
         String key = keyRewardIdxSeqGiven(rewardId);

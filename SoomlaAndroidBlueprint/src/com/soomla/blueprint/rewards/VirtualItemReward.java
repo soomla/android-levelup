@@ -9,12 +9,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * A specific type of <code>Reward</code> that has an associated
+ * virtual item.  The user is given this virtual item when the reward
+ * is granted.  For example: a user can earn a life reward (<code>VirtualItemReward</code>)
+ * which rewards the user with one life (<code>SingleUseVG</code>).
+ *
  * Created by refaelos on 13/05/14.
  */
 public class VirtualItemReward extends Reward {
-    private static final String TAG = "SOOMLA Reward";
-    private int mAmount;
-    private String mAssociatedItemId;
 
     protected VirtualItemReward(String rewardId, String name, int amount, String associatedItemId) {
         super(rewardId, name);
@@ -22,12 +24,24 @@ public class VirtualItemReward extends Reward {
         mAssociatedItemId = associatedItemId;
     }
 
+    /**
+     * Constructor.
+     * Generates an instance of <code>VirtualItemReward</code> from the given <code>JSONObject</code>.
+     *
+     * @param jsonObject A JSONObject representation of the wanted <code>VirtualItemReward</code>.
+     * @throws JSONException
+     */
     public VirtualItemReward(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
         mAssociatedItemId = jsonObject.getString(BPJSONConsts.BP_ASSOCITEMID);
         mAmount = jsonObject.getInt(BPJSONConsts.BP_REWARD_AMOUNT);
     }
 
+    /**
+     * Converts the current <code>VirtualItemReward</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>VirtualItemReward</code>.
+     */
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -41,14 +55,12 @@ public class VirtualItemReward extends Reward {
         return jsonObject;
     }
 
-    public int getAmount() {
-        return mAmount;
-    }
-
-    public String getAssociatedItemId() {
-        return mAssociatedItemId;
-    }
-
+    /**
+     * Gives the user the item associated with this reward.
+     *
+     * @return <code>true</code> if the item was given successfully,
+     * <code>false</code> otherwise
+     */
     @Override
     public boolean giveInner() {
         try {
@@ -59,4 +71,23 @@ public class VirtualItemReward extends Reward {
         }
         return true;
     }
+
+
+    /** Setters and Getters **/
+
+    public int getAmount() {
+        return mAmount;
+    }
+
+    public String getAssociatedItemId() {
+        return mAssociatedItemId;
+    }
+
+
+    /** Private Members **/
+
+    private static final String TAG = "SOOMLA Reward";
+
+    private int mAmount;
+    private String mAssociatedItemId;
 }

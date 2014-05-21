@@ -70,10 +70,9 @@ public class RangeScore extends Score {
     }
 
     /**
-     * Converts the current <code>RangeScore</code> to a JSONObject.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>RangeScore</code>.
+     * {@inheritDoc}
      */
+    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

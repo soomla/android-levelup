@@ -106,10 +106,9 @@ public class Challenge extends Mission {
     }
 
     /**
-     * Converts the current <code>Challenge</code> to a JSONObject.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>Challenge</code>.
+     * {@inheritDoc}
      */
+    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

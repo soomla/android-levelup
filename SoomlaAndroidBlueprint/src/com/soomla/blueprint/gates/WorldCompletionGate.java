@@ -68,10 +68,9 @@ public class WorldCompletionGate extends Gate {
     }
 
     /**
-     * Converts the current <code>WorldCompletionGate</code> to a <code>JSONObject</code>.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>WorldCompletionGate</code>.
+     * {@inheritDoc}
      */
+    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

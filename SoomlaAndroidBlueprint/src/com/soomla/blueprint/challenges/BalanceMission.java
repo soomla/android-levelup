@@ -93,10 +93,9 @@ public class BalanceMission extends Mission {
     }
 
     /**
-     * Converts the current <code>BalanceMission</code> to a JSONObject.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>BalanceMission</code>.
+     * {@inheritDoc}
      */
+    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

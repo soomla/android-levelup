@@ -80,10 +80,9 @@ public class RandomReward extends Reward {
     }
 
     /**
-     * Converts the current <code>RandomReward</code> to a JSONObject.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>RandomReward</code>.
+     * {@inheritDoc}
      */
+    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

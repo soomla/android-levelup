@@ -62,10 +62,9 @@ public class VirtualItemReward extends Reward {
     }
 
     /**
-     * Converts the current <code>VirtualItemReward</code> to a JSONObject.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>VirtualItemReward</code>.
+     * {@inheritDoc}
      */
+    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

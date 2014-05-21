@@ -16,6 +16,7 @@
 
 package com.soomla.blueprint.challenges;
 
+import com.soomla.blueprint.JSONable;
 import com.soomla.blueprint.data.BPJSONConsts;
 import com.soomla.blueprint.data.MissionsStorage;
 import com.soomla.blueprint.rewards.BadgeReward;
@@ -37,7 +38,7 @@ import java.util.List;
  * You can create missions and use them as single, independent, entities OR you can create a
  * <code>Challenge</code> to handle several missions and monitor their completion.
  */
-public abstract class Mission {
+public abstract class Mission implements JSONable {
 
     /**
      * Constructor.
@@ -96,10 +97,9 @@ public abstract class Mission {
     }
 
     /**
-     * Converts the current <code>Mission</code> to a JSONObject.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>Mission</code>.
+     * {@inheritDoc}
      */
+    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {

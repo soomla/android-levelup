@@ -68,10 +68,9 @@ public class BadgeReward extends Reward {
     }
 
     /**
-     * Converts the current <code>BadgeReward</code> to a JSONObject.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>BadgeReward</code>.
+     * {@inheritDoc}
      */
+    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

@@ -16,6 +16,7 @@
 
 package com.soomla.blueprint.rewards;
 
+import com.soomla.blueprint.JSONable;
 import com.soomla.blueprint.data.BPJSONConsts;
 import com.soomla.blueprint.data.RewardsStorage;
 import com.soomla.store.StoreUtils;
@@ -32,7 +33,7 @@ import org.json.JSONObject;
  *
  * Created by refaelos on 13/05/14.
  */
-public abstract class Reward {
+public abstract class Reward implements JSONable {
 
     /**
      * Constructor
@@ -60,10 +61,9 @@ public abstract class Reward {
     }
 
     /**
-     * Converts the current <code>Reward</code> to a JSONObject.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>Reward</code>.
+     * {@inheritDoc}
      */
+    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {

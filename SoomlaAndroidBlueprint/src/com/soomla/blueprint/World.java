@@ -58,7 +58,7 @@ import java.util.UUID;
  *
  * Created by refaelos on 06/05/14.
  */
-public class World {
+public class World implements JSONable {
 
     /**
      * Constructor
@@ -166,10 +166,9 @@ public class World {
     }
 
     /**
-     * Converts the current <code>World</code> to a JSONObject.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>World</code>.
+     * {@inheritDoc}
      */
+    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {

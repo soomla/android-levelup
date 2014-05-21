@@ -5,6 +5,10 @@ import com.soomla.blueprint.Level;
 import com.soomla.store.data.StorageManager;
 
 /**
+ * A utility class for persisting and querying the state of levels.
+ * Use this class to check if a certain gate is open, or to open it.
+ * This class uses the <code>KeyValueStorage</code> internally for storage.
+ *
  * Created by refaelos on 13/05/14.
  */
 public class LevelsStorage {

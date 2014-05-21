@@ -95,7 +95,7 @@ public class RecordGate extends Gate {
      * @return <code>true</code> if the score's record has reached
      * the desired value, <code>false</code> otherwise
      */
-    public boolean canPass() {
+    private boolean canPass() {
         Score score = Blueprint.getInstance().getScore(mAssociatedScoreId);
         if (score == null) {
             StoreUtils.LogError(TAG, "(isOpen) couldn't find score with scoreId: " + mAssociatedScoreId);

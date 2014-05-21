@@ -100,7 +100,7 @@ public class BalanceGate extends Gate {
      * @return <code>true</code> if the item's balance has
      * reached the desired balance, <code>false</code> otherwise
      */
-    public boolean canPass() {
+    private boolean canPass() {
         if (GatesStorage.isOpen(this)) {
             return true;
         }

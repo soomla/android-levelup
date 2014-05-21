@@ -2,11 +2,15 @@ package com.soomla.blueprint.gates;
 
 import com.soomla.blueprint.data.BPJSONConsts;
 import com.soomla.store.BusProvider;
+import com.soomla.store.StoreController;
 import com.soomla.store.StoreInventory;
 import com.soomla.store.StoreUtils;
+import com.soomla.store.data.StoreInfo;
+import com.soomla.store.domain.PurchasableVirtualItem;
 import com.soomla.store.events.MarketPurchaseEvent;
 import com.soomla.store.exceptions.InsufficientFundsException;
 import com.soomla.store.exceptions.VirtualItemNotFoundException;
+import com.soomla.store.purchaseTypes.PurchaseWithMarket;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONException;
@@ -55,12 +59,14 @@ public class PurchasableGate extends Gate {
     @Override
     public void tryOpenInner() {
         try {
-            StoreInventory.buy(mAssociatedItemId);
-        } catch (InsufficientFundsException e) {
-            StoreUtils.LogError(TAG, "Not enough funds to purchase this gate.  gateId: + " +
-                    getGateId() + "  itemId: " + mAssociatedItemId);
+            PurchasableVirtualItem pvi = (PurchasableVirtualItem) StoreInfo.getVirtualItem(mAssociatedItemId);
+            PurchaseWithMarket ptype = (PurchaseWithMarket) pvi.getPurchaseType();
+            StoreController.getInstance().buyWithMarket(ptype.getMarketItem(), getGateId());
         } catch (VirtualItemNotFoundException e) {
             StoreUtils.LogError(TAG, "The item needed for purchase doesn't exist. itemId: " +
+                    mAssociatedItemId);
+        } catch (ClassCastException e) {
+            StoreUtils.LogError(TAG, "The associated item is not a purchasable item. itemId: " +
                     mAssociatedItemId);
         }
     }

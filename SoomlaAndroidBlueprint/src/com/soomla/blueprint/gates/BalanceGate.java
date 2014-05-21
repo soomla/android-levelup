@@ -55,7 +55,7 @@ public class BalanceGate extends Gate {
         return jsonObject;
     }
 
-    public boolean canPass() {
+    private boolean canPass() {
         if (GatesStorage.isOpen(this)) {
             return true;
         }

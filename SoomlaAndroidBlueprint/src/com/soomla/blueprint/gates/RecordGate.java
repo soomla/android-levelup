@@ -53,7 +53,7 @@ public class RecordGate extends Gate {
         return jsonObject;
     }
 
-    public boolean canPass() {
+    private boolean canPass() {
         Score score = Blueprint.getInstance().getScore(mAssociatedScoreId);
         if (score == null) {
             StoreUtils.LogError(TAG, "(isOpen) couldn't find score with scoreId: " + mAssociatedScoreId);

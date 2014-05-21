@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Soomla Inc.
+ * Copyright (C) 2012-2014 Soomla Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.soomla.blueprint.events;
 
 import com.soomla.blueprint.Level;
 
+/**
+ * This event is fired when a level has started, i.e. when
+ * <code>start()</code> is called on an instance of {@link com.soomla.blueprint.Level}
+ */
 public class LevelStartedEvent {
 
+    /**
+     * Constructor
+     *
+     * @param level the level which just started
+     */
     public LevelStartedEvent(Level level) {
         mLevel = level;
     }
 
+    /** Setters and Getters */
+
     public Level getLevel() {
         return mLevel;
     }
+
+    /** Private Members */
 
     private Level mLevel;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Soomla Inc.
+ * Copyright (C) 2012-2014 Soomla Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.soomla.blueprint.events;
 
 import com.soomla.blueprint.challenges.Challenge;
 import com.soomla.blueprint.challenges.Mission;
 
+/**
+ * This event is fired when a <code>Mission</code> has been completed.
+ */
 public class MissionCompletedEvent {
 
+    /**
+     *
+     * @param mission the mission that was completed
+     */
     public MissionCompletedEvent(Mission mission) {
         mMission = mission;
         IsChallenge = mMission instanceof Challenge;
     }
 
+    /** Setters and Getters */
+
     public Mission getMission() {
         return mMission;
     }
 
+    public final boolean IsChallenge;
+
+    /** Private Members */
+
     private Mission mMission;
 
-    public final boolean IsChallenge;
 }

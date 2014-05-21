@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Soomla Inc.
+ * Copyright (C) 2012-2014 Soomla Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.soomla.blueprint.events;
 
 import com.soomla.blueprint.rewards.BadgeReward;
 import com.soomla.blueprint.rewards.Reward;
 
+/**
+ * This event is fired when a <code>Reward</code> has been given.
+ */
 public class RewardGivenEvent {
 
-    private Reward mReward;
-
-    public Reward getReward() {
-        return mReward;
-    }
-
+    /**
+     * Constructor
+     *
+     * @param reward the reward that was given
+     */
     public RewardGivenEvent(Reward reward) {
         mReward = reward;
         IsBadge = reward instanceof BadgeReward;
     }
 
+    /** Setters and Getters */
+
+    public Reward getReward() {
+        return mReward;
+    }
+
     public final boolean IsBadge;
+
+    /** Private Members */
+
+    private Reward mReward;
 }

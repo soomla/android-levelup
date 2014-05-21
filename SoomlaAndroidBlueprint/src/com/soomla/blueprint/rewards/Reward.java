@@ -21,7 +21,7 @@ public abstract class Reward {
     /**
      * Constructor
      *
-     * @param rewardId the reward's ID
+     * @param rewardId the reward's ID (something you might want to display on the screen).
      * @param name the reward's name.
      */
     protected Reward(String rewardId, String name) {

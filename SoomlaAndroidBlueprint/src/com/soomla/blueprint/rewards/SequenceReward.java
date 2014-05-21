@@ -28,12 +28,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A specific type of <code>Reward</code> that holds of list of other
+ * A specific type of <code>Reward</code> that holds of list of other rewards
+ * in a certain sequence.  The rewards are given in ascending order.  For example,
+ * in a Karate game the user can progress between belts and can be rewarded a
+ * sequence of: blue belt, yellow belt, green belt, brown belt, black belt
  *
  * Created by refaelos on 13/05/14.
  */
 public class SequenceReward extends Reward {
 
+    /**
+     * Constructor
+     *
+     * @param rewardId see parent
+     * @param name see parent
+     * @param rewards the list of rewards in the sequence
+     */
     protected SequenceReward(String rewardId, String name, List<Reward> rewards) {
         super(rewardId, name);
         mRewards = rewards;

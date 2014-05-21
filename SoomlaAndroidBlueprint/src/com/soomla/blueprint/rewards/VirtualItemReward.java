@@ -18,6 +18,14 @@ import org.json.JSONObject;
  */
 public class VirtualItemReward extends Reward {
 
+    /**
+     * Constructor
+     *
+     * @param rewardId see parent
+     * @param name see parent
+     * @param amount the amount to give of the associated item when the reward is given
+     * @param associatedItemId the ID of the virtual item associated with this reward
+     */
     protected VirtualItemReward(String rewardId, String name, int amount, String associatedItemId) {
         super(rewardId, name);
         mAmount = amount;

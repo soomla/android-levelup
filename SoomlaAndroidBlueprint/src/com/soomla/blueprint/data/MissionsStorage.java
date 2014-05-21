@@ -8,7 +8,7 @@ import com.soomla.store.data.StorageManager;
 
 /**
  * A utility class for persisting and querying the state of missions.
- * Use this class to check if a certain mission is complete, and to
+ * Use this class to check if a certain mission is complete, or to
  * set its completion state.
  * This class uses the <code>KeyValueStorage</code> internally for storage.
  *

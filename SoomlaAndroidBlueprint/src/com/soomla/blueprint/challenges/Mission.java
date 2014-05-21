@@ -44,8 +44,8 @@ public abstract class Mission {
     /**
      * Constructor.
      *
-     * @param name the name of the mission (something you might want to display on the screen).
-     * @param missionId the ID of the mission
+     * @param name the mission's name (something you might want to display on the screen).
+     * @param missionId the mission's ID
      */
     public Mission(String name, String missionId) {
         mName = name;
@@ -56,8 +56,8 @@ public abstract class Mission {
     /**
      * Constructor.
      *
-     * @param name the name of the mission (something you might want to display on the screen).
-     * @param missionId the ID of the mission.
+     * @param name the mission's name (something you might want to display on the screen).
+     * @param missionId the mission's ID
      * @param rewards the rewards that you want to give your users on mission completion.
      */
     public Mission(String missionId, String name, List<Reward> rewards) {

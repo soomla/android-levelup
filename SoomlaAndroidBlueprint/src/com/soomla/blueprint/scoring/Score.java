@@ -16,7 +16,6 @@
 
 package com.soomla.blueprint.scoring;
 
-import com.soomla.blueprint.JSONable;
 import com.soomla.blueprint.data.BPJSONConsts;
 import com.soomla.blueprint.data.ScoresStorage;
 import com.soomla.blueprint.events.ScoreRecordChangedEvent;
@@ -35,7 +34,7 @@ import org.json.JSONObject;
  *
  * Created by refaelos on 06/05/14.
  */
-public class Score implements JSONable{
+public class Score {
 
     /**
      * Constructor
@@ -81,9 +80,10 @@ public class Score implements JSONable{
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>Score</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>Score</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {

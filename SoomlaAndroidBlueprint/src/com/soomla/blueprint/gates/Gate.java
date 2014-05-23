@@ -16,7 +16,6 @@
 
 package com.soomla.blueprint.gates;
 
-import com.soomla.blueprint.JSONable;
 import com.soomla.blueprint.data.BPJSONConsts;
 import com.soomla.blueprint.data.GatesStorage;
 import com.soomla.store.StoreUtils;
@@ -30,7 +29,7 @@ import org.json.JSONObject;
  *
  * Created by refaelos on 06/05/14.
  */
-public abstract class Gate implements JSONable {
+public abstract class Gate {
 
     /**
      * Constructor
@@ -53,9 +52,10 @@ public abstract class Gate implements JSONable {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>Gate</code> to a <code>JSONObject</code>.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>Gate</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {

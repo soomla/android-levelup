@@ -77,9 +77,10 @@ public class BalanceGate extends Gate {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>RecordGate</code> to a <code>JSONObject</code>.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>RecordGate</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

@@ -77,9 +77,10 @@ public class GatesListAND extends GatesList {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>GatesListAND</code> to a <code>JSONObject</code>.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>GatesListAND</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

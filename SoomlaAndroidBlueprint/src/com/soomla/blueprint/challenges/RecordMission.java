@@ -91,9 +91,10 @@ public class RecordMission extends Mission {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>RecordMission</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>RecordMission</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

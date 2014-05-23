@@ -90,9 +90,10 @@ public class Level extends World {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>Level</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>Level</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

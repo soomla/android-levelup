@@ -76,9 +76,10 @@ public class SequenceReward extends Reward {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>SequenceReward</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>SequenceReward</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

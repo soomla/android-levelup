@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2012-2014 Soomla Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.soomla.blueprint;
 
 import android.text.TextUtils;
@@ -24,16 +40,31 @@ import java.util.List;
 import java.util.UUID;
 
 /**
+ * A world is the highest level entity in the Blueprint framework.  A world
+ * is an entity that defines game progress and achievements with a set of
+ * inner worlds (optional), challenges, missions, gates, scores and rewards.
+ * A game can have several worlds that allow the user to progress between them.
+ * An example can be observed in existing mobile games today such as Angry Birds:
+ * <ul>
+ *     <li>A user plays in one world each time.</li>
+ *     <li>Each world contains multiple challenges which are associated with achieving
+ *     certain scores or badges.</li>
+ *     <li>Completing all challenges opens a gate to (=unlocks) the new world.</li>
+ *     <li>The user accumulates points to his \ her score.</li>
+ *     <li>Reaching a certain high score gives the user a reward - a virtual item,
+ *     a badge, a random reward etc.</li>
+ *     <li>A user can achieve new score records - "personal bests"</li>
+ * </ul>
+ *
  * Created by refaelos on 06/05/14.
  */
 public class World {
-    private static String TAG = "SOOMLA World";
-    private String mWorldId;
-    private GatesList mGates;
-    private HashMap<String, World> mInnerWorldIds;
-    protected HashMap<String, Score> mScores;
-    private List<Challenge> mChallenges;
 
+    /**
+     * Constructor
+     *
+     * @param worldId the world's ID
+     */
     public World(String worldId) {
         this.mWorldId = worldId;
         this.mGates = null;
@@ -42,6 +73,15 @@ public class World {
         this.mChallenges = new ArrayList<Challenge>();
     }
 
+    /**
+     * Constructor
+     *
+     * @param worldId the world's ID
+     * @param gates a list of gates that define
+     * @param innerWorlds a map of worlds included in this world
+     * @param scores a map of scores used by this world
+     * @param challenges a map of challenges used by this world
+     */
     public World(String worldId, GatesList gates, HashMap<String, World> innerWorlds, HashMap<String, Score> scores, List<Challenge> challenges) {
         this.mWorldId = worldId;
         this.mInnerWorldIds = innerWorlds;
@@ -50,12 +90,22 @@ public class World {
         this.mChallenges = challenges;
     }
 
+    /**
+     * Constructor.
+     * Generates an instance of <code>World</code> from the given <code>JSONObject</code>.
+     *
+     * @param jsonObject A JSONObject representation of the wanted <code>World</code>.
+     * @throws JSONException
+     */
     public World(JSONObject jsonObject) throws JSONException {
 
         mWorldId = jsonObject.getString(BPJSONConsts.BP_WORLD_WORLDID);
 
         mInnerWorldIds = new HashMap<String, World>();
         JSONArray worldsArr = jsonObject.getJSONArray(BPJSONConsts.BP_WORLDS);
+
+        // Iterate over all inner worlds in the JSON array and for each one create
+        // an instance according to the world type
         for (int i=0; i<worldsArr.length(); i++) {
             JSONObject worldJSON = worldsArr.getJSONObject(i);
             String type = worldJSON.getString(BPJSONConsts.BP_TYPE);
@@ -72,6 +122,9 @@ public class World {
 
         mScores = new HashMap<String, Score>();
         JSONArray scoresArr = jsonObject.getJSONArray(BPJSONConsts.BP_SCORES);
+
+        // Iterate over all scores in the JSON array and for each one create
+        // an instance according to the score type
         for (int i=0; i<scoresArr.length(); i++) {
             JSONObject scoreJSON = scoresArr.getJSONObject(i);
             String type = scoreJSON.getString(BPJSONConsts.BP_TYPE);
@@ -88,6 +141,8 @@ public class World {
 
         mChallenges = new ArrayList<Challenge>();
         JSONArray challengesArr = jsonObject.getJSONArray(BPJSONConsts.BP_CHALLENGES);
+
+        // Iterate over all challenges in the JSON array and create an instance for each one
         for (int i=0; i<challengesArr.length(); i++) {
             JSONObject challengesJSON = challengesArr.getJSONObject(i);
             mChallenges.add(new Challenge(challengesJSON));
@@ -110,6 +165,11 @@ public class World {
         }
     }
 
+    /**
+     * Converts the current <code>World</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>World</code>.
+     */
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {
@@ -141,13 +201,20 @@ public class World {
         return jsonObject;
     }
 
-    public List<Challenge> getChallenges() {
-        return mChallenges;
-    }
+    /**
+     * Adds another challenge to the world.
+     *
+     * @param challenge the challenge to add
+     */
     public void addChallenge(Challenge challenge) {
         mChallenges.add(challenge);
     }
 
+    /**
+     * Retrieves all score records in the world.
+     *
+     * @return a map of {score ID: record}
+     */
     public HashMap<String, Double> getRecordScores() {
         HashMap<String, Double> records = new HashMap<String, Double>();
         for(Score score : mScores.values()) {
@@ -156,6 +223,12 @@ public class World {
 
         return records;
     }
+
+    /**
+     * Retrieves the most updated scores in the world.
+     *
+     * @return a map of {score ID: latest score}
+     */
     public HashMap<String, Double> getLatestScores() {
         HashMap<String, Double> latest = new HashMap<String, Double>();
         for(Score score : mScores.values()) {
@@ -164,9 +237,13 @@ public class World {
 
         return latest;
     }
-    public HashMap<String, Score> getScores() {
-        return mScores;
-    }
+
+    /**
+     * Sets a value for a certain score in the current game session.
+     *
+     * @param scoreId the ID of the score to set
+     * @param scoreVal the value to set for the score
+     */
     public void setScore(String scoreId, double scoreVal) {
         Score score = mScores.get(scoreId);
         if (score == null) {
@@ -175,10 +252,21 @@ public class World {
         }
         score.setTempScore(scoreVal);
     }
+
+    /**
+     * Adds another score to the world.
+     *
+     * @param score the score to add
+     */
     public void addScore(Score score) {
         mScores.put(score.getScoreId(), score);
     }
 
+    /**
+     * Adds another gate to the world.
+     *
+     * @param gate the gate to add
+     */
     public void addGate(Gate gate) {
         if (mGates == null) {
             mGates = new GatesListAND(UUID.randomUUID().toString());
@@ -186,13 +274,29 @@ public class World {
         mGates.addGate(gate);
     }
 
+    /**
+     * Adds another inner world to this world.
+     *
+     * @param world the world to add
+     */
     public void addInnerWorld(World world) {
         mInnerWorldIds.put(world.getWorldId(), world);
     }
 
+    /**
+     * Checks if this world has been completed.
+     *
+     * @return <code>true</code> if completed, <code>false</code> otherwise
+     */
     public boolean isCompleted() {
         return WorldsStorage.isCompleted(this);
     }
+
+    /**
+     * Sets this world to be completed.
+     *
+     * @param mCompleted
+     */
     public void setCompleted(boolean mCompleted) {
         setCompleted(mCompleted, false);
     }
@@ -204,6 +308,21 @@ public class World {
         }
         WorldsStorage.setCompleted(this, completed);
     }
+
+    /**
+     * Checks if this world's starting criteria is met.
+     * A world can be started if it has not gates or if
+     * all of its gates are open.
+     *
+     * @return <code>true</code> if the world can be started,
+     * <code>false</code> otherwise
+     */
+    public boolean canStart() {
+        return mGates == null || mGates.isOpen();
+    }
+
+
+    /** Setters and Getters **/
 
     public String getWorldId() {
         return mWorldId;
@@ -217,7 +336,22 @@ public class World {
         return mInnerWorldIds;
     }
 
-    public boolean canStart() {
-        return mGates == null || mGates.isOpen();
+    public HashMap<String, Score> getScores() {
+        return mScores;
     }
+
+    public List<Challenge> getChallenges() {
+        return mChallenges;
+    }
+
+
+    /** Private Members **/
+
+    private static String TAG = "SOOMLA World";
+
+    private String mWorldId;
+    private GatesList mGates;
+    private HashMap<String, World> mInnerWorldIds;
+    protected HashMap<String, Score> mScores;
+    private List<Challenge> mChallenges;
 }

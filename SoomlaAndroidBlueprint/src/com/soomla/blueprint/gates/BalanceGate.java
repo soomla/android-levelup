@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2012-2014 Soomla Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.soomla.blueprint.gates;
 
 import com.soomla.blueprint.data.BPJSONConsts;
@@ -15,6 +31,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * A specific type of <code>Gate</code> that has an associated
+ * virtual item and a desired balance. The gate opens once
+ * the item's balance reaches the desired balance.
+ *
  * Created by refaelos on 07/05/14.
  */
 public class BalanceGate extends Gate {
@@ -22,6 +42,13 @@ public class BalanceGate extends Gate {
     private String mAssociatedItemId;
     private int mDesiredBalance;
 
+    /**
+     * Constructor
+     *
+     * @param gateId see parent
+     * @param associatedItemId the ID of the item who's balance is examined
+     * @param desiredBalance the balance which will open this gate
+     */
     public BalanceGate(String gateId, String associatedItemId, int desiredBalance) {
         super(gateId);
         this.mDesiredBalance = desiredBalance;
@@ -32,6 +59,13 @@ public class BalanceGate extends Gate {
         }
     }
 
+    /**
+     * Constructor
+     * Generates an instance of <code>BalanceGate</code> from the given <code>JSONObject</code>.
+     *
+     * @param jsonObject see parent
+     * @throws JSONException
+     */
     public BalanceGate(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
         mAssociatedItemId = jsonObject.getString(BPJSONConsts.BP_ASSOCITEMID);
@@ -42,6 +76,11 @@ public class BalanceGate extends Gate {
         }
     }
 
+    /**
+     * Converts the current <code>RecordGate</code> to a <code>JSONObject</code>.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>RecordGate</code>.
+     */
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -55,7 +94,13 @@ public class BalanceGate extends Gate {
         return jsonObject;
     }
 
-    public boolean canPass() {
+    /**
+     * Checks if the gate meets its item balance criteria for opening.
+     *
+     * @return <code>true</code> if the item's balance has
+     * reached the desired balance, <code>false</code> otherwise
+     */
+    private boolean canPass() {
         if (GatesStorage.isOpen(this)) {
             return true;
         }
@@ -84,11 +129,21 @@ public class BalanceGate extends Gate {
         }
     }
 
+    /**
+     * Handles changes in the associated item's balance (if it's a currency)
+     *
+     * @param currencyBalanceChangedEvent
+     */
     @Subscribe
     public void onCurrencyBalanceChanged(CurrencyBalanceChangedEvent currencyBalanceChangedEvent) {
         checkItemIdBalance(currencyBalanceChangedEvent.getCurrency().getItemId(), currencyBalanceChangedEvent.getBalance());
     }
 
+    /**
+     * Handles changes in the associated item's balance (if it's a virtual good)
+     *
+     * @param goodBalanceChangedEvent
+     */
     @Subscribe
     public void onGoodBalanceChanged(GoodBalanceChangedEvent goodBalanceChangedEvent) {
         StoreUtils.LogDebug(TAG, "HAHAHA");

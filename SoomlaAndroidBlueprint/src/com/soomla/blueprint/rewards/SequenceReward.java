@@ -26,20 +26,36 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
+ * A specific type of <code>Reward</code> that holds of list of other rewards
+ * in a certain sequence.  The rewards are given in ascending order.  For example,
+ * in a Karate game the user can progress between belts and can be rewarded a
+ * sequence of: blue belt, yellow belt, green belt, brown belt, black belt
+ *
  * Created by refaelos on 13/05/14.
  */
 public class SequenceReward extends Reward {
-    private static final String TAG = "SOOMLA BadgeReward";
-    private List<Reward> mRewards;
 
+    /**
+     * Constructor
+     *
+     * @param rewardId see parent
+     * @param name see parent
+     * @param rewards the list of rewards in the sequence
+     */
     protected SequenceReward(String rewardId, String name, List<Reward> rewards) {
         super(rewardId, name);
         mRewards = rewards;
     }
 
+    /**
+     * Constructor.
+     * Generates an instance of <code>SequenceReward</code> from the given <code>JSONObject</code>.
+     *
+     * @param jsonObject A JSONObject representation of the wanted <code>SequenceReward</code>.
+     * @throws JSONException
+     */
     public SequenceReward(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
         try {
@@ -59,6 +75,11 @@ public class SequenceReward extends Reward {
         } catch (JSONException ignored) {}
     }
 
+    /**
+     * Converts the current <code>SequenceReward</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>SequenceReward</code>.
+     */
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -75,10 +96,11 @@ public class SequenceReward extends Reward {
         return jsonObject;
     }
 
-    public List<Reward> getRewards() {
-        return mRewards;
-    }
-
+    /**
+     * Retrieves the last reward that was given from the sequence.
+     *
+     * @return the last given reward
+     */
     public Reward getLastGivenReward() {
         int idx = RewardsStorage.getLastSeqIdxGiven(this);
         if (idx < 0) {
@@ -87,20 +109,39 @@ public class SequenceReward extends Reward {
         return mRewards.get(idx);
     }
 
+    /**
+     * Checks if there are more rewards in the sequence that can be given.
+     *
+     * @return <code>true</code> if there are more rewards, <code>false</code> otherwise
+     */
     public boolean hasMoreToGive() {
         return RewardsStorage.getLastSeqIdxGiven(this) < mRewards.size() ;
     }
 
+    /**
+     * Forces which reward to give next in the sequence.
+     *
+     * @param reward the reward to give next
+     * @return <code>true</code> if the reward was set successfully as next
+     * in the sequence, <code>false</code> otherwise.
+     */
     public boolean forceNextRewardToGive(Reward reward) {
-        for(int i=0; i<mRewards.size(); i++) {
+        for (int i = 0; i < mRewards.size(); i++) {
             if (mRewards.get(i).getRewardId().equals(reward.getRewardId())) {
-                RewardsStorage.setLastSeqIdxGiven(this, i-1);
+                RewardsStorage.setLastSeqIdxGiven(this, i - 1);
                 return true;
             }
         }
         return false;
     }
 
+    /**
+     * Gives the next reward in the sequence.
+     *
+     * @return <code>true</code> if the next reward was given,
+     * <code>false</code> if the sequence has been completed and there
+     * are no more rewards to be given.
+     */
     @Override
     protected boolean giveInner() {
         int idx = RewardsStorage.getLastSeqIdxGiven(this);
@@ -110,4 +151,18 @@ public class SequenceReward extends Reward {
         RewardsStorage.setLastSeqIdxGiven(this, ++idx);
         return true;
     }
+
+
+    /** Setters and Getters **/
+
+    public List<Reward> getRewards() {
+        return mRewards;
+    }
+
+
+    /** Private Members **/
+
+    private static final String TAG = "SOOMLA BadgeReward";
+
+    private List<Reward> mRewards;
 }

@@ -28,23 +28,44 @@ import java.util.List;
 import java.util.Random;
 
 /**
+ * A specific type of <code>Reward</code> that holds of list of other
+ * rewards. When this reward is given, it randomly chooses a reward from
+ * the list of rewards it internally holds.  For example: a user can earn a mystery box
+ * reward (<code>RandomReward</code>, which in fact grants the user a random reward between a
+ * "Mayor" badge (<code>BadgeReward</code>) and a speed boost (<code>VirtualItemReward</code>)
+ *
  * Created by refaelos on 13/05/14.
  */
 public class RandomReward extends Reward {
-    private static final String TAG = "SOOMLA BadgeReward";
-    private List<Reward> mRewards;
 
+    /**
+     * Constructor
+     *
+     * @param rewardId see parent
+     * @param name see parent
+     * @param rewards a list of rewards from which to choose the reward randomly
+     */
     protected RandomReward(String rewardId, String name, List<Reward> rewards) {
         super(rewardId, name);
         mRewards = rewards;
     }
 
+    /**
+     * Constructor.
+     * Generates an instance of <code>RandomReward</code> from the given <code>JSONObject</code>.
+     *
+     * @param jsonObject A JSONObject representation of the wanted <code>RandomReward</code>.
+     * @throws JSONException
+     */
     public RandomReward(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
         try {
             mRewards = new ArrayList<Reward>();
             JSONArray rewardsArr = jsonObject.getJSONArray(BPJSONConsts.BP_REWARDS);
-            for(int i=0; i<rewardsArr.length(); i++) {
+
+            // Iterate over all rewards in the JSON array and for each one create
+            // an instance according to the reward type
+            for (int i = 0; i < rewardsArr.length(); i++) {
                 JSONObject rewardJSON = rewardsArr.getJSONObject(i);
                 String type = rewardJSON.getString(BPJSONConsts.BP_TYPE);
                 if (type.equals("badge")) {
@@ -58,6 +79,11 @@ public class RandomReward extends Reward {
         } catch (JSONException ignored) {}
     }
 
+    /**
+     * Converts the current <code>RandomReward</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>RandomReward</code>.
+     */
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -74,10 +100,11 @@ public class RandomReward extends Reward {
         return jsonObject;
     }
 
-    public List<Reward> getRewards() {
-        return mRewards;
-    }
-
+    /**
+     * Gives a random reward from the list of rewards.
+     *
+     * @return <code>true</code>
+     */
     @Override
     protected boolean giveInner() {
         Random rand = new Random();
@@ -85,4 +112,18 @@ public class RandomReward extends Reward {
         mRewards.get(n).give();
         return true;
     }
+
+
+    /** Setters and Getters **/
+
+    public List<Reward> getRewards() {
+        return mRewards;
+    }
+
+
+    /** Private Members **/
+
+    private static final String TAG = "SOOMLA BadgeReward";
+
+    private List<Reward> mRewards;
 }

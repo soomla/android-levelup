@@ -16,7 +16,11 @@
 
 package com.soomla.blueprint.challenges;
 
+import com.soomla.blueprint.data.BPJSONConsts;
 import com.soomla.blueprint.rewards.Reward;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -48,5 +52,15 @@ public class ActionMission extends Mission {
      */
     public ActionMission(String missionId, String name, List<Reward> rewards) {
         super(missionId, name, rewards);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param jsonObject A JSONObject representation of the wanted <code>ActionMission</code>.
+     * @throws JSONException
+     */
+    public ActionMission(JSONObject jsonObject) throws JSONException {
+        super(jsonObject);
     }
 }

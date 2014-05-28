@@ -47,7 +47,7 @@ public class BalanceMission extends Mission {
      * @param desiredBalance the balance which will complete this mission
      */
     public BalanceMission(String name, String missionId, String associatedItemId, int desiredBalance) {
-        super(name, missionId);
+        super(missionId, name);
         mAssociatedItemId = associatedItemId;
         mDesiredBalance = desiredBalance;
 

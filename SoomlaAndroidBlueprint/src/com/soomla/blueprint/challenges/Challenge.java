@@ -47,7 +47,7 @@ public class Challenge extends Mission {
      * @param missions the list of missions included in this challenge
      */
     public Challenge(String missionId, String name, List<Mission> missions) {
-        super(name, missionId);
+        super(missionId, name);
         mMissions = missions;
         if (!isCompleted()) {
             BusProvider.getInstance().register(this);

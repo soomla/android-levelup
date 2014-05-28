@@ -32,11 +32,11 @@ public class ActionMission extends Mission {
     /**
      * Constructor
      *
-     * @param name see parent
      * @param missionId see parent
+     * @param name see parent
      */
-    public ActionMission(String name, String missionId) {
-        super(name, missionId);
+    public ActionMission(String missionId, String name) {
+        super(missionId, name);
     }
 
     /**

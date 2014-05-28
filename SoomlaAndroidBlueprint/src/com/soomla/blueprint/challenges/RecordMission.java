@@ -40,14 +40,13 @@ public class RecordMission extends Mission {
 
     /**
      * Constructor
-     *
+     *  @param missionId see parent
      * @param name see parent
-     * @param missionId see parent
      * @param associatedScoreId the ID of the score which is examined
      * @param desiredRecord the record which will complete this mission
      */
-    public RecordMission(String name, String missionId, String associatedScoreId, double desiredRecord) {
-        super(name, missionId);
+    public RecordMission(String missionId, String name, String associatedScoreId, double desiredRecord) {
+        super(missionId, name);
         mAssociatedScoreId = associatedScoreId;
         mDesiredRecord = desiredRecord;
 

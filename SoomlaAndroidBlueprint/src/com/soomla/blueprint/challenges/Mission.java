@@ -42,10 +42,10 @@ public abstract class Mission {
     /**
      * Constructor.
      *
-     * @param name the mission's name (something you might want to display on the screen).
      * @param missionId the mission's ID
+     * @param name the mission's name (something you might want to display on the screen).
      */
-    public Mission(String name, String missionId) {
+    public Mission(String missionId, String name) {
         mName = name;
         mMissionId = missionId;
         mRewards = new ArrayList<Reward>();
@@ -54,8 +54,8 @@ public abstract class Mission {
     /**
      * Constructor.
      *
-     * @param name the mission's name (something you might want to display on the screen).
      * @param missionId the mission's ID
+     * @param name the mission's name (something you might want to display on the screen).
      * @param rewards the rewards that you want to give your users on mission completion.
      */
     public Mission(String missionId, String name, List<Reward> rewards) {

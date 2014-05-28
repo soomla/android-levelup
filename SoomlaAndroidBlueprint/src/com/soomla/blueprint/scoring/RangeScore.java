@@ -91,6 +91,8 @@ public class RangeScore extends Score {
      */
     @Override
     public void inc(double amount) {
+
+        // Don't increment if we've hit the range's highest value
         if (getTempScore() == mRange.getHigh()) {
             return;
         }
@@ -102,6 +104,8 @@ public class RangeScore extends Score {
      */
     @Override
     public void dec(double amount) {
+
+        // Don't increment if we've hit the range's lowest value
         if (getTempScore() == mRange.getLow()) {
             return;
         }

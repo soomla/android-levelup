@@ -123,7 +123,7 @@ public class RandomReward extends Reward {
 
     /** Private Members **/
 
-    private static final String TAG = "SOOMLA BadgeReward";
+    private static final String TAG = "SOOMLA RandomReward";
 
     private List<Reward> mRewards;
 }

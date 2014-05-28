@@ -88,7 +88,7 @@ public class SequenceReward extends Reward {
                 rewardsArr.put(reward.toJSONObject());
             }
             jsonObject.put(BPJSONConsts.BP_REWARDS, rewardsArr);
-            jsonObject.put(BPJSONConsts.BP_TYPE, "random");
+            jsonObject.put(BPJSONConsts.BP_TYPE, "sequence");
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
@@ -162,7 +162,7 @@ public class SequenceReward extends Reward {
 
     /** Private Members **/
 
-    private static final String TAG = "SOOMLA BadgeReward";
+    private static final String TAG = "SOOMLA SequenceReward";
 
     private List<Reward> mRewards;
 }

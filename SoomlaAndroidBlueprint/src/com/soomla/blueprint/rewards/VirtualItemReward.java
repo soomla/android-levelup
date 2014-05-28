@@ -110,7 +110,7 @@ public class VirtualItemReward extends Reward {
 
     /** Private Members **/
 
-    private static final String TAG = "SOOMLA Reward";
+    private static final String TAG = "SOOMLA VirtualItemReward";
 
     private int mAmount;
     private String mAssociatedItemId;

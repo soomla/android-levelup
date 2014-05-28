@@ -64,8 +64,9 @@ public class RecordMission extends Mission {
      * @param rewards see parent
      * @param desiredRecord the record which will complete this mission
      */
-    public RecordMission(String missionId, String name, List<Reward> rewards, double desiredRecord) {
+    public RecordMission(String missionId, String name, List<Reward> rewards, String associatedScoreId, double desiredRecord) {
         super(missionId, name, rewards);
+        mAssociatedScoreId = associatedScoreId;
         mDesiredRecord = desiredRecord;
 
         if (!isCompleted()) {

@@ -29,7 +29,7 @@ import com.soomla.store.data.StorageManager;
  *
  * Created by refaelos on 13/05/14.
  */
-public class GatesStorage {
+public class GateStorage {
 
     private static String keyGates(String gateId, String postfix) {
         return Blueprint.DB_KEY_PREFIX + "gates." + gateId + "." + postfix;

@@ -17,7 +17,7 @@
 package com.soomla.blueprint.gates;
 
 import com.soomla.blueprint.data.BPJSONConsts;
-import com.soomla.blueprint.data.GatesStorage;
+import com.soomla.blueprint.data.GateStorage;
 import com.soomla.store.StoreUtils;
 
 import org.json.JSONException;
@@ -71,7 +71,7 @@ public abstract class Gate {
      * Attempts to open this gate
      */
     public void tryOpen() {
-        if (GatesStorage.isOpen(this)) {
+        if (GateStorage.isOpen(this)) {
             return;
         }
 
@@ -85,7 +85,7 @@ public abstract class Gate {
      * @param open
      */
     public void forceOpen(boolean open) {
-        GatesStorage.setOpen(this, open);
+        GateStorage.setOpen(this, open);
     }
 
     /**
@@ -94,7 +94,7 @@ public abstract class Gate {
      * @return <code>true</code> if open,<code>false</code> otherwise
      */
     public boolean isOpen() {
-        return GatesStorage.isOpen(this);
+        return GateStorage.isOpen(this);
     }
 
 

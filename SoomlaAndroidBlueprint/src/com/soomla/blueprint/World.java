@@ -68,7 +68,7 @@ public class World {
     public World(String worldId) {
         this.mWorldId = worldId;
         this.mGates = null;
-        this.mInnerWorldIds = new HashMap<String, World>();
+        this.mInnerWorlds = new HashMap<String, World>();
         this.mScores = new HashMap<String, Score>();
         this.mChallenges = new ArrayList<Challenge>();
     }
@@ -84,7 +84,7 @@ public class World {
      */
     public World(String worldId, GatesList gates, HashMap<String, World> innerWorlds, HashMap<String, Score> scores, List<Challenge> challenges) {
         this.mWorldId = worldId;
-        this.mInnerWorldIds = innerWorlds;
+        this.mInnerWorlds = innerWorlds;
         this.mScores = scores;
         this.mGates = gates;
         this.mChallenges = challenges;
@@ -101,7 +101,7 @@ public class World {
 
         mWorldId = jsonObject.getString(BPJSONConsts.BP_WORLD_WORLDID);
 
-        mInnerWorldIds = new HashMap<String, World>();
+        mInnerWorlds = new HashMap<String, World>();
         JSONArray worldsArr = jsonObject.getJSONArray(BPJSONConsts.BP_WORLDS);
 
         // Iterate over all inner worlds in the JSON array and for each one create
@@ -111,10 +111,10 @@ public class World {
             String type = worldJSON.getString(BPJSONConsts.BP_TYPE);
             if (type.equals("world")) {
                 World world = new World(worldJSON);
-                mInnerWorldIds.put(world.getWorldId(), world);
+                mInnerWorlds.put(world.getWorldId(), world);
             } else if (type.equals("level")) {
                 Level level = new Level(worldJSON);
-                mInnerWorldIds.put(level.getWorldId(), level);
+                mInnerWorlds.put(level.getWorldId(), level);
             } else {
                 StoreUtils.LogError(TAG, "Unknown world type: " + type);
             }
@@ -177,7 +177,7 @@ public class World {
             jsonObject.put(BPJSONConsts.BP_GATES, (mGates==null ? new JSONObject() : mGates.toJSONObject()));
 
             JSONArray worldsArr = new JSONArray();
-            for (World world : mInnerWorldIds.values()) {
+            for (World world : mInnerWorlds.values()) {
                 worldsArr.put(world.toJSONObject());
             }
             jsonObject.put(BPJSONConsts.BP_WORLDS, worldsArr);
@@ -280,7 +280,7 @@ public class World {
      * @param world the world to add
      */
     public void addInnerWorld(World world) {
-        mInnerWorldIds.put(world.getWorldId(), world);
+        mInnerWorlds.put(world.getWorldId(), world);
     }
 
     /**
@@ -302,7 +302,7 @@ public class World {
     }
     public void setCompleted(boolean completed, boolean recursive) {
         if (recursive) {
-            for (World world : mInnerWorldIds.values()) {
+            for (World world : mInnerWorlds.values()) {
                 world.setCompleted(completed, true);
             }
         }
@@ -333,7 +333,7 @@ public class World {
     }
 
     public HashMap<String, World> getInnerWorlds() {
-        return mInnerWorldIds;
+        return mInnerWorlds;
     }
 
     public HashMap<String, Score> getScores() {
@@ -351,7 +351,7 @@ public class World {
 
     private String mWorldId;
     private GatesList mGates;
-    private HashMap<String, World> mInnerWorldIds;
+    private HashMap<String, World> mInnerWorlds;
     protected HashMap<String, Score> mScores;
     private List<Challenge> mChallenges;
 }

@@ -17,7 +17,7 @@
 package com.soomla.blueprint.challenges;
 
 import com.soomla.blueprint.data.BPJSONConsts;
-import com.soomla.blueprint.data.MissionsStorage;
+import com.soomla.blueprint.data.MissionStorage;
 import com.soomla.blueprint.rewards.BadgeReward;
 import com.soomla.blueprint.rewards.RandomReward;
 import com.soomla.blueprint.rewards.Reward;
@@ -123,7 +123,7 @@ public abstract class Mission {
      * @return the completion status of the current mission.
      */
     public boolean isCompleted() {
-        return MissionsStorage.isCompleted(this);
+        return MissionStorage.isCompleted(this);
     }
 
     /**
@@ -134,7 +134,7 @@ public abstract class Mission {
      * @param completed the completion status you want to set to the mission.
      */
     public void setCompleted(boolean completed) {
-        MissionsStorage.setCompleted(this, completed);
+        MissionStorage.setCompleted(this, completed);
         if (completed) {
 
             // The mission is completed, giving the rewards.

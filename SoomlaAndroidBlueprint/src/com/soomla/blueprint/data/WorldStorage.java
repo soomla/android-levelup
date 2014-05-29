@@ -25,7 +25,7 @@ import com.soomla.store.data.StorageManager;
 /**
  * Created by refaelos on 13/05/14.
  */
-public class WorldsStorage {
+public class WorldStorage {
 
     private static String keyWorlds(String worldId, String postfix) {
         return Blueprint.DB_KEY_PREFIX + "worlds." + worldId + "." + postfix;

@@ -17,7 +17,7 @@
 package com.soomla.blueprint.rewards;
 
 import com.soomla.blueprint.data.BPJSONConsts;
-import com.soomla.blueprint.data.RewardsStorage;
+import com.soomla.blueprint.data.RewardStorage;
 import com.soomla.store.StoreUtils;
 
 import org.json.JSONException;
@@ -83,7 +83,7 @@ public abstract class Reward {
      */
     public void give() {
         if (giveInner()) {
-            RewardsStorage.setRewardStatus(this, true);
+            RewardStorage.setRewardStatus(this, true);
         }
     }
 
@@ -93,7 +93,7 @@ public abstract class Reward {
      * indicating that his \ her previously earned reward should be recalled.
      */
     public void take() {
-        RewardsStorage.setRewardStatus(this, false);
+        RewardStorage.setRewardStatus(this, false);
     }
 
     /**
@@ -102,7 +102,7 @@ public abstract class Reward {
      * @return <code>true</code> if owned, <code>false</code> otherwise
      */
     public boolean isOwned() {
-        return RewardsStorage.isRewardGiven(this);
+        return RewardStorage.isRewardGiven(this);
     }
 
     /**

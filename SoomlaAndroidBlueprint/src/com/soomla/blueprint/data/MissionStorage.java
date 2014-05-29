@@ -30,7 +30,7 @@ import com.soomla.store.data.StorageManager;
  *
  * Created by refaelos on 13/05/14.
  */
-public class MissionsStorage {
+public class MissionStorage {
 
     private static String keyMissions(String missionId, String postfix) {
         return Blueprint.DB_KEY_PREFIX + "missions." + missionId + "." + postfix;

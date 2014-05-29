@@ -27,7 +27,7 @@ import com.soomla.store.data.StorageManager;
  *
  * Created by refaelos on 13/05/14.
  */
-public class ScoresStorage {
+public class ScoreStorage {
 
     private static String keyScores(String scoreId, String postfix) {
         return Blueprint.DB_KEY_PREFIX + "scores." + scoreId + "." + postfix;

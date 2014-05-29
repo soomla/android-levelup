@@ -20,7 +20,7 @@ import android.text.TextUtils;
 
 import com.soomla.blueprint.challenges.Challenge;
 import com.soomla.blueprint.data.BPJSONConsts;
-import com.soomla.blueprint.data.WorldsStorage;
+import com.soomla.blueprint.data.WorldStorage;
 import com.soomla.blueprint.gates.Gate;
 import com.soomla.blueprint.gates.GatesList;
 import com.soomla.blueprint.gates.GatesListAND;
@@ -289,7 +289,7 @@ public class World {
      * @return <code>true</code> if completed, <code>false</code> otherwise
      */
     public boolean isCompleted() {
-        return WorldsStorage.isCompleted(this);
+        return WorldStorage.isCompleted(this);
     }
 
     /**
@@ -306,7 +306,7 @@ public class World {
                 world.setCompleted(completed, true);
             }
         }
-        WorldsStorage.setCompleted(this, completed);
+        WorldStorage.setCompleted(this, completed);
     }
 
     /**

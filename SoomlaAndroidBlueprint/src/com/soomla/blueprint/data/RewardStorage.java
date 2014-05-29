@@ -30,7 +30,7 @@ import com.soomla.store.data.StorageManager;
  *
  * Created by refaelos on 13/05/14.
  */
-public class RewardsStorage {
+public class RewardStorage {
 
     private static String keyRewards(String rewardId, String postfix) {
         return Blueprint.DB_KEY_PREFIX + "rewards." + rewardId + "." + postfix;

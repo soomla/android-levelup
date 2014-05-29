@@ -31,7 +31,7 @@ public class WorldStorage {
         return Blueprint.DB_KEY_PREFIX + "worlds." + worldId + "." + postfix;
     }
 
-    private static String keyWorldsCompleted(String worldId) {
+    private static String keyWorldCompleted(String worldId) {
         return keyWorlds(worldId, "completed");
     }
 
@@ -41,7 +41,7 @@ public class WorldStorage {
 
     public static void setCompleted(World world, boolean completed, boolean notify) {
         String worldId = world.getWorldId();
-        String key = keyWorldsCompleted(worldId);
+        String key = keyWorldCompleted(worldId);
 
         if (completed) {
             StorageManager.getKeyValueStorage().setValue(key, "yes");
@@ -56,7 +56,7 @@ public class WorldStorage {
 
     public static boolean isCompleted(World world) {
         String worldId = world.getWorldId();
-        String key = keyWorldsCompleted(worldId);
+        String key = keyWorldCompleted(worldId);
 
         String val = StorageManager.getKeyValueStorage().getValue(key);
 

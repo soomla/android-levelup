@@ -62,9 +62,10 @@ public class VirtualItemReward extends Reward {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>VirtualItemReward</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>VirtualItemReward</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -109,7 +110,7 @@ public class VirtualItemReward extends Reward {
 
     /** Private Members **/
 
-    private static final String TAG = "SOOMLA Reward";
+    private static final String TAG = "SOOMLA VirtualItemReward";
 
     private int mAmount;
     private String mAssociatedItemId;

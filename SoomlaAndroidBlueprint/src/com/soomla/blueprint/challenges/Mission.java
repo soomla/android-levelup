@@ -16,9 +16,8 @@
 
 package com.soomla.blueprint.challenges;
 
-import com.soomla.blueprint.JSONable;
 import com.soomla.blueprint.data.BPJSONConsts;
-import com.soomla.blueprint.data.MissionsStorage;
+import com.soomla.blueprint.data.MissionStorage;
 import com.soomla.blueprint.rewards.BadgeReward;
 import com.soomla.blueprint.rewards.RandomReward;
 import com.soomla.blueprint.rewards.Reward;
@@ -38,15 +37,15 @@ import java.util.List;
  * You can create missions and use them as single, independent, entities OR you can create a
  * <code>Challenge</code> to handle several missions and monitor their completion.
  */
-public abstract class Mission implements JSONable {
+public abstract class Mission {
 
     /**
      * Constructor.
      *
-     * @param name the mission's name (something you might want to display on the screen).
      * @param missionId the mission's ID
+     * @param name the mission's name (something you might want to display on the screen).
      */
-    public Mission(String name, String missionId) {
+    public Mission(String missionId, String name) {
         mName = name;
         mMissionId = missionId;
         mRewards = new ArrayList<Reward>();
@@ -55,8 +54,8 @@ public abstract class Mission implements JSONable {
     /**
      * Constructor.
      *
-     * @param name the mission's name (something you might want to display on the screen).
      * @param missionId the mission's ID
+     * @param name the mission's name (something you might want to display on the screen).
      * @param rewards the rewards that you want to give your users on mission completion.
      */
     public Mission(String missionId, String name, List<Reward> rewards) {
@@ -97,9 +96,10 @@ public abstract class Mission implements JSONable {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>Mission</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>Mission</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {
@@ -123,7 +123,7 @@ public abstract class Mission implements JSONable {
      * @return the completion status of the current mission.
      */
     public boolean isCompleted() {
-        return MissionsStorage.isCompleted(this);
+        return MissionStorage.isCompleted(this);
     }
 
     /**
@@ -134,7 +134,7 @@ public abstract class Mission implements JSONable {
      * @param completed the completion status you want to set to the mission.
      */
     public void setCompleted(boolean completed) {
-        MissionsStorage.setCompleted(this, completed);
+        MissionStorage.setCompleted(this, completed);
         if (completed) {
 
             // The mission is completed, giving the rewards.

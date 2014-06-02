@@ -17,7 +17,7 @@
 package com.soomla.blueprint.gates;
 
 import com.soomla.blueprint.data.BPJSONConsts;
-import com.soomla.blueprint.data.GatesStorage;
+import com.soomla.blueprint.data.GateStorage;
 import com.soomla.blueprint.events.GateCanBeOpenedEvent;
 import com.soomla.store.BusProvider;
 import com.soomla.store.StoreInventory;
@@ -77,9 +77,10 @@ public class BalanceGate extends Gate {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>RecordGate</code> to a <code>JSONObject</code>.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>RecordGate</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -100,7 +101,7 @@ public class BalanceGate extends Gate {
      * reached the desired balance, <code>false</code> otherwise
      */
     private boolean canPass() {
-        if (GatesStorage.isOpen(this)) {
+        if (GateStorage.isOpen(this)) {
             return true;
         }
         try {

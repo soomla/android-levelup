@@ -80,9 +80,10 @@ public class RandomReward extends Reward {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>RandomReward</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>RandomReward</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -122,7 +123,7 @@ public class RandomReward extends Reward {
 
     /** Private Members **/
 
-    private static final String TAG = "SOOMLA BadgeReward";
+    private static final String TAG = "SOOMLA RandomReward";
 
     private List<Reward> mRewards;
 }

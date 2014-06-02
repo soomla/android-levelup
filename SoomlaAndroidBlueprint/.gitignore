@@ -13,6 +13,13 @@ out/
 
 .DS_Store
 
+# Eclipse project files
+.classpath
+.project
+.metadata
+.settings
+diagrams
+
 
 #### Based on https://github.com/github/gitignore/blob/master/Android.gitignore
 # Built application files

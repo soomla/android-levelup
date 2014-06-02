@@ -106,9 +106,10 @@ public abstract class GatesList extends Gate {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>GatesList</code> to a <code>JSONObject</code>.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>GatesList</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

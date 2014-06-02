@@ -72,9 +72,10 @@ public class RecordGate extends Gate {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>RecordGate</code> to a <code>JSONObject</code>.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>RecordGate</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -97,7 +98,7 @@ public class RecordGate extends Gate {
     private boolean canPass() {
         Score score = Blueprint.getInstance().getScore(mAssociatedScoreId);
         if (score == null) {
-            StoreUtils.LogError(TAG, "(isOpen) couldn't find score with scoreId: " + mAssociatedScoreId);
+            StoreUtils.LogError(TAG, "(canPass) couldn't find score with scoreId: " + mAssociatedScoreId);
             return false;
         }
 
@@ -129,7 +130,7 @@ public class RecordGate extends Gate {
 
     /** Private Members */
 
-    private static String TAG = "SOOMLA GlobalScoresGate";
+    private static String TAG = "SOOMLA RecordGate";
 
     private String mAssociatedScoreId;
     private double mDesiredRecord;

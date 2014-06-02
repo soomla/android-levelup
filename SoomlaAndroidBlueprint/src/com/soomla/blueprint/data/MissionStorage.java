@@ -30,13 +30,13 @@ import com.soomla.store.data.StorageManager;
  *
  * Created by refaelos on 13/05/14.
  */
-public class MissionsStorage {
+public class MissionStorage {
 
     private static String keyMissions(String missionId, String postfix) {
         return Blueprint.DB_KEY_PREFIX + "missions." + missionId + "." + postfix;
     }
 
-    private static String keyMissionsCompleted(String missionId) {
+    private static String keyMissionCompleted(String missionId) {
         return keyMissions(missionId, "completed");
     }
 
@@ -52,7 +52,7 @@ public class MissionsStorage {
 
     public static void setCompleted(Mission mission, boolean completed, boolean notify) {
         String missionId = mission.getMissionId();
-        String key = keyMissionsCompleted(missionId);
+        String key = keyMissionCompleted(missionId);
 
         if (completed) {
             StorageManager.getKeyValueStorage().setValue(key, "yes");
@@ -74,7 +74,7 @@ public class MissionsStorage {
      */
     public static boolean isCompleted(Mission mission) {
         String missionId = mission.getMissionId();
-        String key = keyMissionsCompleted(missionId);
+        String key = keyMissionCompleted(missionId);
 
         String val = StorageManager.getKeyValueStorage().getValue(key);
 

@@ -53,27 +53,6 @@ public class Blueprint {
         StorageManager.getKeyValueStorage().setValue(key, bp_json);
     }
 
-    /**
-     * Converts the current <code>Blueprint</code> to a JSONObject.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>Blueprint</code>.
-     */
-    private JSONObject toJSONObject() {
-        JSONObject jsonObject = new JSONObject();
-
-        try {
-            JSONArray worldsJSON = new JSONArray();
-            for (World world : mInitialWorlds.values()) {
-                worldsJSON.put(world.toJSONObject());
-            }
-            jsonObject.put(BPJSONConsts.BP_WORLDS, worldsJSON);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return jsonObject;
-    }
-
 //    public void load() {}
 //    public void loadFromFile(String filePath) {}
 //    public void loadFromJSON(String json) {}
@@ -96,6 +75,39 @@ public class Blueprint {
      */
     public World getWorld(String worldId) {
         return fetchWorld(worldId, mInitialWorlds);
+    }
+
+    /** Singleton **/
+
+    public static Blueprint getInstance() {
+        if (sInstance == null) {
+            sInstance = new Blueprint();
+        }
+        return sInstance;
+    }
+
+    private Blueprint() {}
+    private static Blueprint sInstance;
+
+    /**
+     * Converts the current <code>Blueprint</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>Blueprint</code>.
+     */
+    private JSONObject toJSONObject() {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            JSONArray worldsJSON = new JSONArray();
+            for (World world : mInitialWorlds.values()) {
+                worldsJSON.put(world.toJSONObject());
+            }
+            jsonObject.put(BPJSONConsts.BP_WORLDS, worldsJSON);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonObject;
     }
 
     private Score fetchScoreFromWorlds(String scoreId, HashMap<String, World> worlds) {
@@ -123,20 +135,6 @@ public class Blueprint {
 
         return retWorld;
     }
-
-
-    /** Singleton **/
-
-    public static Blueprint getInstance() {
-        if (sInstance == null) {
-            sInstance = new Blueprint();
-        }
-        return sInstance;
-    }
-
-    private Blueprint() {}
-    private static Blueprint sInstance;
-
 
     /** Private Members **/
 

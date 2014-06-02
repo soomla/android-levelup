@@ -70,9 +70,10 @@ public class RangeScore extends Score {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>RangeScore</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>RangeScore</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -90,6 +91,8 @@ public class RangeScore extends Score {
      */
     @Override
     public void inc(double amount) {
+
+        // Don't increment if we've hit the range's highest value
         if (getTempScore() == mRange.getHigh()) {
             return;
         }
@@ -101,6 +104,8 @@ public class RangeScore extends Score {
      */
     @Override
     public void dec(double amount) {
+
+        // Don't increment if we've hit the range's lowest value
         if (getTempScore() == mRange.getLow()) {
             return;
         }

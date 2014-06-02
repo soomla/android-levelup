@@ -27,7 +27,7 @@ import com.soomla.store.data.StorageManager;
  *
  * Created by refaelos on 13/05/14.
  */
-public class LevelsStorage {
+public class LevelStorage {
 
     private static String keyLevels(String levelId, String postfix) {
         return Blueprint.DB_KEY_PREFIX + "levels." + levelId + "." + postfix;

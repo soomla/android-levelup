@@ -47,7 +47,7 @@ public class Challenge extends Mission {
      * @param missions the list of missions included in this challenge
      */
     public Challenge(String missionId, String name, List<Mission> missions) {
-        super(name, missionId);
+        super(missionId, name);
         mMissions = missions;
         if (!isCompleted()) {
             BusProvider.getInstance().register(this);
@@ -106,9 +106,10 @@ public class Challenge extends Mission {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>Challenge</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>Challenge</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

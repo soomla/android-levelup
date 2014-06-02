@@ -18,7 +18,7 @@ package com.soomla.blueprint;
 
 import com.soomla.blueprint.challenges.Challenge;
 import com.soomla.blueprint.data.BPJSONConsts;
-import com.soomla.blueprint.data.LevelsStorage;
+import com.soomla.blueprint.data.LevelStorage;
 import com.soomla.blueprint.events.LevelEndedEvent;
 import com.soomla.blueprint.events.LevelStartedEvent;
 import com.soomla.blueprint.gates.GatesList;
@@ -90,9 +90,10 @@ public class Level extends World {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>Level</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>Level</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -106,19 +107,19 @@ public class Level extends World {
 
 
     public int getTimesStarted() {
-        return LevelsStorage.getTimesStarted(this);
+        return LevelStorage.getTimesStarted(this);
     }
 
     public int getTimesPlayed() {
-        return LevelsStorage.getTimesPlayed(this);
+        return LevelStorage.getTimesPlayed(this);
     }
 
     public double getSlowestDuration() {
-        return LevelsStorage.getSlowestDuration(this);
+        return LevelStorage.getSlowestDuration(this);
     }
 
     public double getFastestDuration() {
-        return LevelsStorage.getFastestDuration(this);
+        return LevelStorage.getFastestDuration(this);
     }
 
     public void decScore(String scoreId, double amount) {
@@ -141,7 +142,7 @@ public class Level extends World {
             return false;
         }
 
-        LevelsStorage.incTimesStarted(this);
+        LevelStorage.incTimesStarted(this);
 
         mStartTime = System.currentTimeMillis();
 
@@ -158,18 +159,18 @@ public class Level extends World {
     public void end() {
 
         // Count number of times this level was played
-        LevelsStorage.incTimesPlayed(this);
+        LevelStorage.incTimesPlayed(this);
 
         // Calulate the slowest \ fastest durations of level play
         long endTime = System.currentTimeMillis();
         double duration = (endTime - mStartTime) / 1000.0;
 
         if (duration > getSlowestDuration()) {
-            LevelsStorage.setSlowestDuration(this, duration);
+            LevelStorage.setSlowestDuration(this, duration);
         }
 
         if (duration < getFastestDuration()) {
-            LevelsStorage.setFastestDuration(this, duration);
+            LevelStorage.setFastestDuration(this, duration);
         }
 
         for(Score score : mScores.values()) {

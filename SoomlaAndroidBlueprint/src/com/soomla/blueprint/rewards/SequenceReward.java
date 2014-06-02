@@ -17,7 +17,7 @@
 package com.soomla.blueprint.rewards;
 
 import com.soomla.blueprint.data.BPJSONConsts;
-import com.soomla.blueprint.data.RewardsStorage;
+import com.soomla.blueprint.data.RewardStorage;
 import com.soomla.store.StoreUtils;
 
 import org.json.JSONArray;
@@ -76,9 +76,10 @@ public class SequenceReward extends Reward {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>SequenceReward</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>SequenceReward</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -87,7 +88,7 @@ public class SequenceReward extends Reward {
                 rewardsArr.put(reward.toJSONObject());
             }
             jsonObject.put(BPJSONConsts.BP_REWARDS, rewardsArr);
-            jsonObject.put(BPJSONConsts.BP_TYPE, "random");
+            jsonObject.put(BPJSONConsts.BP_TYPE, "sequence");
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
@@ -101,7 +102,7 @@ public class SequenceReward extends Reward {
      * @return the last given reward
      */
     public Reward getLastGivenReward() {
-        int idx = RewardsStorage.getLastSeqIdxGiven(this);
+        int idx = RewardStorage.getLastSeqIdxGiven(this);
         if (idx < 0) {
             return null;
         }
@@ -114,7 +115,7 @@ public class SequenceReward extends Reward {
      * @return <code>true</code> if there are more rewards, <code>false</code> otherwise
      */
     public boolean hasMoreToGive() {
-        return RewardsStorage.getLastSeqIdxGiven(this) < mRewards.size() ;
+        return RewardStorage.getLastSeqIdxGiven(this) < mRewards.size() ;
     }
 
     /**
@@ -127,7 +128,7 @@ public class SequenceReward extends Reward {
     public boolean forceNextRewardToGive(Reward reward) {
         for (int i = 0; i < mRewards.size(); i++) {
             if (mRewards.get(i).getRewardId().equals(reward.getRewardId())) {
-                RewardsStorage.setLastSeqIdxGiven(this, i - 1);
+                RewardStorage.setLastSeqIdxGiven(this, i - 1);
                 return true;
             }
         }
@@ -143,11 +144,11 @@ public class SequenceReward extends Reward {
      */
     @Override
     protected boolean giveInner() {
-        int idx = RewardsStorage.getLastSeqIdxGiven(this);
+        int idx = RewardStorage.getLastSeqIdxGiven(this);
         if (idx >= mRewards.size()) {
             return false; // all rewards in the sequence were given
         }
-        RewardsStorage.setLastSeqIdxGiven(this, ++idx);
+        RewardStorage.setLastSeqIdxGiven(this, ++idx);
         return true;
     }
 
@@ -161,7 +162,7 @@ public class SequenceReward extends Reward {
 
     /** Private Members **/
 
-    private static final String TAG = "SOOMLA BadgeReward";
+    private static final String TAG = "SOOMLA SequenceReward";
 
     private List<Reward> mRewards;
 }

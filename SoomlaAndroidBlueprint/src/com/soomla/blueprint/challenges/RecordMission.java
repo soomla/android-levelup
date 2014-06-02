@@ -40,14 +40,13 @@ public class RecordMission extends Mission {
 
     /**
      * Constructor
-     *
+     *  @param missionId see parent
      * @param name see parent
-     * @param missionId see parent
      * @param associatedScoreId the ID of the score which is examined
      * @param desiredRecord the record which will complete this mission
      */
-    public RecordMission(String name, String missionId, String associatedScoreId, double desiredRecord) {
-        super(name, missionId);
+    public RecordMission(String missionId, String name, String associatedScoreId, double desiredRecord) {
+        super(missionId, name);
         mAssociatedScoreId = associatedScoreId;
         mDesiredRecord = desiredRecord;
 
@@ -64,8 +63,9 @@ public class RecordMission extends Mission {
      * @param rewards see parent
      * @param desiredRecord the record which will complete this mission
      */
-    public RecordMission(String missionId, String name, List<Reward> rewards, double desiredRecord) {
+    public RecordMission(String missionId, String name, List<Reward> rewards, String associatedScoreId, double desiredRecord) {
         super(missionId, name, rewards);
+        mAssociatedScoreId = associatedScoreId;
         mDesiredRecord = desiredRecord;
 
         if (!isCompleted()) {
@@ -91,9 +91,10 @@ public class RecordMission extends Mission {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>RecordMission</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>RecordMission</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

@@ -16,9 +16,8 @@
 
 package com.soomla.blueprint.gates;
 
-import com.soomla.blueprint.JSONable;
 import com.soomla.blueprint.data.BPJSONConsts;
-import com.soomla.blueprint.data.GatesStorage;
+import com.soomla.blueprint.data.GateStorage;
 import com.soomla.store.StoreUtils;
 
 import org.json.JSONException;
@@ -30,7 +29,7 @@ import org.json.JSONObject;
  *
  * Created by refaelos on 06/05/14.
  */
-public abstract class Gate implements JSONable {
+public abstract class Gate {
 
     /**
      * Constructor
@@ -53,9 +52,10 @@ public abstract class Gate implements JSONable {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>Gate</code> to a <code>JSONObject</code>.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>Gate</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {
@@ -71,7 +71,7 @@ public abstract class Gate implements JSONable {
      * Attempts to open this gate
      */
     public void tryOpen() {
-        if (GatesStorage.isOpen(this)) {
+        if (GateStorage.isOpen(this)) {
             return;
         }
 
@@ -85,7 +85,7 @@ public abstract class Gate implements JSONable {
      * @param open
      */
     public void forceOpen(boolean open) {
-        GatesStorage.setOpen(this, open);
+        GateStorage.setOpen(this, open);
     }
 
     /**
@@ -94,7 +94,7 @@ public abstract class Gate implements JSONable {
      * @return <code>true</code> if open,<code>false</code> otherwise
      */
     public boolean isOpen() {
-        return GatesStorage.isOpen(this);
+        return GateStorage.isOpen(this);
     }
 
 

@@ -47,7 +47,7 @@ public class BalanceMission extends Mission {
      * @param desiredBalance the balance which will complete this mission
      */
     public BalanceMission(String name, String missionId, String associatedItemId, int desiredBalance) {
-        super(name, missionId);
+        super(missionId, name);
         mAssociatedItemId = associatedItemId;
         mDesiredBalance = desiredBalance;
 
@@ -93,9 +93,10 @@ public class BalanceMission extends Mission {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>BalanceMission</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>BalanceMission</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

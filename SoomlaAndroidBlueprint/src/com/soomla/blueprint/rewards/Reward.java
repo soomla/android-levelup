@@ -16,9 +16,8 @@
 
 package com.soomla.blueprint.rewards;
 
-import com.soomla.blueprint.JSONable;
 import com.soomla.blueprint.data.BPJSONConsts;
-import com.soomla.blueprint.data.RewardsStorage;
+import com.soomla.blueprint.data.RewardStorage;
 import com.soomla.store.StoreUtils;
 
 import org.json.JSONException;
@@ -33,7 +32,7 @@ import org.json.JSONObject;
  *
  * Created by refaelos on 13/05/14.
  */
-public abstract class Reward implements JSONable {
+public abstract class Reward {
 
     /**
      * Constructor
@@ -61,9 +60,10 @@ public abstract class Reward implements JSONable {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>Reward</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>Reward</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {
@@ -88,7 +88,7 @@ public abstract class Reward implements JSONable {
         }
 
         if (giveInner()) {
-            RewardsStorage.setRewardStatus(this, true);
+            RewardStorage.setRewardStatus(this, true);
         }
     }
 
@@ -98,7 +98,7 @@ public abstract class Reward implements JSONable {
      * indicating that his \ her previously earned reward should be recalled.
      */
     public void take() {
-        RewardsStorage.setRewardStatus(this, false);
+        RewardStorage.setRewardStatus(this, false);
     }
 
     /**
@@ -107,7 +107,7 @@ public abstract class Reward implements JSONable {
      * @return <code>true</code> if owned, <code>false</code> otherwise
      */
     public boolean isOwned() {
-        return RewardsStorage.isRewardGiven(this);
+        return RewardStorage.isRewardGiven(this);
     }
 
     /**

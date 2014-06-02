@@ -16,9 +16,8 @@
 
 package com.soomla.blueprint.scoring;
 
-import com.soomla.blueprint.JSONable;
 import com.soomla.blueprint.data.BPJSONConsts;
-import com.soomla.blueprint.data.ScoresStorage;
+import com.soomla.blueprint.data.ScoreStorage;
 import com.soomla.blueprint.events.ScoreRecordChangedEvent;
 import com.soomla.store.BusProvider;
 import com.soomla.store.StoreUtils;
@@ -35,7 +34,7 @@ import org.json.JSONObject;
  *
  * Created by refaelos on 06/05/14.
  */
-public class Score implements JSONable{
+public class Score {
 
     /**
      * Constructor
@@ -81,9 +80,10 @@ public class Score implements JSONable{
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>Score</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>Score</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {
@@ -127,12 +127,12 @@ public class Score implements JSONable{
      * when a user restarts a level with a fresh score of 0.
      */
     public void saveAndReset() {
-        double record = ScoresStorage.getRecordScore(this);
+        double record = ScoreStorage.getRecordScore(this);
         if (hasTempReached(record)) {
-            ScoresStorage.setRecordScore(this, mTempScore);
+            ScoreStorage.setRecordScore(this, mTempScore);
             BusProvider.getInstance().post(new ScoreRecordChangedEvent(this));
         }
-        ScoresStorage.setLatestScore(this, mTempScore);
+        ScoreStorage.setLatestScore(this, mTempScore);
         setTempScore(mStartValue);
     }
 
@@ -141,8 +141,8 @@ public class Score implements JSONable{
      */
     public void reset() {
         mTempScore = mStartValue;
-        ScoresStorage.setRecordScore(this, 0);
-        ScoresStorage.setLatestScore(this, 0);
+        ScoreStorage.setRecordScore(this, 0);
+        ScoreStorage.setLatestScore(this, 0);
     }
 
     /**
@@ -164,7 +164,7 @@ public class Score implements JSONable{
      * <code>false</code> otherwise
      */
     public boolean hasRecordReached(double scoreVal) {
-        double record = ScoresStorage.getRecordScore(this);
+        double record = ScoreStorage.getRecordScore(this);
         return hasScoreReached(record, scoreVal);
     }
 
@@ -186,11 +186,11 @@ public class Score implements JSONable{
     }
 
     public double getRecord() {
-        return ScoresStorage.getRecordScore(this);
+        return ScoreStorage.getRecordScore(this);
     }
 
     public double getLatest() {
-        return ScoresStorage.getLatestScore(this);
+        return ScoreStorage.getLatestScore(this);
     }
 
     public String getName() {

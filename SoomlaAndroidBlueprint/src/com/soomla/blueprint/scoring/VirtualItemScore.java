@@ -69,9 +69,10 @@ public class VirtualItemScore extends Score {
     }
 
     /**
-     * {@inheritDoc}
+     * Converts the current <code>VirtualItemScore</code> to a JSONObject.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>VirtualItemScore</code>.
      */
-    @Override
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {

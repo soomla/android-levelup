@@ -42,7 +42,7 @@ public class VirtualItemReward extends Reward {
      * @param amount the amount to give of the associated item when the reward is given
      * @param associatedItemId the ID of the virtual item associated with this reward
      */
-    protected VirtualItemReward(String rewardId, String name, int amount, String associatedItemId) {
+    public VirtualItemReward(String rewardId, String name, int amount, String associatedItemId) {
         super(rewardId, name);
         mAmount = amount;
         mAssociatedItemId = associatedItemId;

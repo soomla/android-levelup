@@ -82,6 +82,11 @@ public abstract class Reward implements JSONable {
      * For example - give a reward when a user completes a mission or a challenge.
      */
     public void give() {
+        if (RewardsStorage.isRewardGiven(this) && !mRepeatable) {
+            StoreUtils.LogDebug(TAG, "Reward was already given and is not repeatable. id: " + getRewardId());
+            return;
+        }
+
         if (giveInner()) {
             RewardsStorage.setRewardStatus(this, true);
         }
@@ -113,7 +118,6 @@ public abstract class Reward implements JSONable {
      */
     protected abstract boolean giveInner();
 
-
     /** Setters and Getters **/
 
     public String getRewardId() {
@@ -124,6 +128,13 @@ public abstract class Reward implements JSONable {
         return mName;
     }
 
+    public boolean isRepeatable() {
+        return mRepeatable;
+    }
+
+    public void setRepeatable(boolean repeatable) {
+        mRepeatable = repeatable;
+    }
 
     /** Private Members **/
 
@@ -131,5 +142,6 @@ public abstract class Reward implements JSONable {
 
     private String mRewardId;
     private String mName;
+    private boolean mRepeatable = false;
 }
 

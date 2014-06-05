@@ -82,7 +82,7 @@ public abstract class Reward {
      * For example - give a reward when a user completes a mission or a challenge.
      */
     public void give() {
-        if (RewardsStorage.isRewardGiven(this) && !mRepeatable) {
+        if (RewardStorage.isRewardGiven(this) && !mRepeatable) {
             StoreUtils.LogDebug(TAG, "Reward was already given and is not repeatable. id: " + getRewardId());
             return;
         }

@@ -48,6 +48,7 @@ public class RandomReward extends Reward {
     protected RandomReward(String rewardId, String name, List<Reward> rewards) {
         super(rewardId, name);
         mRewards = rewards;
+        setRepeatable(true);
     }
 
     /**
@@ -77,6 +78,7 @@ public class RandomReward extends Reward {
                 }
             }
         } catch (JSONException ignored) {}
+        setRepeatable(true);
     }
 
     /**

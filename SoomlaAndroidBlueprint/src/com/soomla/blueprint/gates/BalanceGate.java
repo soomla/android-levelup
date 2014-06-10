@@ -146,7 +146,6 @@ public class BalanceGate extends Gate {
      */
     @Subscribe
     public void onGoodBalanceChanged(GoodBalanceChangedEvent goodBalanceChangedEvent) {
-        StoreUtils.LogDebug(TAG, "HAHAHA");
         checkItemIdBalance(goodBalanceChangedEvent.getGood().getItemId(), goodBalanceChangedEvent.getBalance());
     }
 

@@ -93,7 +93,7 @@ public class RangeScore extends Score {
     public void inc(double amount) {
 
         // Don't increment if we've hit the range's highest value
-        if (getTempScore() == mRange.getHigh()) {
+        if (getTempScore() >= mRange.getHigh()) {
             return;
         }
         super.inc(amount);
@@ -106,7 +106,7 @@ public class RangeScore extends Score {
     public void dec(double amount) {
 
         // Don't increment if we've hit the range's lowest value
-        if (getTempScore() == mRange.getLow()) {
+        if (getTempScore() >= mRange.getLow()) {
             return;
         }
         super.dec(amount);

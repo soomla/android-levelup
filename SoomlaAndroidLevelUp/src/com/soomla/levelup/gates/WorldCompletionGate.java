@@ -108,7 +108,7 @@ public class WorldCompletionGate extends Gate {
      */
     @Subscribe
     public void onWorldCompleted(WorldCompletedEvent worldCompletedEvent) {
-        if (worldCompletedEvent.getWorld().getWorldId().equals(mAssociatedWorldId)) {
+        if (worldCompletedEvent.World.getWorldId().equals(mAssociatedWorldId)) {
             BusProvider.getInstance().unregister(this);
             BusProvider.getInstance().post(new GateCanBeOpenedEvent(this));
         }

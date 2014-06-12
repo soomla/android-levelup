@@ -178,14 +178,14 @@ public class Level extends World {
 
         // check end() called without matching start()
         if(mStartTime == 0) {
-            StoreUtils.LogError(TAG, "end() called without matching start()! ignoring.");
+            StoreUtils.LogError(TAG, "end() called without prior start()! ignoring.");
             return;
         }
 
         // Count number of times this level was played
         LevelStorage.incTimesPlayed(this);
 
-        // Calulate the slowest \ fastest durations of level play
+        // Calculate the slowest \ fastest durations of level play
         long startTime = mPaused ? mCurrentTime : System.currentTimeMillis() - mStartTime;
         long endTime = System.currentTimeMillis();
         double duration = (endTime - startTime) / 1000.0;

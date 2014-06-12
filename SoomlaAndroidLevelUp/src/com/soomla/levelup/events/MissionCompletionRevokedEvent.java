@@ -16,6 +16,7 @@
 
 package com.soomla.levelup.events;
 
+import com.soomla.levelup.challenges.Challenge;
 import com.soomla.levelup.challenges.Mission;
 
 /**
@@ -28,6 +29,7 @@ public class MissionCompletionRevokedEvent {
     /** read-only Properties **/
 
     public final Mission Mission;
+    public final boolean IsChallenge;
 
     /**
      * Constructor
@@ -35,5 +37,6 @@ public class MissionCompletionRevokedEvent {
      */
     public MissionCompletionRevokedEvent(Mission mission) {
         Mission = mission;
+        IsChallenge = mission instanceof Challenge;
     }
 }

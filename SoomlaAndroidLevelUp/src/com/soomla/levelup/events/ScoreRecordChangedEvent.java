@@ -23,22 +23,15 @@ import com.soomla.levelup.scoring.Score;
  */
 public class ScoreRecordChangedEvent {
 
+    /** read-only Properties **/
+    public final Score Score;
+
     /**
      * Constructor
      *
      * @param score the score which has reached a new record
      */
     public ScoreRecordChangedEvent(Score score) {
-        mScore = score;
+        Score = score;
     }
-
-    /** Setters and Getters */
-
-    public Score getScore() {
-        return mScore;
-    }
-
-    /** Private Members */
-
-    private Score mScore;
 }

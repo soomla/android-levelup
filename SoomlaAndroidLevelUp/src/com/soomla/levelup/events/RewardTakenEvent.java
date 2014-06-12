@@ -16,6 +16,7 @@
 
 package com.soomla.levelup.events;
 
+import com.soomla.levelup.rewards.BadgeReward;
 import com.soomla.levelup.rewards.Reward;
 
 /**

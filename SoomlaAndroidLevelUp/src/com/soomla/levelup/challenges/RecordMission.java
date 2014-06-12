@@ -116,8 +116,8 @@ public class RecordMission extends Mission {
      */
     @Subscribe
     public void onScoreRecordChanged(ScoreRecordChangedEvent scoreRecordChangedEvent) {
-        if (scoreRecordChangedEvent.getScore().getScoreId().equals(mAssociatedScoreId) &&
-                scoreRecordChangedEvent.getScore().hasRecordReached(mDesiredRecord)) {
+        if (scoreRecordChangedEvent.Score.getScoreId().equals(mAssociatedScoreId) &&
+                scoreRecordChangedEvent.Score.hasRecordReached(mDesiredRecord)) {
             BusProvider.getInstance().unregister(this);
             setCompleted(true);
         }

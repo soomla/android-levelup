@@ -23,22 +23,16 @@ import com.soomla.levelup.World;
  */
 public class WorldCompletedEvent {
 
+    /** read-only Properties **/
+
+    public final World World;
+
     /**
      * Constructor
      *
      * @param world the world which was completed
      */
     public WorldCompletedEvent(World world) {
-        mWorld = world;
+        World = world;
     }
-
-    /** Setters and Getters */
-
-    public World getWorld() {
-        return mWorld;
-    }
-
-    /** Private Members */
-
-    private World mWorld;
 }

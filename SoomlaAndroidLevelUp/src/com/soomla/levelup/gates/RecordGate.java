@@ -120,8 +120,8 @@ public class RecordGate extends Gate {
      */
     @Subscribe
     public void onScoreRecordChanged(ScoreRecordChangedEvent scoreRecordChangedEvent) {
-        if (scoreRecordChangedEvent.getScore().getScoreId().equals(mAssociatedScoreId) &&
-                scoreRecordChangedEvent.getScore().hasRecordReached(mDesiredRecord)) {
+        if (scoreRecordChangedEvent.Score.getScoreId().equals(mAssociatedScoreId) &&
+                scoreRecordChangedEvent.Score.hasRecordReached(mDesiredRecord)) {
             BusProvider.getInstance().unregister(this);
             BusProvider.getInstance().post(new GateCanBeOpenedEvent(this));
         }

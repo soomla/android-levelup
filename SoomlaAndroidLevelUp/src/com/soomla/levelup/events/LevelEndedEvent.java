@@ -24,22 +24,16 @@ import com.soomla.levelup.Level;
  */
 public class LevelEndedEvent {
 
+    /** read-only Properties **/
+
+    public final Level Level;
+
     /**
      * Constructor
      *
      * @param level the level which just ended
      */
     public LevelEndedEvent(Level level) {
-        mLevel = level;
+        Level = level;
     }
-
-    /** Setters and Getters */
-
-    public Level getLevel() {
-        return mLevel;
-    }
-
-    /** Private Members */
-
-    private Level mLevel;
 }

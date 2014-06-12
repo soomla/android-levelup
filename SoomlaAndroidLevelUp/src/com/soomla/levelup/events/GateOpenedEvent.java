@@ -23,22 +23,18 @@ import com.soomla.levelup.gates.Gate;
  */
 public class GateOpenedEvent {
 
+    /** read-only Properties */
+
+    public final Gate Gate;
+
     /**
      * Constructor
      *
      * @param gate the gate that has been opened
      */
     public GateOpenedEvent(Gate gate) {
-        mGate = gate;
+        Gate = gate;
     }
 
-    /** Setters and Getters */
 
-    public Gate getGate() {
-        return mGate;
-    }
-
-    /** Private Members */
-
-    private Gate mGate;
 }

@@ -24,25 +24,16 @@ import com.soomla.levelup.rewards.Reward;
  */
 public class RewardGivenEvent {
 
+    /** read-only Properties **/
+
+    public final Reward Reward;
+
     /**
      * Constructor
      *
      * @param reward the reward that was given
      */
     public RewardGivenEvent(Reward reward) {
-        mReward = reward;
-        IsBadge = reward instanceof BadgeReward;
+        Reward = reward;
     }
-
-    /** Setters and Getters */
-
-    public Reward getReward() {
-        return mReward;
-    }
-
-    public final boolean IsBadge;
-
-    /** Private Members */
-
-    private Reward mReward;
 }

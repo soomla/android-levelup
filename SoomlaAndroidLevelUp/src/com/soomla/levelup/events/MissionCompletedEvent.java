@@ -24,25 +24,18 @@ import com.soomla.levelup.challenges.Mission;
  */
 public class MissionCompletedEvent {
 
+    /** read-only Properties **/
+
+    public final boolean IsChallenge;
+    public final Mission Mission;
+
+
     /**
      *
      * @param mission the mission that was completed
      */
     public MissionCompletedEvent(Mission mission) {
-        mMission = mission;
-        IsChallenge = mMission instanceof Challenge;
+        Mission = mission;
+        IsChallenge = Mission instanceof Challenge;
     }
-
-    /** Setters and Getters */
-
-    public Mission getMission() {
-        return mMission;
-    }
-
-    public final boolean IsChallenge;
-
-    /** Private Members */
-
-    private Mission mMission;
-
 }

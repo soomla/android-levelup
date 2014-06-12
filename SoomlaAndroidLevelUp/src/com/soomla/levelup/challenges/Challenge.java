@@ -150,7 +150,7 @@ public class Challenge extends Mission {
      */
     @Subscribe
     public void onMissionCompleted(MissionCompletedEvent missionCompletedEvent) {
-        if (mMissions.contains(missionCompletedEvent.getMission())) {
+        if (mMissions.contains(missionCompletedEvent.Mission)) {
             boolean completed = true;
             for (Mission mission : mMissions) {
                 if (!mission.isCompleted()) {

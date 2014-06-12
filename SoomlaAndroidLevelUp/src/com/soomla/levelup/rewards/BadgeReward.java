@@ -91,6 +91,11 @@ public class BadgeReward extends Reward {
         return true;
     }
 
+    @Override
+    protected boolean takeInner() {
+        // nothing to do here... the parent Reward takes in storage
+        return true;
+    }
 
     /** Setters and Getters **/
 

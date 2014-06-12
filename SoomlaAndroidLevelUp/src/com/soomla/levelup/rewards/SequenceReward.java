@@ -153,6 +153,15 @@ public class SequenceReward extends Reward {
         return true;
     }
 
+    @Override
+    protected boolean takeInner() {
+        int idx = RewardStorage.getLastSeqIdxGiven(this);
+        if (idx <= 0) {
+            return false; // all rewards in the sequence were taken
+        }
+        RewardStorage.setLastSeqIdxGiven(this, --idx);
+        return true;
+    }
 
     /** Setters and Getters **/
 

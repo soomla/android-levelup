@@ -78,16 +78,21 @@ public abstract class Reward {
      * Grants this reward to the user. Use this method in cases where the user
      * has positive progress in game play and is eligible for earning this reward.
      * For example - give a reward when a user completes a mission or a challenge.
+     *
+     * @return if the reward was actually given
      */
-    public void give() {
+    public boolean give() {
         if (RewardStorage.isRewardGiven(this) && !mRepeatable) {
             StoreUtils.LogDebug(TAG, "Reward was already given and is not repeatable. id: " + getRewardId());
-            return;
+            return false;
         }
 
         if (giveInner()) {
             RewardStorage.setRewardStatus(this, true);
+            return true;
         }
+
+        return false;
     }
 
     /**
@@ -95,8 +100,18 @@ public abstract class Reward {
      * should be "punished", or has negative progress in the game
      * indicating that his \ her previously earned reward should be recalled.
      */
-    public void take() {
-        RewardStorage.setRewardStatus(this, false);
+    public boolean take() {
+        if (!RewardStorage.isRewardGiven(this)) {
+            StoreUtils.LogDebug(TAG, "Reward not given. id: " + getRewardId());
+            return false;
+        }
+
+        if (takeInner()) {
+            RewardStorage.setRewardStatus(this, false);
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -115,6 +130,15 @@ public abstract class Reward {
      * @return <code>true</code> if criteria is met, <code>false</code> otherwise
      */
     protected abstract boolean giveInner();
+
+    /**
+     * Tests the reward criteria which need to be met in order
+     * to <code>take</code> the reward from the user
+     * (not always possible?)
+     *
+     * @return <code>true</code> if criteria is met, <code>false</code> otherwise
+     */
+    protected abstract boolean takeInner();
 
     /** Setters and Getters **/
 

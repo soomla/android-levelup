@@ -110,11 +110,26 @@ public class RandomReward extends Reward {
     @Override
     protected boolean giveInner() {
         Random rand = new Random();
-        int  n = rand.nextInt(mRewards.size());
-        mRewards.get(n).give();
+        int n = rand.nextInt(mRewards.size());
+        final Reward randomReward = mRewards.get(n);
+        randomReward.give();
+        mLastGivenReward = randomReward;
+
         return true;
     }
 
+    @Override
+    protected boolean takeInner() {
+        // for now is able to take only last given
+        if(mLastGivenReward == null) {
+            return false;
+        }
+
+        final boolean taken = mLastGivenReward.take();
+        mLastGivenReward = null;
+
+        return taken;
+    }
 
     /** Setters and Getters **/
 
@@ -128,4 +143,5 @@ public class RandomReward extends Reward {
     private static final String TAG = "SOOMLA RandomReward";
 
     private List<Reward> mRewards;
+    private Reward mLastGivenReward;
 }

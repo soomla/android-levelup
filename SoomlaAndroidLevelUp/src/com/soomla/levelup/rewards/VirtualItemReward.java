@@ -96,6 +96,17 @@ public class VirtualItemReward extends Reward {
         return true;
     }
 
+    @Override
+    protected boolean takeInner() {
+        try {
+            StoreInventory.takeVirtualItem(mAssociatedItemId, mAmount);
+        } catch (VirtualItemNotFoundException e) {
+            StoreUtils.LogError(TAG, "(take) Couldn't find associated itemId: " + mAssociatedItemId);
+            return false;
+        }
+
+        return true;
+    }
 
     /** Setters and Getters **/
 

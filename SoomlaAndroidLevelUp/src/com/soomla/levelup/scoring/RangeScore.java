@@ -132,7 +132,7 @@ public class RangeScore extends Score {
      * A representation of a range, or interval, of values that can
      * be assigned to this score
      */
-    public class Range {
+    public static class Range {
 
         /**
          * Constructor

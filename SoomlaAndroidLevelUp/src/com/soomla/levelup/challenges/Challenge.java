@@ -49,9 +49,6 @@ public class Challenge extends Mission {
     public Challenge(String missionId, String name, List<Mission> missions) {
         super(missionId, name);
         mMissions = missions;
-        if (!isCompleted()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -65,10 +62,6 @@ public class Challenge extends Mission {
     public Challenge(String missionId, String name, List<Mission> missions, List<Reward> rewards) {
         super(missionId, name, rewards);
         mMissions = missions;
-
-        if (!isCompleted()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -98,10 +91,6 @@ public class Challenge extends Mission {
             } else {
                 StoreUtils.LogError(TAG, "Unknown mission type: " + type);
             }
-        }
-
-        if (!isCompleted()) {
-            BusProvider.getInstance().register(this);
         }
     }
 
@@ -160,7 +149,6 @@ public class Challenge extends Mission {
             }
 
             if (completed) {
-                BusProvider.getInstance().unregister(this);
                 setCompleted(true);
             }
         }

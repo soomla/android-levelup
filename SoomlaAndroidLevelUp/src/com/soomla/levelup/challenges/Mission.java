@@ -22,6 +22,7 @@ import com.soomla.levelup.rewards.BadgeReward;
 import com.soomla.levelup.rewards.RandomReward;
 import com.soomla.levelup.rewards.Reward;
 import com.soomla.levelup.rewards.VirtualItemReward;
+import com.soomla.store.BusProvider;
 import com.soomla.store.StoreUtils;
 
 import org.json.JSONArray;
@@ -49,6 +50,8 @@ public abstract class Mission {
         mName = name;
         mMissionId = missionId;
         mRewards = new ArrayList<Reward>();
+
+        registerEvents();
     }
 
     /**
@@ -62,6 +65,8 @@ public abstract class Mission {
         mMissionId = missionId;
         mName = name;
         mRewards = rewards;
+
+        registerEvents();
     }
 
     /**
@@ -93,6 +98,31 @@ public abstract class Mission {
                 StoreUtils.LogError(TAG, "Unknown reward type: " + type);
             }
         }
+
+        registerEvents();
+    }
+
+    /**
+     * subscribe self to events in order to track
+     * mission completion. Should be called on construction
+     *
+     * NOTE: override this and <code>unregisterEvents</code> to empty
+     * if you need to use a <code>Mission</code> without events
+     */
+    protected void registerEvents() {
+        if (!isCompleted()) {
+            BusProvider.getInstance().register(this);
+        }
+    }
+
+    /**
+     * unsubscribe self to events.
+     * Should be called on setComplete(true)
+     *
+     * NOTE: see <code>registerEvents</code>
+     */
+    protected void unregisterEvents() {
+        BusProvider.getInstance().unregister(this);
     }
 
     /**
@@ -136,6 +166,8 @@ public abstract class Mission {
     public void setCompleted(boolean completed) {
         MissionStorage.setCompleted(this, completed);
         if (completed) {
+
+            unregisterEvents();
 
             // The mission is completed, giving the rewards.
             for(Reward reward : mRewards) {

@@ -49,10 +49,6 @@ public class RecordMission extends Mission {
         super(missionId, name);
         mAssociatedScoreId = associatedScoreId;
         mDesiredRecord = desiredRecord;
-
-        if (!isCompleted()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -67,10 +63,6 @@ public class RecordMission extends Mission {
         super(missionId, name, rewards);
         mAssociatedScoreId = associatedScoreId;
         mDesiredRecord = desiredRecord;
-
-        if (!isCompleted()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -84,10 +76,6 @@ public class RecordMission extends Mission {
         super(jsonObject);
         mAssociatedScoreId = jsonObject.getString(BPJSONConsts.BP_ASSOCSCOREID);
         mDesiredRecord = jsonObject.getInt(BPJSONConsts.BP_DESIRED_RECORD);
-
-        if (!isCompleted()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -118,7 +106,6 @@ public class RecordMission extends Mission {
     public void onScoreRecordChanged(ScoreRecordChangedEvent scoreRecordChangedEvent) {
         if (scoreRecordChangedEvent.Score.getScoreId().equals(mAssociatedScoreId) &&
                 scoreRecordChangedEvent.Score.hasRecordReached(mDesiredRecord)) {
-            BusProvider.getInstance().unregister(this);
             setCompleted(true);
         }
     }

@@ -50,10 +50,6 @@ public class BalanceMission extends Mission {
         super(missionId, name);
         mAssociatedItemId = associatedItemId;
         mDesiredBalance = desiredBalance;
-
-        if (!isCompleted()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -69,10 +65,6 @@ public class BalanceMission extends Mission {
         super(missionId, name, rewards);
         mAssociatedItemId = associatedItemId;
         mDesiredBalance = desiredBalance;
-
-        if (!isCompleted()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -86,10 +78,6 @@ public class BalanceMission extends Mission {
         super(jsonObject);
         mAssociatedItemId = jsonObject.getString(BPJSONConsts.BP_ASSOCITEMID);
         mDesiredBalance = jsonObject.getInt(BPJSONConsts.BP_DESIRED_BALANCE);
-
-        if (!isCompleted()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -132,7 +120,6 @@ public class BalanceMission extends Mission {
 
     private void checkItemIdBalance(String itemId, int balance) {
         if (itemId.equals(mAssociatedItemId) && balance >= mDesiredBalance) {
-            BusProvider.getInstance().unregister(this);
             setCompleted(true);
         }
     }

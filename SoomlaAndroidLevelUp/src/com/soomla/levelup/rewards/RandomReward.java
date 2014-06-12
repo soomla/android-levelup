@@ -30,7 +30,12 @@ import java.util.Random;
 /**
  * A specific type of <code>Reward</code> that holds of list of other
  * rewards. When this reward is given, it randomly chooses a reward from
- * the list of rewards it internally holds.  For example: a user can earn a mystery box
+ * the list of rewards it internally holds.
+ * Currently, the pool of rewards stays constant, so each reward is available
+ * on each draw.
+ * (A future version may add subtracting a given reward from the pool)
+ *
+ * For example: a user can earn a mystery box
  * reward (<code>RandomReward</code>, which in fact grants the user a random reward between a
  * "Mayor" badge (<code>BadgeReward</code>) and a speed boost (<code>VirtualItemReward</code>)
  *
@@ -46,9 +51,16 @@ public class RandomReward extends Reward {
      * @param rewardId see parent
      * @param name see parent
      * @param rewards a list of rewards from which to choose the reward randomly
+     *                this must not be null and contain at least 1 item
      */
     protected RandomReward(String rewardId, String name, List<Reward> rewards) {
         super(rewardId, name);
+
+        if (rewards == null || rewards.isEmpty()) {
+            final String error = "this reward doesn't make sense without items";
+            StoreUtils.LogError(TAG, error);
+        }
+
         mRewards = rewards;
         setRepeatable(true);
     }

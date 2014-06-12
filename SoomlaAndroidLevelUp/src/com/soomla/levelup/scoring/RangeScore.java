@@ -32,6 +32,8 @@ import org.json.JSONObject;
  */
 public class RangeScore extends Score {
 
+    public static final String TYPE_NAME = "range";
+
     /**
      * Constructor
      *
@@ -78,7 +80,7 @@ public class RangeScore extends Score {
         JSONObject jsonObject = super.toJSONObject();
         try {
             jsonObject.put(BPJSONConsts.BP_SCORE_RANGE, mRange.toJSONObject());
-            jsonObject.put(BPJSONConsts.BP_TYPE, "range");
+            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

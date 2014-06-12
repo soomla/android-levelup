@@ -24,6 +24,7 @@ import com.soomla.levelup.events.LevelStartedEvent;
 import com.soomla.levelup.gates.GatesList;
 import com.soomla.levelup.scoring.Score;
 import com.soomla.levelup.scoring.VirtualItemScore;
+import com.soomla.levelup.util.JSONFactory;
 import com.soomla.store.BusProvider;
 import com.soomla.store.StoreInventory;
 import com.soomla.store.StoreUtils;
@@ -43,6 +44,8 @@ import java.util.List;
  * Created by refaelos on 07/05/14.
  */
 public class Level extends World {
+
+    public static final String TYPE_NAME = "level";
 
     /**
      * Constructor
@@ -97,14 +100,13 @@ public class Level extends World {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
-            jsonObject.put(BPJSONConsts.BP_TYPE, "level");
+            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
 
         return jsonObject;
     }
-
 
     public int getTimesStarted() {
         return LevelStorage.getTimesStarted(this);
@@ -199,16 +201,6 @@ public class Level extends World {
         }
 
         for(Score score : mScores.values()) {
-            if (score instanceof VirtualItemScore) { // giving the user the items he collected
-                String associatedItemId = ((VirtualItemScore) score).getAssociatedItemId();
-                try {
-                    StoreInventory.giveVirtualItem(associatedItemId, (int) score.getTempScore());
-                } catch (VirtualItemNotFoundException e) {
-                    StoreUtils.LogError(TAG, "Couldn't find item associated with a given " +
-                            "VirtualItemScore. itemId: " + associatedItemId);
-                }
-            }
-
             score.saveAndReset(); // resetting scores
         }
 

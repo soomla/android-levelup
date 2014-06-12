@@ -18,10 +18,8 @@ package com.soomla.levelup.challenges;
 
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.MissionStorage;
-import com.soomla.levelup.rewards.BadgeReward;
-import com.soomla.levelup.rewards.RandomReward;
 import com.soomla.levelup.rewards.Reward;
-import com.soomla.levelup.rewards.VirtualItemReward;
+import com.soomla.levelup.util.JSONFactory;
 import com.soomla.store.BusProvider;
 import com.soomla.store.StoreUtils;
 
@@ -30,7 +28,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A mission is a task your users needs to complete in your game. Missions are usually associated
@@ -94,6 +94,10 @@ public abstract class Mission {
         }
 
         registerEvents();
+    }
+
+    public static Mission fromJSONObject(JSONObject jsonObject) {
+        return sJSONFactory.create(jsonObject, sTypeMap);
     }
 
     /**
@@ -215,6 +219,16 @@ public abstract class Mission {
     /** Private Members **/
 
     private static final String TAG = "SOOMLA Mission";
+
+    private static JSONFactory<Mission> sJSONFactory = new JSONFactory<Mission>();
+    private static Map<String, Class<? extends Mission>> sTypeMap =
+            new HashMap<String, Class<? extends Mission>>(4);
+    static {
+        sTypeMap.put(ActionMission.TYPE_NAME, ActionMission.class);
+        sTypeMap.put(BalanceMission.TYPE_NAME, BalanceMission.class);
+        sTypeMap.put(Challenge.TYPE_NAME, Challenge.class);
+        sTypeMap.put(RecordMission.TYPE_NAME, RecordMission.class);
+    }
 
     private String mMissionId;
     private String mName;

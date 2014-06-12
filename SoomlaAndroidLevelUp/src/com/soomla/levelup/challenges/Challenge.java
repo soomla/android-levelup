@@ -19,7 +19,6 @@ package com.soomla.levelup.challenges;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.events.MissionCompletedEvent;
 import com.soomla.levelup.rewards.Reward;
-import com.soomla.store.BusProvider;
 import com.soomla.store.StoreUtils;
 import com.squareup.otto.Subscribe;
 
@@ -38,6 +37,8 @@ import java.util.List;
  * Created by refaelos on 13/05/14.
  */
 public class Challenge extends Mission {
+
+    public static final String TYPE_NAME = "challenge";
 
     /**
      * Constructor
@@ -81,15 +82,9 @@ public class Challenge extends Mission {
         // an instance according to the mission type
         for (int i=0; i<missionsArr.length(); i++) {
             JSONObject missionJSON = missionsArr.getJSONObject(i);
-            String type = missionJSON.getString(BPJSONConsts.BP_TYPE);
-            if (type.equals("balance")) {
-                mMissions.add(new BalanceMission(missionJSON));
-            } else if (type.equals("record")) {
-                mMissions.add(new RecordMission(missionJSON));
-            } else if (type.equals("challenge")) {
-                mMissions.add(new Challenge(missionJSON));
-            } else {
-                StoreUtils.LogError(TAG, "Unknown mission type: " + type);
+            Mission mission = Mission.fromJSONObject(missionJSON);
+            if (mission != null) {
+                mMissions.add(mission);
             }
         }
     }
@@ -107,7 +102,7 @@ public class Challenge extends Mission {
                 missionsArr.put(mission.toJSONObject());
             }
             jsonObject.put(BPJSONConsts.BP_MISSIONS, missionsArr);
-            jsonObject.put(BPJSONConsts.BP_TYPE, "challenge");
+            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

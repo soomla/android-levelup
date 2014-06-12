@@ -35,7 +35,9 @@ import java.util.List;
  * Created by refaelos on 07/05/14.
  */
 public class GatesListAND extends GatesList {
-    
+
+    public static final String TYPE_NAME = "listAND";
+
     /**
      * Constructor
      *
@@ -84,7 +86,7 @@ public class GatesListAND extends GatesList {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
-            jsonObject.put(BPJSONConsts.BP_TYPE, "listAND");
+            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

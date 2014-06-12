@@ -25,9 +25,8 @@ import com.soomla.levelup.gates.Gate;
 import com.soomla.levelup.gates.GatesList;
 import com.soomla.levelup.gates.GatesListAND;
 import com.soomla.levelup.gates.GatesListOR;
-import com.soomla.levelup.scoring.RangeScore;
 import com.soomla.levelup.scoring.Score;
-import com.soomla.levelup.scoring.VirtualItemScore;
+import com.soomla.levelup.util.JSONFactory;
 import com.soomla.store.StoreUtils;
 
 import org.json.JSONArray;
@@ -37,6 +36,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -59,6 +59,8 @@ import java.util.UUID;
  * Created by refaelos on 06/05/14.
  */
 public class World {
+
+    public static final String TYPE_NAME = "world";
 
     /**
      * Constructor
@@ -108,15 +110,9 @@ public class World {
         // an instance according to the world type
         for (int i=0; i<worldsArr.length(); i++) {
             JSONObject worldJSON = worldsArr.getJSONObject(i);
-            String type = worldJSON.getString(BPJSONConsts.BP_TYPE);
-            if (type.equals("world")) {
-                World world = new World(worldJSON);
-                mInnerWorlds.put(world.getWorldId(), world);
-            } else if (type.equals("level")) {
-                Level level = new Level(worldJSON);
-                mInnerWorlds.put(level.getWorldId(), level);
-            } else {
-                StoreUtils.LogError(TAG, "Unknown world type: " + type);
+            World innerWorld = World.fromJSONObject(worldJSON);
+            if (innerWorld != null) {
+                mInnerWorlds.put(innerWorld.getWorldId(), innerWorld);
             }
         }
 
@@ -127,15 +123,9 @@ public class World {
         // an instance according to the score type
         for (int i=0; i<scoresArr.length(); i++) {
             JSONObject scoreJSON = scoresArr.getJSONObject(i);
-            String type = scoreJSON.getString(BPJSONConsts.BP_TYPE);
-            if (type.equals("range")) {
-                Score score = new RangeScore(scoreJSON);
+            Score score = Score.fromJSONObject(scoreJSON);
+            if (score != null) {
                 mScores.put(score.getScoreId(), score);
-            } else if (type.equals("item")) {
-                Score score = new VirtualItemScore(scoreJSON);
-                mScores.put(score.getScoreId(), score);
-            } else {
-                StoreUtils.LogError(TAG, "Unknown score type: " + type);
             }
         }
 
@@ -148,22 +138,39 @@ public class World {
             mChallenges.add(new Challenge(challengesJSON));
         }
 
-        try {
-            JSONObject gateListJSON = jsonObject.getJSONObject(BPJSONConsts.BP_GATES);
-            String type = gateListJSON.getString(BPJSONConsts.BP_TYPE);
-            if (!TextUtils.isEmpty(type)) {
-                if (type.equals("listOR")) {
-                    mGates = new GatesListOR(gateListJSON);
-                } else if (type.equals("listAND")) {
-                    mGates = new GatesListAND(gateListJSON);
-                } else {
-                    StoreUtils.LogError(TAG, "Unknown gates-list type: " + type);
-                }
-            }
-        } catch (JSONException ignored) {
-            mGates = null;
-        }
+        JSONObject gateListJSON = jsonObject.getJSONObject(BPJSONConsts.BP_GATES);
+        mGates = GatesList.fromJSONObject(gateListJSON);
     }
+
+    public static World fromJSONObject(JSONObject jsonObject) {
+
+        return sJSONFactory.create(jsonObject, sTypeMap);
+
+//        if(jsonObject == null) {
+//            StoreUtils.LogWarning(TAG, "fromJSONObject: jsonObject is null");
+//            return null;
+//        }
+//
+//        World world = null;
+//
+//        try {
+//            String type = jsonObject.getString(BPJSONConsts.BP_TYPE);
+//            if (type.equals(World.TYPE_NAME)) {
+//                world = new World(jsonObject);
+//            }
+//            else if (type.equals(Level.TYPE_NAME)) {
+//                world = new Level(jsonObject);
+//            }
+//            else {
+//                StoreUtils.LogError(TAG, "unknown world type:" + type);
+//            }
+//        } catch (JSONException e) {
+//            StoreUtils.LogError(TAG, "fromJSONObject JSONException:" + e.getMessage());
+//        }
+//
+//        return world;
+    }
+
 
     /**
      * Converts the current <code>World</code> to a JSONObject.
@@ -173,6 +180,7 @@ public class World {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
             jsonObject.put(BPJSONConsts.BP_WORLD_WORLDID, mWorldId);
             jsonObject.put(BPJSONConsts.BP_GATES, (mGates==null ? new JSONObject() : mGates.toJSONObject()));
 
@@ -348,6 +356,15 @@ public class World {
     /** Private Members **/
 
     private static String TAG = "SOOMLA World";
+
+    private static JSONFactory<World> sJSONFactory = new JSONFactory<World>();
+    private static Map<String, Class<? extends World>> sTypeMap =
+            new HashMap<String, Class<? extends World>>(2);
+
+    static {
+        sTypeMap.put(World.TYPE_NAME, World.class);
+        sTypeMap.put(Level.TYPE_NAME, Level.class);
+    }
 
     private String mWorldId;
     private GatesList mGates;

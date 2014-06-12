@@ -45,9 +45,16 @@ public class SequenceReward extends Reward {
      * @param rewardId see parent
      * @param name see parent
      * @param rewards the list of rewards in the sequence
+     *                this must not be null and contain at least 1 item
      */
     protected SequenceReward(String rewardId, String name, List<Reward> rewards) {
         super(rewardId, name);
+
+        if (rewards == null || rewards.isEmpty()) {
+            final String error = "this reward doesn't make sense without items";
+            StoreUtils.LogError(TAG, error);
+        }
+
         mRewards = rewards;
     }
 

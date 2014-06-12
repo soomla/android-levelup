@@ -36,6 +36,8 @@ import java.util.List;
  */
 public class GatesListOR extends GatesList {
 
+    public static final String TYPE_NAME = "listOR";
+
     /**
      * Constructor
      *
@@ -84,7 +86,7 @@ public class GatesListOR extends GatesList {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
-            jsonObject.put(BPJSONConsts.BP_TYPE, "listOR");
+            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

@@ -17,6 +17,7 @@
 package com.soomla.levelup.gates;
 
 import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.util.JSONFactory;
 import com.soomla.store.StoreUtils;
 
 import org.json.JSONArray;
@@ -24,7 +25,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A representation of one or more <code>Gate</code>s which together define
@@ -86,21 +89,9 @@ public abstract class GatesList extends Gate {
         // an instance according to the gate type
         for (int i = 0; i < gatesArr.length(); i++) {
             JSONObject gateJSON = gatesArr.getJSONObject(i);
-            String type = gateJSON.getString(BPJSONConsts.BP_TYPE);
-            if (type.equals("balance")) {
-                mGates.add(new BalanceGate(gateJSON));
-            } else if (type.equals("listAND")) {
-                mGates.add(new BalanceGate(gateJSON));
-            } else if (type.equals("listOR")) {
-                mGates.add(new BalanceGate(gateJSON));
-            } else if (type.equals("record")) {
-                mGates.add(new BalanceGate(gateJSON));
-            } else if (type.equals("purchasable")) {
-                mGates.add(new BalanceGate(gateJSON));
-            } else if (type.equals("worldCompletion")) {
-                mGates.add(new BalanceGate(gateJSON));
-            } else {
-                StoreUtils.LogError(TAG, "Unknown gate type: " + type);
+            Gate gate = Gate.fromJSONObject(gateJSON);
+            if (gate != null) {
+                mGates.add(gate);
             }
         }
     }
@@ -123,6 +114,10 @@ public abstract class GatesList extends Gate {
         }
 
         return jsonObject;
+    }
+
+    public static GatesList fromJSONObject(JSONObject jsonObject) {
+        return sJSONFactory.create(jsonObject, sTypeMap);
     }
 
     public void addGate(Gate gate) {
@@ -160,6 +155,14 @@ public abstract class GatesList extends Gate {
     /** Private Members */
 
     private static final String TAG = "SOOMLA GatesList";
+
+    private static JSONFactory<GatesList> sJSONFactory = new JSONFactory<GatesList>();
+    private static Map<String, Class<? extends GatesList>> sTypeMap =
+            new HashMap<String, Class<? extends GatesList>>(2);
+    static {
+        sTypeMap.put(GatesListAND.TYPE_NAME, GatesListAND.class);
+        sTypeMap.put(GatesListOR.TYPE_NAME, GatesListOR.class);
+    }
 
     protected List<Gate> mGates;
 }

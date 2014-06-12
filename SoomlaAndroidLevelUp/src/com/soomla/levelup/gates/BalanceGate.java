@@ -38,9 +38,8 @@ import org.json.JSONObject;
  * Created by refaelos on 07/05/14.
  */
 public class BalanceGate extends Gate {
-    private static String TAG = "SOOMLA BalanceGate";
-    private String mAssociatedItemId;
-    private int mDesiredBalance;
+
+    public static final String TYPE_NAME = "balance";
 
     /**
      * Constructor
@@ -86,7 +85,7 @@ public class BalanceGate extends Gate {
         try {
             jsonObject.put(BPJSONConsts.BP_ASSOCITEMID, mAssociatedItemId);
             jsonObject.put(BPJSONConsts.BP_DESIRED_BALANCE, mDesiredBalance);
-            jsonObject.put(BPJSONConsts.BP_TYPE, "balance");
+            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
@@ -155,4 +154,12 @@ public class BalanceGate extends Gate {
             BusProvider.getInstance().post(new GateCanBeOpenedEvent(this));
         }
     }
+
+
+    /** private members **/
+
+    private static String TAG = "SOOMLA BalanceGate";
+
+    private String mAssociatedItemId;
+    private int mDesiredBalance;
 }

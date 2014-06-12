@@ -18,10 +18,14 @@ package com.soomla.levelup.rewards;
 
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.RewardStorage;
+import com.soomla.levelup.util.JSONFactory;
 import com.soomla.store.StoreUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A reward is an entity which can be earned by the user for meeting certain
@@ -75,35 +79,38 @@ public abstract class Reward {
     }
 
     public static Reward fromJSONObject(JSONObject jsonObject) {
-        if(jsonObject == null) {
-            StoreUtils.LogWarning(TAG, "fromJSONObject: jsonObject is null");
-            return null;
-        }
 
-        Reward reward = null;
+        return sJSONFactory.create(jsonObject, sTypeMap);
 
-        try {
-            String type = jsonObject.getString(BPJSONConsts.BP_TYPE);
-            if (type.equals(BadgeReward.TYPE_NAME)) {
-                reward = new BadgeReward(jsonObject);
-            }
-            else if (type.equals(VirtualItemReward.TYPE_NAME)) {
-                reward = new VirtualItemReward(jsonObject);
-            }
-            else if (type.equals(RandomReward.TYPE_NAME)) {
-                reward = new RandomReward(jsonObject);
-            }
-            else if (type.equals(SequenceReward.TYPE_NAME)) {
-                reward = new SequenceReward(jsonObject);
-            }
-            else {
-                StoreUtils.LogError(TAG, "unknown reward type:" + type);
-            }
-        } catch (JSONException e) {
-            StoreUtils.LogError(TAG, "fromJSONObject JSONException:" + e.getMessage());
-        }
-
-        return reward;
+//        if(jsonObject == null) {
+//            StoreUtils.LogWarning(TAG, "fromJSONObject: jsonObject is null");
+//            return null;
+//        }
+//
+//        Reward reward = null;
+//
+//        try {
+//            String type = jsonObject.getString(BPJSONConsts.BP_TYPE);
+//            if (type.equals(BadgeReward.TYPE_NAME)) {
+//                reward = new BadgeReward(jsonObject);
+//            }
+//            else if (type.equals(VirtualItemReward.TYPE_NAME)) {
+//                reward = new VirtualItemReward(jsonObject);
+//            }
+//            else if (type.equals(RandomReward.TYPE_NAME)) {
+//                reward = new RandomReward(jsonObject);
+//            }
+//            else if (type.equals(SequenceReward.TYPE_NAME)) {
+//                reward = new SequenceReward(jsonObject);
+//            }
+//            else {
+//                StoreUtils.LogError(TAG, "unknown reward type:" + type);
+//            }
+//        } catch (JSONException e) {
+//            StoreUtils.LogError(TAG, "fromJSONObject JSONException:" + e.getMessage());
+//        }
+//
+//        return reward;
     }
 
     /**
@@ -193,6 +200,16 @@ public abstract class Reward {
     /** Private Members **/
 
     private static final String TAG = "SOOMLA Reward";
+
+    private static JSONFactory<Reward> sJSONFactory = new JSONFactory<Reward>();
+    private static Map<String, Class<? extends Reward>> sTypeMap =
+            new HashMap<String, Class<? extends Reward>>(4);
+    static {
+        sTypeMap.put(BadgeReward.TYPE_NAME, BadgeReward.class);
+        sTypeMap.put(RandomReward.TYPE_NAME, RandomReward.class);
+        sTypeMap.put(SequenceReward.TYPE_NAME, SequenceReward.class);
+        sTypeMap.put(VirtualItemReward.TYPE_NAME, VirtualItemReward.class);
+    }
 
     private String mRewardId;
     private String mName;

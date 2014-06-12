@@ -37,6 +37,8 @@ import org.json.JSONObject;
  */
 public class RecordGate extends Gate {
 
+    public static final String TYPE_NAME = "record";
+
     /**
      * Constructor
      *
@@ -81,7 +83,7 @@ public class RecordGate extends Gate {
         try {
             jsonObject.put(BPJSONConsts.BP_ASSOCSCOREID, mAssociatedScoreId);
             jsonObject.put(BPJSONConsts.BP_DESIRED_RECORD, mDesiredRecord);
-            jsonObject.put(BPJSONConsts.BP_TYPE, "record");
+            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

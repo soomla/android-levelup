@@ -18,7 +18,6 @@ package com.soomla.levelup.challenges;
 
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.rewards.Reward;
-import com.soomla.store.BusProvider;
 import com.soomla.store.StoreUtils;
 import com.soomla.store.events.CurrencyBalanceChangedEvent;
 import com.soomla.store.events.GoodBalanceChangedEvent;
@@ -37,6 +36,8 @@ import java.util.List;
  * Created by refaelos on 13/05/14.
  */
 public class BalanceMission extends Mission {
+
+    public static final String TYPE_NAME = "balance";
 
     /**
      * Constructor
@@ -90,7 +91,7 @@ public class BalanceMission extends Mission {
         try {
             jsonObject.put(BPJSONConsts.BP_ASSOCITEMID, mAssociatedItemId);
             jsonObject.put(BPJSONConsts.BP_DESIRED_BALANCE, mDesiredBalance);
-            jsonObject.put(BPJSONConsts.BP_TYPE, "balance");
+            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

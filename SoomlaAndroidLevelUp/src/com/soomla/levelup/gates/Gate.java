@@ -16,12 +16,17 @@
 
 package com.soomla.levelup.gates;
 
+import com.soomla.levelup.challenges.BalanceMission;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.GateStorage;
+import com.soomla.levelup.util.JSONFactory;
 import com.soomla.store.StoreUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A gate is an object which defines certain criteria for progressing
@@ -67,6 +72,10 @@ public abstract class Gate {
         return jsonObject;
     }
 
+    public static Gate fromJSONObject(JSONObject jsonObject) {
+        return sJSONFactory.create(jsonObject, sTypeMap);
+    }
+
     /**
      * Attempts to open this gate
      */
@@ -108,6 +117,18 @@ public abstract class Gate {
     /** Private Members */
 
     private static final String TAG = "SOOMLA Gate";
+
+    private static JSONFactory<Gate> sJSONFactory = new JSONFactory<Gate>();
+    private static Map<String, Class<? extends Gate>> sTypeMap =
+            new HashMap<String, Class<? extends Gate>>(6);
+    static {
+        sTypeMap.put(BalanceGate.TYPE_NAME, BalanceGate.class);
+        sTypeMap.put(GatesListAND.TYPE_NAME, GatesListAND.class);
+        sTypeMap.put(GatesListOR.TYPE_NAME, GatesListOR.class);
+        sTypeMap.put(PurchasableGate.TYPE_NAME, PurchasableGate.class);
+        sTypeMap.put(RecordGate.TYPE_NAME, RecordGate.class);
+        sTypeMap.put(WorldCompletionGate.TYPE_NAME, WorldCompletionGate.class);
+    }
 
     private String mGateId;
 }

@@ -36,6 +36,8 @@ import org.json.JSONObject;
  */
 public class WorldCompletionGate extends Gate {
 
+    public static final String TYPE_NAME = "worldCompletion";
+
     /**
      * Constructor
      *
@@ -76,7 +78,7 @@ public class WorldCompletionGate extends Gate {
         JSONObject jsonObject = super.toJSONObject();
         try {
             jsonObject.put(BPJSONConsts.BP_ASSOCWORLDID, mAssociatedWorldId);
-            jsonObject.put(BPJSONConsts.BP_TYPE, "worldCompletion");
+            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

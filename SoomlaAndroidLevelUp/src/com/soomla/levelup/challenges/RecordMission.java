@@ -20,7 +20,6 @@ package com.soomla.levelup.challenges;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.events.ScoreRecordChangedEvent;
 import com.soomla.levelup.rewards.Reward;
-import com.soomla.store.BusProvider;
 import com.soomla.store.StoreUtils;
 import com.squareup.otto.Subscribe;
 
@@ -37,6 +36,8 @@ import java.util.List;
  * Created by refaelos on 13/05/14.
  */
 public class RecordMission extends Mission {
+
+    public static final String TYPE_NAME = "record";
 
     /**
      * Constructor
@@ -88,7 +89,7 @@ public class RecordMission extends Mission {
         try {
             jsonObject.put(BPJSONConsts.BP_ASSOCSCOREID, mAssociatedScoreId);
             jsonObject.put(BPJSONConsts.BP_DESIRED_RECORD, mDesiredRecord);
-            jsonObject.put(BPJSONConsts.BP_TYPE, "record");
+            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

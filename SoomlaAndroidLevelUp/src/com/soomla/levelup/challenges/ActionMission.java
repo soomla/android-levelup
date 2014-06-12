@@ -29,6 +29,8 @@ import java.util.List;
  */
 public class ActionMission extends Mission {
 
+    public static final String TYPE_NAME = "action";
+
     /**
      * Constructor
      *

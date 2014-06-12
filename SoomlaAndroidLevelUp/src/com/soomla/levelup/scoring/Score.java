@@ -16,14 +16,19 @@
 
 package com.soomla.levelup.scoring;
 
+import com.soomla.levelup.Level;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.ScoreStorage;
 import com.soomla.levelup.events.ScoreRecordChangedEvent;
+import com.soomla.levelup.util.JSONFactory;
 import com.soomla.store.BusProvider;
 import com.soomla.store.StoreUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents a score in the game. A simple game usually has one generic numeric score
@@ -35,6 +40,8 @@ import org.json.JSONObject;
  * Created by refaelos on 06/05/14.
  */
 public class Score {
+
+    public static final String TYPE_NAME = "score";
 
     /**
      * Constructor
@@ -91,12 +98,44 @@ public class Score {
             jsonObject.put(BPJSONConsts.BP_NAME, mName);
             jsonObject.put(BPJSONConsts.BP_SCORE_STARTVAL, mStartValue);
             jsonObject.put(BPJSONConsts.BP_SCORE_HIGHBETTER, mHigherBetter);
-            jsonObject.put(BPJSONConsts.BP_TYPE, "score");
+            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
 
         return jsonObject;
+    }
+
+    public static Score fromJSONObject(JSONObject jsonObject) {
+
+        return sJSONFactory.create(jsonObject, sTypeMap);
+
+//        if(jsonObject == null) {
+//            StoreUtils.LogWarning(TAG, "fromJSONObject: jsonObject is null");
+//            return null;
+//        }
+//
+//        Score score = null;
+//
+//        try {
+//            String type = jsonObject.getString(BPJSONConsts.BP_TYPE);
+//            if (type.equals(Score.TYPE_NAME)) {
+//                score = new Score(jsonObject);
+//            }
+//            else if (type.equals(RangeScore.TYPE_NAME)) {
+//                score = new RangeScore(jsonObject);
+//            }
+//            else if (type.equals(VirtualItemScore.TYPE_NAME)) {
+//                score = new VirtualItemScore(jsonObject);
+//            }
+//            else {
+//                StoreUtils.LogError(TAG, "unknown score type:" + type);
+//            }
+//        } catch (JSONException e) {
+//            StoreUtils.LogError(TAG, "fromJSONObject JSONException:" + e.getMessage());
+//        }
+//
+//        return score;
     }
 
     public boolean isHigherBetter() {
@@ -132,6 +171,9 @@ public class Score {
             ScoreStorage.setRecordScore(this, mTempScore);
             BusProvider.getInstance().post(new ScoreRecordChangedEvent(this));
         }
+
+        performSaveActions();
+
         ScoreStorage.setLatestScore(this, mTempScore);
         setTempScore(mStartValue);
     }
@@ -167,6 +209,13 @@ public class Score {
         double record = ScoreStorage.getRecordScore(this);
         return hasScoreReached(record, scoreVal);
     }
+
+    /**
+     * Score sometimes can have additional actions
+     * associated with reaching/saving it.
+     * Override this method to add specific score behavior
+     */
+    protected void performSaveActions() {}
 
     private boolean hasScoreReached(double score1, double score2) {
         return this.isHigherBetter() ?
@@ -213,6 +262,15 @@ public class Score {
     /** Private Members **/
 
     private static String TAG = "SOOMLA Score";
+
+    private static JSONFactory<Score> sJSONFactory = new JSONFactory<Score>();
+    private static Map<String, Class<? extends Score>> sTypeMap =
+            new HashMap<String, Class<? extends Score>>(4);
+    static {
+        sTypeMap.put(Score.TYPE_NAME, Score.class);
+        sTypeMap.put(RangeScore.TYPE_NAME, RangeScore.class);
+        sTypeMap.put(VirtualItemScore.TYPE_NAME, VirtualItemScore.class);
+    }
 
     protected double mStartValue;
     protected String mName;

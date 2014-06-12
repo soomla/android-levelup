@@ -40,6 +40,8 @@ import org.json.JSONObject;
  */
 public class PurchasableGate extends Gate {
 
+    public static final String TYPE_NAME = "purchasable";
+
     /**
      * Constructor
      *
@@ -83,7 +85,7 @@ public class PurchasableGate extends Gate {
         JSONObject jsonObject = super.toJSONObject();
         try {
             jsonObject.put(BPJSONConsts.BP_ASSOCITEMID, mAssociatedItemId);
-            jsonObject.put(BPJSONConsts.BP_TYPE, "purchasable");
+            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

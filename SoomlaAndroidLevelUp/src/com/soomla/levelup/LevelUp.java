@@ -25,8 +25,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The top level container for the android-levelup model and definitions.
@@ -44,20 +47,6 @@ public class LevelUp {
         mInitialWorlds = worldMap;
         save();
     }
-
-    /**
-     * Persists the entire levelup model to storage.
-     */
-    private void save() {
-        String bp_json = toJSONObject().toString();
-        StoreUtils.LogDebug(TAG, "saving LevelUp to DB. json is: " + bp_json);
-        String key = DB_KEY_PREFIX + "model";
-        StorageManager.getKeyValueStorage().setValue(key, bp_json);
-    }
-
-//    public void load() {}
-//    public void loadFromFile(String filePath) {}
-//    public void loadFromJSON(String json) {}
 
     /**
      * Retrieves a score object from the model
@@ -90,6 +79,21 @@ public class LevelUp {
 
     private LevelUp() {}
     private static LevelUp sInstance;
+
+    /**
+     * Persists the entire levelup model to storage.
+     */
+    private void save() {
+        String bp_json = toJSONObject().toString();
+        StoreUtils.LogDebug(TAG, "saving LevelUp to DB. json is: " + bp_json);
+        String key = DB_KEY_PREFIX + "model";
+        StorageManager.getKeyValueStorage().setValue(key, bp_json);
+    }
+
+//    public void load() {}
+//    public void loadFromFile(String filePath) {}
+//    public void loadFromJSON(String json) {}
+
 
     /**
      * Converts the current <code>LevelUp</code> to a JSONObject.

@@ -74,6 +74,38 @@ public abstract class Reward {
         return jsonObject;
     }
 
+    public static Reward fromJSONObject(JSONObject jsonObject) {
+        if(jsonObject == null) {
+            StoreUtils.LogWarning(TAG, "fromJSONObject: jsonObject is null");
+            return null;
+        }
+
+        Reward reward = null;
+
+        try {
+            String type = jsonObject.getString(BPJSONConsts.BP_TYPE);
+            if (type.equals(BadgeReward.TYPE_NAME)) {
+                reward = new BadgeReward(jsonObject);
+            }
+            else if (type.equals(VirtualItemReward.TYPE_NAME)) {
+                reward = new VirtualItemReward(jsonObject);
+            }
+            else if (type.equals(RandomReward.TYPE_NAME)) {
+                reward = new RandomReward(jsonObject);
+            }
+            else if (type.equals(SequenceReward.TYPE_NAME)) {
+                reward = new SequenceReward(jsonObject);
+            }
+            else {
+                StoreUtils.LogError(TAG, "unknown reward type:" + type);
+            }
+        } catch (JSONException e) {
+            StoreUtils.LogError(TAG, "fromJSONObject JSONException:" + e.getMessage());
+        }
+
+        return reward;
+    }
+
     /**
      * Grants this reward to the user. Use this method in cases where the user
      * has positive progress in game play and is eligible for earning this reward.

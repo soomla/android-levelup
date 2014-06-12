@@ -31,6 +31,8 @@ import org.json.JSONObject;
  */
 public class BadgeReward extends Reward {
 
+    public static final String TYPE_NAME = "badge";
+
     /**
      * Constructor
      *
@@ -76,7 +78,7 @@ public class BadgeReward extends Reward {
         JSONObject jsonObject = super.toJSONObject();
         try {
             jsonObject.put(BPJSONConsts.BP_REWARD_ICONURL, mIconUrl);
-            jsonObject.put(BPJSONConsts.BP_TYPE, "badge");
+            jsonObject.put(BPJSONConsts.BP_TYPE,TYPE_NAME);
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

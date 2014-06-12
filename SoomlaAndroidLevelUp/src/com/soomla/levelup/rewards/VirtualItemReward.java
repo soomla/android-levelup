@@ -34,6 +34,8 @@ import org.json.JSONObject;
  */
 public class VirtualItemReward extends Reward {
 
+    public static final String TYPE_NAME = "item";
+
     /**
      * Constructor
      *
@@ -71,7 +73,7 @@ public class VirtualItemReward extends Reward {
         try {
             jsonObject.put(BPJSONConsts.BP_ASSOCITEMID, mAssociatedItemId);
             jsonObject.put(BPJSONConsts.BP_REWARD_AMOUNT, mAmount);
-            jsonObject.put(BPJSONConsts.BP_TYPE, "item");
+            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

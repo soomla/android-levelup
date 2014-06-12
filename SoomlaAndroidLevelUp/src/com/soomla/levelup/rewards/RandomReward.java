@@ -38,6 +38,8 @@ import java.util.Random;
  */
 public class RandomReward extends Reward {
 
+    public static final String TYPE_NAME = "random";
+
     /**
      * Constructor
      *
@@ -60,24 +62,24 @@ public class RandomReward extends Reward {
      */
     public RandomReward(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-        try {
-            mRewards = new ArrayList<Reward>();
-            JSONArray rewardsArr = jsonObject.getJSONArray(BPJSONConsts.BP_REWARDS);
 
-            // Iterate over all rewards in the JSON array and for each one create
-            // an instance according to the reward type
-            for (int i = 0; i < rewardsArr.length(); i++) {
-                JSONObject rewardJSON = rewardsArr.getJSONObject(i);
-                String type = rewardJSON.getString(BPJSONConsts.BP_TYPE);
-                if (type.equals("badge")) {
-                    mRewards.add(new BadgeReward(rewardJSON));
-                } else if (type.equals("item")) {
-                    mRewards.add(new VirtualItemReward(rewardJSON));
-                } else {
-                    StoreUtils.LogError(TAG, "Unknown reward type: " + type);
-                }
+        mRewards = new ArrayList<Reward>();
+        JSONArray rewardsArr = jsonObject.optJSONArray(BPJSONConsts.BP_REWARDS);
+        if (rewardsArr == null) {
+            StoreUtils.LogWarning(TAG, "reward has no meaning without children");
+            rewardsArr = new JSONArray();
+        }
+
+        // Iterate over all rewards in the JSON array and for each one create
+        // an instance according to the reward type
+        for (int i = 0; i < rewardsArr.length(); i++) {
+            JSONObject rewardJSON = rewardsArr.getJSONObject(i);
+            Reward reward = Reward.fromJSONObject(rewardJSON);
+            if (reward != null) {
+                mRewards.add(reward);
             }
-        } catch (JSONException ignored) {}
+        }
+
         setRepeatable(true);
     }
 
@@ -94,7 +96,7 @@ public class RandomReward extends Reward {
                 rewardsArr.put(reward.toJSONObject());
             }
             jsonObject.put(BPJSONConsts.BP_REWARDS, rewardsArr);
-            jsonObject.put(BPJSONConsts.BP_TYPE, "random");
+            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
             StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

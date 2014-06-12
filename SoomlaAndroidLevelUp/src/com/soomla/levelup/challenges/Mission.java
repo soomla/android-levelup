@@ -87,15 +87,9 @@ public abstract class Mission {
         // an instance according to the mission type
         for (int i=0; i<rewardsArr.length(); i++) {
             JSONObject rewardJSON = rewardsArr.getJSONObject(i);
-            String type = rewardJSON.getString(BPJSONConsts.BP_TYPE);
-            if (type.equals("badge")) {
-                mRewards.add(new BadgeReward(rewardJSON));
-            } else if (type.equals("item")) {
-                mRewards.add(new VirtualItemReward(rewardJSON));
-            } else if (type.equals("random")) {
-                mRewards.add(new RandomReward(rewardJSON));
-            } else {
-                StoreUtils.LogError(TAG, "Unknown reward type: " + type);
+            Reward reward = Reward.fromJSONObject(rewardJSON);
+            if (reward != null) {
+                mRewards.add(reward);
             }
         }
 

@@ -16,15 +16,12 @@
 
 package com.soomla.levelup;
 
-import android.text.TextUtils;
-
 import com.soomla.levelup.challenges.Challenge;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.WorldStorage;
 import com.soomla.levelup.gates.Gate;
 import com.soomla.levelup.gates.GatesList;
 import com.soomla.levelup.gates.GatesListAND;
-import com.soomla.levelup.gates.GatesListOR;
 import com.soomla.levelup.scoring.Score;
 import com.soomla.levelup.util.JSONFactory;
 import com.soomla.store.StoreUtils;

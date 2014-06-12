@@ -105,6 +105,7 @@ public class RecordGate extends Gate {
             return false;
         }
 
+//        return score.hasTempReached(mDesiredRecord);
         return score.hasRecordReached(mDesiredRecord);
     }
 

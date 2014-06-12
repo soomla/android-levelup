@@ -18,6 +18,7 @@ package com.soomla.levelup.challenges;
 
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.MissionStorage;
+import com.soomla.levelup.events.MissionCompletionRevokedEvent;
 import com.soomla.levelup.rewards.Reward;
 import com.soomla.levelup.util.JSONFactory;
 import com.soomla.store.BusProvider;
@@ -171,6 +172,15 @@ public abstract class Mission {
             for(Reward reward : mRewards) {
                 reward.give();
             }
+        }
+        else {
+            BusProvider.getInstance().post(new MissionCompletionRevokedEvent(this));
+            for (Reward reward : mRewards) {
+                reward.take();
+            }
+
+            // listen again for chance to be completed
+            registerEvents();
         }
     }
 

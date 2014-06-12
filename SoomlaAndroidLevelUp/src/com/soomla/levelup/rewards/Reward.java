@@ -18,7 +18,9 @@ package com.soomla.levelup.rewards;
 
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.RewardStorage;
+import com.soomla.levelup.events.RewardTakenEvent;
 import com.soomla.levelup.util.JSONFactory;
+import com.soomla.store.BusProvider;
 import com.soomla.store.StoreUtils;
 
 import org.json.JSONException;
@@ -147,6 +149,7 @@ public abstract class Reward {
 
         if (takeInner()) {
             RewardStorage.setRewardStatus(this, false);
+            BusProvider.getInstance().post(new RewardTakenEvent(this));
             return true;
         }
 

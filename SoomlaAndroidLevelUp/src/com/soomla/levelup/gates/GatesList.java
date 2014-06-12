@@ -17,8 +17,11 @@
 package com.soomla.levelup.gates;
 
 import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.events.GateOpenedEvent;
 import com.soomla.levelup.util.JSONFactory;
+import com.soomla.store.BusProvider;
 import com.soomla.store.StoreUtils;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -71,6 +74,8 @@ public abstract class GatesList extends Gate {
     public GatesList(String gateId, List<Gate> gates) {
         super(gateId);
         mGates = gates;
+
+        registerEvents();
     }
 
     /**
@@ -94,6 +99,18 @@ public abstract class GatesList extends Gate {
                 mGates.add(gate);
             }
         }
+
+        registerEvents();
+    }
+
+    private void registerEvents() {
+        if(!isOpen()) {
+            BusProvider.getInstance().register(this);
+        }
+    }
+
+    private void unregisterEvents() {
+        BusProvider.getInstance().unregister(this);
     }
 
     /**
@@ -138,9 +155,21 @@ public abstract class GatesList extends Gate {
      * Attempts to open all gates included in this gate list
      */
     @Override
-    public void tryOpenInner() {
+    public boolean tryOpenInner() {
         for (Gate gate : mGates) {
             gate.tryOpen();
+        }
+
+        return isOpen();
+    }
+
+    /** Events **/
+
+    @Subscribe
+    public void onGateOpenedEvent(GateOpenedEvent gateOpenedEvent) {
+        final boolean open = tryOpen();
+        if(open) {
+            unregisterEvents();
         }
     }
 

@@ -99,7 +99,8 @@ public class BalanceGate extends Gate {
      * @return <code>true</code> if the item's balance has
      * reached the desired balance, <code>false</code> otherwise
      */
-    private boolean canPass() {
+    @Override
+    public boolean canOpen() {
         if (GateStorage.isOpen(this)) {
             return true;
         }
@@ -115,17 +116,20 @@ public class BalanceGate extends Gate {
     }
 
     @Override
-    public void tryOpenInner() {
-        if (canPass()) {
+    public boolean tryOpenInner() {
+        if (canOpen()) {
             try {
                 StoreInventory.takeVirtualItem(mAssociatedItemId, mDesiredBalance);
             } catch (VirtualItemNotFoundException e) {
                 StoreUtils.LogError(TAG, "(open) Couldn't find itemId. itemId: " + mAssociatedItemId);
-                return;
+                return false;
             }
 
             forceOpen(true);
+            return true;
         }
+
+        return false;
     }
 
     /**

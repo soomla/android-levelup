@@ -97,11 +97,12 @@ public class PurchasableGate extends Gate {
      * Attempts to open the gate by purchasing the associated item
      */
     @Override
-    public void tryOpenInner() {
+    public boolean tryOpenInner() {
         try {
             PurchasableVirtualItem pvi = (PurchasableVirtualItem) StoreInfo.getVirtualItem(mAssociatedItemId);
             PurchaseWithMarket ptype = (PurchaseWithMarket) pvi.getPurchaseType();
             StoreController.getInstance().buyWithMarket(ptype.getMarketItem(), getGateId());
+            return true;
         } catch (VirtualItemNotFoundException e) {
             StoreUtils.LogError(TAG, "The item needed for purchase doesn't exist. itemId: " +
                     mAssociatedItemId);
@@ -109,6 +110,13 @@ public class PurchasableGate extends Gate {
             StoreUtils.LogError(TAG, "The associated item is not a purchasable item. itemId: " +
                     mAssociatedItemId);
         }
+
+        return false;
+    }
+
+    @Override
+    public boolean canOpen() {
+        return true;
     }
 
     /**

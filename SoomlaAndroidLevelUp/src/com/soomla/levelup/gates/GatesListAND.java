@@ -17,7 +17,9 @@
 package com.soomla.levelup.gates;
 
 import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.events.GateOpenedEvent;
 import com.soomla.store.StoreUtils;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -101,6 +103,16 @@ public class GatesListAND extends GatesList {
     public boolean isOpen() {
         for (Gate gate : mGates) {
             if (!gate.isOpen()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean canOpen() {
+        for (Gate gate : mGates) {
+            if (!gate.canOpen()) {
                 return false;
             }
         }

@@ -91,16 +91,20 @@ public class WorldCompletionGate extends Gate {
      *
      * @return <code>true</code> if the world is completed, <code>false</code> otherwise
      */
-    private boolean canPass() {
+    @Override
+    public boolean canOpen() {
         World world = LevelUp.getInstance().getWorld(mAssociatedWorldId);
         return world != null && world.isCompleted();
     }
 
     @Override
-    public void tryOpenInner() {
-        if (canPass()) {
+    public boolean tryOpenInner() {
+        if (canOpen()) {
             forceOpen(true);
+            return true;
         }
+
+        return false;
     }
 
     /**

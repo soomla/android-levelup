@@ -78,16 +78,18 @@ public abstract class Gate {
 
     /**
      * Attempts to open this gate
+     *
+     * @return if the opened successfully
      */
-    public void tryOpen() {
+    public boolean tryOpen() {
         if (GateStorage.isOpen(this)) {
-            return;
+            return true;
         }
 
-        tryOpenInner();
+        return tryOpenInner();
     }
 
-    protected abstract void tryOpenInner();
+    protected abstract boolean tryOpenInner();
 
     /**
      * Sets the gate to be opened
@@ -106,6 +108,13 @@ public abstract class Gate {
         return GateStorage.isOpen(this);
     }
 
+
+    /**
+     * Checks if the gate meets its criteria for opening.
+     *
+     * @return true if criteria met for opening it
+     */
+    public abstract boolean canOpen();
 
     /** Setters and Getters */
 

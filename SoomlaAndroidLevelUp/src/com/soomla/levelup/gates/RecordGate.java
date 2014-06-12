@@ -97,7 +97,8 @@ public class RecordGate extends Gate {
      * @return <code>true</code> if the score's record has reached
      * the desired value, <code>false</code> otherwise
      */
-    private boolean canPass() {
+    @Override
+    public boolean canOpen() {
         Score score = LevelUp.getInstance().getScore(mAssociatedScoreId);
         if (score == null) {
             StoreUtils.LogError(TAG, "(canPass) couldn't find score with scoreId: " + mAssociatedScoreId);
@@ -108,10 +109,13 @@ public class RecordGate extends Gate {
     }
 
     @Override
-    public void tryOpenInner() {
-        if (canPass()) {
+    public boolean tryOpenInner() {
+        if (canOpen()) {
             forceOpen(true);
+            return true;
         }
+
+        return false;
     }
 
 

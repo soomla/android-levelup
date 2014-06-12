@@ -107,6 +107,15 @@ public class GatesListOR extends GatesList {
         return false;
     }
 
+    @Override
+    public boolean canOpen() {
+        for (Gate gate : mGates) {
+            if (gate.canOpen()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /** Private Members */
 

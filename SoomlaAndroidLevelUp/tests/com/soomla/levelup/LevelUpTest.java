@@ -20,6 +20,7 @@ import com.soomla.levelup.events.GateCanBeOpenedEvent;
 import com.soomla.levelup.gates.BalanceGate;
 import com.soomla.levelup.gates.RecordGate;
 import com.soomla.levelup.scoring.RangeScore;
+import com.soomla.levelup.scoring.Score;
 import com.soomla.levelup.scoring.VirtualItemScore;
 import com.soomla.store.BusProvider;
 import com.soomla.store.IStoreAssets;
@@ -150,7 +151,7 @@ public class LevelUpTest {
     @Test
     public void testAll() {
         testLevel();
-        testRecordGate();
+        testRecordGateWithRangeScore();
         testBalanceGate();
         testVirtualItemScore();
     }
@@ -207,7 +208,59 @@ public class LevelUpTest {
         Assert.assertEquals(1, lvl1.getTimesStarted());
     }
 
-    public void testRecordGate() {
+    public void testScore() {
+        boolean higherIsBetter = true;
+        Score scoreAsc = new Score("score_asc", "ScoreAsc", higherIsBetter);
+        Score scoreDsc = new Score("score_dsc", "ScoreDsc", !higherIsBetter);
+
+        Assert.assertEquals(scoreAsc.getTempScore(), 0, 0.01);
+        scoreAsc.setStartValue(0);
+        scoreAsc.inc(1);
+        Assert.assertEquals(scoreAsc.getTempScore(), 1, 0.01);
+        scoreAsc.dec(1);
+        Assert.assertEquals(scoreAsc.getTempScore(), 0, 0.01);
+        scoreAsc.inc(10);
+        Assert.assertEquals(scoreAsc.getTempScore(), 10, 0.01);
+        scoreAsc.saveAndReset();
+        Assert.assertEquals(scoreAsc.getLatest(), 10, 0.01);
+        Assert.assertEquals(scoreAsc.getTempScore(), 0, 0.01);
+        scoreAsc.setTempScore(20);
+        scoreAsc.reset();
+        Assert.assertEquals(scoreAsc.getLatest(), 10, 0.01);
+        Assert.assertEquals(scoreAsc.getTempScore(), 0, 0.01);
+        scoreAsc.setTempScore(30);
+        Assert.assertTrue(scoreAsc.hasTempReached(30));
+        Assert.assertFalse(scoreAsc.hasTempReached(31));
+        scoreAsc.saveAndReset();
+        Assert.assertEquals(scoreAsc.getLatest(), 30, 0.01);
+        Assert.assertEquals(scoreAsc.getRecord(), 30, 0.01);
+        scoreAsc.setTempScore(15);
+        scoreAsc.saveAndReset();
+        Assert.assertEquals(scoreAsc.getLatest(), 15, 0.01);
+        Assert.assertEquals(scoreAsc.getRecord(), 30, 0.01);
+        Assert.assertTrue(scoreAsc.hasRecordReached(30));
+        Assert.assertFalse(scoreAsc.hasRecordReached(31));
+
+        scoreDsc.setStartValue(100);
+        Assert.assertEquals(scoreAsc.getTempScore(), 100, 0.01);
+        scoreDsc.dec(50);
+        Assert.assertEquals(scoreAsc.getTempScore(), 50, 0.01);
+        scoreDsc.saveAndReset(); // start value is 100
+        Assert.assertEquals(scoreDsc.getLatest(), 50, 0.01);
+        Assert.assertEquals(scoreAsc.getTempScore(), 100, 0.01);
+        scoreDsc.setTempScore(20);
+        scoreDsc.saveAndReset();
+        Assert.assertEquals(scoreDsc.getLatest(), 20, 0.01);
+        Assert.assertEquals(scoreDsc.getRecord(), 20, 0.01);
+        scoreDsc.setTempScore(30);
+        scoreDsc.saveAndReset();
+        Assert.assertEquals(scoreDsc.getLatest(), 30, 0.01);
+        Assert.assertEquals(scoreDsc.getRecord(), 20, 0.01);
+        Assert.assertTrue(scoreAsc.hasRecordReached(20));
+        Assert.assertFalse(scoreAsc.hasRecordReached(19));
+    }
+
+    public void testRecordGateWithRangeScore() {
         final List<World> worlds = new ArrayList<World>();
         Level lvl1 = new Level("lvl1");
         Level lvl2 = new Level("lvl2");

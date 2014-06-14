@@ -84,7 +84,7 @@ Here is an example:
 
 Lets say you have a _Level_ you call `LEVEL_1` and a _VirtualCurrency_ you call `COIN_CURRENCY`:
 
-    ```Java
+```Java
       VirtualCurrencyPack TEN_COINS_PACK = new VirtualCurrencyPack(
             "10 Coins",                                     // name
             "A pack of 10 coins",                           // description
@@ -96,9 +96,9 @@ Lets say you have a _Level_ you call `LEVEL_1` and a _VirtualCurrency_ you call 
 
 Now you can use _StoreInventory_ to buy your new VirtualCurrencyPack:
 
-    ```Java
+```Java
         StoreInventory.buy(TEN_COINS_PACK.getItemId());
-    ```
+```
 
 ## Integration with Soomla android-store
 

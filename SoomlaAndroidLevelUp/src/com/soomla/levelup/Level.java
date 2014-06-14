@@ -47,6 +47,14 @@ public class Level extends World {
 
     public static final String TYPE_NAME = "level";
 
+    public enum State {
+        Idle,
+        Running,
+        Paused,
+        Ended,
+        Completed
+    }
+
     /**
      * Constructor
      *
@@ -147,6 +155,9 @@ public class Level extends World {
         LevelStorage.incTimesStarted(this);
 
         mStartTime = System.currentTimeMillis();
+        mElapsed = 0;
+
+        mState = State.Running;
 
         // Notify level has started
         BusProvider.getInstance().post(new LevelStartedEvent(this));
@@ -158,8 +169,15 @@ public class Level extends World {
      * important if you're keeping track of level time
      */
     public void pause() {
-        mCurrentTime = System.currentTimeMillis() - mStartTime;
-        mPaused = true;
+        if (mState != State.Running) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        mElapsed += now - mStartTime;
+        mStartTime = 0;
+
+        mState = State.Paused;
     }
 
     /**
@@ -167,8 +185,26 @@ public class Level extends World {
      * important if you're keeping track of level time
      */
     public void resume() {
-        mStartTime = System.currentTimeMillis() - mCurrentTime;
-        mPaused = false;
+        if (mState != State.Paused) {
+            return;
+        }
+
+        mStartTime = System.currentTimeMillis();
+        mState = State.Running;
+    }
+
+    public State getState() {
+        return mState;
+    }
+
+    public double getPlayDuration() {
+
+        long now = System.currentTimeMillis();
+        long duration = mElapsed;
+        if (mStartTime != 0)
+            duration += now - mStartTime;
+
+        return duration / 1000.0;
     }
 
     /**
@@ -184,13 +220,14 @@ public class Level extends World {
             return;
         }
 
+        double duration = getPlayDuration();
+
+        mState = State.Ended;
+
         // Count number of times this level was played
         LevelStorage.incTimesPlayed(this);
 
         // Calculate the slowest \ fastest durations of level play
-        long startTime = mPaused ? mCurrentTime : System.currentTimeMillis() - mStartTime;
-        long endTime = System.currentTimeMillis();
-        double duration = (endTime - startTime) / 1000.0;
 
         if (duration > getSlowestDuration()) {
             LevelStorage.setSlowestDuration(this, duration);
@@ -209,20 +246,25 @@ public class Level extends World {
 
         // reset timers
         mStartTime = 0;
-        mCurrentTime = 0;
-        mPaused = false;
+        mElapsed = 0;
 
         if(completed) {
             setCompleted(true);
         }
     }
 
+    @Override
+    public void setCompleted(boolean mCompleted) {
+        mState = State.Completed;
+        super.setCompleted(mCompleted);
+    }
 
     /** Private Members **/
 
     private static String TAG = "SOOMLA Level";
 
     private long mStartTime;
-    private long mCurrentTime;
-    private boolean mPaused;
+    private long mElapsed;
+
+    private State mState = State.Idle;
 }

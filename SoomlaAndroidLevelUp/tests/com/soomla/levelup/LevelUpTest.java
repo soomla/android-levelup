@@ -20,20 +20,20 @@ import com.soomla.levelup.events.GateCanBeOpenedEvent;
 import com.soomla.levelup.gates.BalanceGate;
 import com.soomla.levelup.gates.RecordGate;
 import com.soomla.levelup.scoring.RangeScore;
+import com.soomla.levelup.scoring.VirtualItemScore;
 import com.soomla.store.BusProvider;
 import com.soomla.store.IStoreAssets;
 import com.soomla.store.SoomlaApp;
 import com.soomla.store.StoreController;
 import com.soomla.store.StoreInventory;
-import com.soomla.store.data.StorageManager;
 import com.soomla.store.domain.NonConsumableItem;
 import com.soomla.store.domain.VirtualCategory;
 import com.soomla.store.domain.virtualCurrencies.VirtualCurrency;
 import com.soomla.store.domain.virtualCurrencies.VirtualCurrencyPack;
 import com.soomla.store.domain.virtualGoods.SingleUseVG;
 import com.soomla.store.domain.virtualGoods.VirtualGood;
+import com.soomla.store.events.GoodBalanceChangedEvent;
 import com.soomla.store.exceptions.VirtualItemNotFoundException;
-import com.soomla.store.purchaseTypes.PurchaseType;
 import com.soomla.store.purchaseTypes.PurchaseWithMarket;
 import com.squareup.otto.Subscribe;
 
@@ -64,17 +64,66 @@ import java.util.List;
 @RunWith(RobolectricTestRunner.class)
 public class LevelUpTest {
 
+    public static final String ITEM_ID_BALANCE_GATE = "item_balance_gate";
+    public static final String ITEM_ID_VI_SCORE = "item_vi_score";
+
+    /** event expectations **/
+
+    // Gate
     private String mExpectedGateEventId = "";
+
+    // VirtualGood
+    private String mExpectedVirtualItemId = "";
+    private int mExpectedVirtualItemAmountAdded = -1;
+    private int mExpectedVirtualItemBalance = -1;
 
     @Before
     public void setUp() throws Exception {
         SoomlaApp.setExternalContext(Robolectric.application);
         BusProvider.getInstance().register(this);
+
+        StoreController.getInstance().initialize(new IStoreAssets() {
+            @Override
+            public int getVersion() {
+                return 1;
+            }
+
+            @Override
+            public VirtualCurrency[] getCurrencies() {
+                return new VirtualCurrency[0];
+            }
+
+            @Override
+            public VirtualGood[] getGoods() {
+                final VirtualGood[] virtualGoods = new VirtualGood[2];
+                virtualGoods[0] = new SingleUseVG("ItemBalanceGate",
+                        "", ITEM_ID_BALANCE_GATE,
+                        new PurchaseWithMarket(ITEM_ID_BALANCE_GATE, 1));
+                virtualGoods[1] = new SingleUseVG("ItemVIScore",
+                        "", ITEM_ID_VI_SCORE,
+                        new PurchaseWithMarket(ITEM_ID_VI_SCORE, 1));
+                return virtualGoods;
+            }
+
+            @Override
+            public VirtualCurrencyPack[] getCurrencyPacks() {
+                return new VirtualCurrencyPack[0];
+            }
+
+            @Override
+            public VirtualCategory[] getCategories() {
+                return new VirtualCategory[0];
+            }
+
+            @Override
+            public NonConsumableItem[] getNonConsumableItems() {
+                return new NonConsumableItem[0];
+            }
+        }, "a", "b");
     }
 
     @After
     public void tearDown() throws Exception {
-        mExpectedGateEventId = "";
         BusProvider.getInstance().unregister(this);
     }
 
@@ -103,6 +152,7 @@ public class LevelUpTest {
         testLevel();
         testRecordGate();
         testBalanceGate();
+        testVirtualItemScore();
     }
 
     public void testLevel() {
@@ -151,8 +201,8 @@ public class LevelUpTest {
         lvl1.setCompleted(true);
         Assert.assertTrue(lvl1.isCompleted());
 
-        Assert.assertEquals(playDuration, lvl1.getSlowestDuration(), 0.0001);
-        Assert.assertEquals(playDuration, lvl1.getFastestDuration(), 0.0001);
+        Assert.assertEquals(playDuration, lvl1.getSlowestDuration(), 0.1);
+        Assert.assertEquals(playDuration, lvl1.getFastestDuration(), 0.1);
         Assert.assertEquals(1, lvl1.getTimesPlayed());
         Assert.assertEquals(1, lvl1.getTimesStarted());
     }
@@ -161,8 +211,9 @@ public class LevelUpTest {
         final List<World> worlds = new ArrayList<World>();
         Level lvl1 = new Level("lvl1");
         Level lvl2 = new Level("lvl2");
-        final RangeScore rangeScore = new RangeScore("score1", "RangeScore", new RangeScore.Range(0, 100));
-        final RecordGate recordGate = new RecordGate("record_gate", "score1", 100);
+        final String scoreId = "range_score";
+        final RangeScore rangeScore = new RangeScore(scoreId, "RangeScore", new RangeScore.Range(0, 100));
+        final RecordGate recordGate = new RecordGate("record_gate", scoreId, 100);
         lvl1.addScore(rangeScore);
         lvl2.addGate(recordGate);
 
@@ -216,45 +267,11 @@ public class LevelUpTest {
         final List<World> worlds = new ArrayList<World>();
         Level lvl1 = new Level("lvl1");
         Level lvl2 = new Level("lvl2");
-        final String itemId = "itemId";
+        final String itemId = ITEM_ID_BALANCE_GATE;
         final String balanceGateId = "balance_gate";
 
         final BalanceGate balanceGate = new BalanceGate(balanceGateId, itemId, 1);
         lvl2.addGate(balanceGate);
-
-        StoreController.getInstance().initialize(new IStoreAssets() {
-            @Override
-            public int getVersion() {
-                return 1;
-            }
-
-            @Override
-            public VirtualCurrency[] getCurrencies() {
-                return new VirtualCurrency[0];
-            }
-
-            @Override
-            public VirtualGood[] getGoods() {
-                final VirtualGood[] virtualGoods = new VirtualGood[1];
-                virtualGoods[0] = new SingleUseVG("Item1", "", itemId, new PurchaseWithMarket(itemId, 1));
-                return virtualGoods;
-            }
-
-            @Override
-            public VirtualCurrencyPack[] getCurrencyPacks() {
-                return new VirtualCurrencyPack[0];
-            }
-
-            @Override
-            public VirtualCategory[] getCategories() {
-                return new VirtualCategory[0];
-            }
-
-            @Override
-            public NonConsumableItem[] getNonConsumableItems() {
-                return new NonConsumableItem[0];
-            }
-        }, "a", "b");
 
         worlds.add(lvl1);
         worlds.add(lvl2);
@@ -270,7 +287,11 @@ public class LevelUpTest {
         Assert.assertFalse(balanceGate.isOpen());
         Assert.assertFalse(balanceGate.canOpen());
 
+        // set up events expectations (async)
         mExpectedGateEventId = balanceGateId;
+        mExpectedVirtualItemId = itemId;
+        mExpectedVirtualItemAmountAdded = 1;
+        mExpectedVirtualItemBalance = 1;
 
         try {
             StoreInventory.giveVirtualItem(itemId, 1);
@@ -285,6 +306,10 @@ public class LevelUpTest {
         Assert.assertFalse(balanceGate.isOpen());
         Assert.assertTrue(balanceGate.canOpen());
 
+        mExpectedVirtualItemId = itemId;
+        mExpectedVirtualItemAmountAdded = -1;
+        mExpectedVirtualItemBalance = 0;
+
         final boolean opened = balanceGate.tryOpen();
         Assert.assertTrue(opened);
         Assert.assertTrue(balanceGate.isOpen());
@@ -297,7 +322,39 @@ public class LevelUpTest {
         Assert.assertTrue(lvl2.isCompleted());
     }
 
+    public void testVirtualItemScore() {
+        final List<World> worlds = new ArrayList<World>();
+        Level lvl1 = new Level("lvl1");
+        final String itemId = ITEM_ID_VI_SCORE;
+        final VirtualItemScore virtualItemScore = new VirtualItemScore(
+                "vi_score", "VI_Score", itemId);
+        lvl1.addScore(virtualItemScore);
 
+        worlds.add(lvl1);
+
+        LevelUp.getInstance().initialize(worlds);
+
+        try {
+            Assert.assertEquals(StoreInventory.getVirtualItemBalance(itemId), 0);
+        } catch (VirtualItemNotFoundException e) {
+            Assert.fail(e.getMessage());
+        }
+
+        // set up events expectations (async)
+        mExpectedVirtualItemId = itemId;
+        mExpectedVirtualItemAmountAdded = 2;
+        mExpectedVirtualItemBalance = 2;
+
+        lvl1.start();
+        virtualItemScore.inc(2);
+        lvl1.end(true);
+
+        try {
+            Assert.assertEquals(StoreInventory.getVirtualItemBalance(itemId), 2);
+        } catch (VirtualItemNotFoundException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
 
     @Subscribe
     public void onEvent(GateCanBeOpenedEvent gateCanBeOpenedEvent) {
@@ -305,6 +362,13 @@ public class LevelUpTest {
         Assert.assertEquals(gateCanBeOpenedEvent.Gate.getGateId(), mExpectedGateEventId);
     }
 
+    @Subscribe
+    public void onEvent(GoodBalanceChangedEvent goodBalanceChangedEvent) {
+        System.out.println("onEvent/GoodBalanceChangedEvent:" + goodBalanceChangedEvent.getGood().getItemId());
+        Assert.assertEquals(goodBalanceChangedEvent.getGood().getItemId(), mExpectedVirtualItemId);
+        Assert.assertEquals(goodBalanceChangedEvent.getAmountAdded(), mExpectedVirtualItemAmountAdded);
+        Assert.assertEquals(goodBalanceChangedEvent.getBalance(), mExpectedVirtualItemBalance);
+    }
 
     public static String readFile(String filePath) {
         String text = null;

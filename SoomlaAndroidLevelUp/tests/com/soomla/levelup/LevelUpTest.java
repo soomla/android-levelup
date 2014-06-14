@@ -17,11 +17,24 @@
 package com.soomla.levelup;
 
 import com.soomla.levelup.events.GateCanBeOpenedEvent;
+import com.soomla.levelup.gates.BalanceGate;
 import com.soomla.levelup.gates.RecordGate;
 import com.soomla.levelup.scoring.RangeScore;
 import com.soomla.store.BusProvider;
+import com.soomla.store.IStoreAssets;
 import com.soomla.store.SoomlaApp;
+import com.soomla.store.StoreController;
+import com.soomla.store.StoreInventory;
 import com.soomla.store.data.StorageManager;
+import com.soomla.store.domain.NonConsumableItem;
+import com.soomla.store.domain.VirtualCategory;
+import com.soomla.store.domain.virtualCurrencies.VirtualCurrency;
+import com.soomla.store.domain.virtualCurrencies.VirtualCurrencyPack;
+import com.soomla.store.domain.virtualGoods.SingleUseVG;
+import com.soomla.store.domain.virtualGoods.VirtualGood;
+import com.soomla.store.exceptions.VirtualItemNotFoundException;
+import com.soomla.store.purchaseTypes.PurchaseType;
+import com.soomla.store.purchaseTypes.PurchaseWithMarket;
 import com.squareup.otto.Subscribe;
 
 import org.junit.After;
@@ -79,7 +92,72 @@ public class LevelUpTest {
 //
 //    }
 
-    @Test public void testLevelupToJSON() {
+    /**
+     * todo: a problem in robolectric causes sqlite errors
+     * when running several tests per class (normal usage)
+     * the reason is the sqlite DB files being deleted between tests
+     * while the SqliteOpenHelper remains the same object
+     */
+    @Test
+    public void testAll() {
+        testLevel();
+        testRecordGate();
+        testBalanceGate();
+    }
+
+    public void testLevel() {
+        final List<World> worlds = new ArrayList<World>();
+        Level lvl1 = new Level("lvl1");
+        worlds.add(lvl1);
+
+        LevelUp.getInstance().initialize(worlds);
+
+        // no gates
+        Assert.assertTrue(lvl1.canStart());
+        Assert.assertTrue(lvl1.getState() == Level.State.Idle);
+
+        lvl1.start();
+        Assert.assertTrue(lvl1.getState() == Level.State.Running);
+
+        sleep(1000);
+        // check level time measure
+        double playDuration = lvl1.getPlayDuration();
+        System.out.println("playDuration = " + playDuration);
+        Assert.assertTrue(playDuration >= 1);
+        Assert.assertFalse(playDuration > 2);
+
+        lvl1.pause();
+        sleep(1000);
+        // make sure no changes after pause
+        playDuration = lvl1.getPlayDuration();
+        System.out.println("playDuration = " + playDuration);
+        Assert.assertTrue(playDuration >= 1);
+        Assert.assertFalse(playDuration > 2);
+        Assert.assertTrue(lvl1.getState() == Level.State.Paused);
+
+        lvl1.resume();
+        sleep(1000);
+        // make sure working after resume
+        playDuration = lvl1.getPlayDuration();
+        System.out.println("playDuration = " + playDuration);
+        Assert.assertTrue(playDuration >= 2);
+        Assert.assertFalse(playDuration > 3);
+        Assert.assertTrue(lvl1.getState() == Level.State.Running);
+
+        lvl1.end(false);
+        Assert.assertTrue(lvl1.getState() == Level.State.Ended);
+        Assert.assertFalse(lvl1.isCompleted());
+
+        lvl1.setCompleted(true);
+        Assert.assertTrue(lvl1.isCompleted());
+
+        Assert.assertEquals(playDuration, lvl1.getSlowestDuration(), 0.0001);
+        Assert.assertEquals(playDuration, lvl1.getFastestDuration(), 0.0001);
+        Assert.assertEquals(1, lvl1.getTimesPlayed());
+        Assert.assertEquals(1, lvl1.getTimesStarted());
+    }
+
+    public void testRecordGate() {
         final List<World> worlds = new ArrayList<World>();
         Level lvl1 = new Level("lvl1");
         Level lvl2 = new Level("lvl2");
@@ -90,9 +168,12 @@ public class LevelUpTest {
 
         worlds.add(lvl1);
         worlds.add(lvl2);
+
         LevelUp.getInstance().initialize(worlds);
 
+        // open level
         Assert.assertTrue(lvl1.canStart());
+        // protected by gate
         Assert.assertFalse(lvl2.canStart());
         lvl1.start();
 
@@ -126,21 +207,97 @@ public class LevelUpTest {
 
         Assert.assertTrue(lvl2.isCompleted());
 
-//        final BalanceGate balanceGate = new BalanceGate("balance_gate", "item1", 1);
-//        lvl2.addGate(balanceGate);
-//        try {
-//            StoreInventory.giveVirtualItem("item1", 1);
-//            Assert.assertTrue(balanceGate.canOpen());
-//
-//        } catch (VirtualItemNotFoundException e) {
-//            e.printStackTrace();
-//        }
-
         // test json serialization
-        LevelUp.getInstance().initialize(worlds);
-        final String json = StorageManager.getKeyValueStorage().getValue(LevelUp.DB_KEY_PREFIX + "model");
-        writeFile("tests/levelup.json", json);
+//        final String json = StorageManager.getKeyValueStorage().getValue(LevelUp.DB_KEY_PREFIX + "model");
+//        writeFile("tests/levelup.json", json);
     }
+
+    public void testBalanceGate() {
+        final List<World> worlds = new ArrayList<World>();
+        Level lvl1 = new Level("lvl1");
+        Level lvl2 = new Level("lvl2");
+        final String itemId = "itemId";
+        final String balanceGateId = "balance_gate";
+
+        final BalanceGate balanceGate = new BalanceGate(balanceGateId, itemId, 1);
+        lvl2.addGate(balanceGate);
+
+        StoreController.getInstance().initialize(new IStoreAssets() {
+            @Override
+            public int getVersion() {
+                return 1;
+            }
+
+            @Override
+            public VirtualCurrency[] getCurrencies() {
+                return new VirtualCurrency[0];
+            }
+
+            @Override
+            public VirtualGood[] getGoods() {
+                final VirtualGood[] virtualGoods = new VirtualGood[1];
+                virtualGoods[0] = new SingleUseVG("Item1", "", itemId, new PurchaseWithMarket(itemId, 1));
+                return virtualGoods;
+            }
+
+            @Override
+            public VirtualCurrencyPack[] getCurrencyPacks() {
+                return new VirtualCurrencyPack[0];
+            }
+
+            @Override
+            public VirtualCategory[] getCategories() {
+                return new VirtualCategory[0];
+            }
+
+            @Override
+            public NonConsumableItem[] getNonConsumableItems() {
+                return new NonConsumableItem[0];
+            }
+        }, "a", "b");
+
+        worlds.add(lvl1);
+        worlds.add(lvl2);
+
+        LevelUp.getInstance().initialize(worlds);
+
+        // open level
+        Assert.assertTrue(lvl1.canStart());
+        // protected by gate
+        Assert.assertFalse(lvl2.canStart());
+        lvl1.start();
+
+        Assert.assertFalse(balanceGate.isOpen());
+        Assert.assertFalse(balanceGate.canOpen());
+
+        mExpectedGateEventId = balanceGateId;
+
+        try {
+            StoreInventory.giveVirtualItem(itemId, 1);
+            Assert.assertTrue(balanceGate.canOpen());
+
+        } catch (VirtualItemNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        lvl1.end(true);
+
+        Assert.assertFalse(balanceGate.isOpen());
+        Assert.assertTrue(balanceGate.canOpen());
+
+        final boolean opened = balanceGate.tryOpen();
+        Assert.assertTrue(opened);
+        Assert.assertTrue(balanceGate.isOpen());
+        Assert.assertTrue(balanceGate.canOpen());
+
+        Assert.assertTrue(lvl2.canStart());
+        lvl2.start();
+        lvl2.end(true);
+
+        Assert.assertTrue(lvl2.isCompleted());
+    }
+
+
 
     @Subscribe
     public void onEvent(GateCanBeOpenedEvent gateCanBeOpenedEvent) {
@@ -182,6 +339,14 @@ public class LevelUpTest {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+        }
+    }
+
+    private void sleep(int time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

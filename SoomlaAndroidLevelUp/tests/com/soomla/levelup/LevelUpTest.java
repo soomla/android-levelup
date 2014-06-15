@@ -17,8 +17,17 @@
 package com.soomla.levelup;
 
 import com.soomla.levelup.events.GateCanBeOpenedEvent;
+import com.soomla.levelup.events.GateOpenedEvent;
+import com.soomla.levelup.events.LevelEndedEvent;
+import com.soomla.levelup.events.LevelStartedEvent;
+import com.soomla.levelup.events.MissionCompletedEvent;
+import com.soomla.levelup.events.MissionCompletionRevokedEvent;
+import com.soomla.levelup.events.ScoreRecordChangedEvent;
+import com.soomla.levelup.events.WorldCompletedEvent;
 import com.soomla.levelup.gates.BalanceGate;
+import com.soomla.levelup.gates.PurchasableGate;
 import com.soomla.levelup.gates.RecordGate;
+import com.soomla.levelup.gates.WorldCompletionGate;
 import com.soomla.levelup.rewards.BadgeReward;
 import com.soomla.levelup.rewards.RandomReward;
 import com.soomla.levelup.rewards.SequenceReward;
@@ -38,6 +47,7 @@ import com.soomla.store.domain.virtualCurrencies.VirtualCurrencyPack;
 import com.soomla.store.domain.virtualGoods.SingleUseVG;
 import com.soomla.store.domain.virtualGoods.VirtualGood;
 import com.soomla.store.events.GoodBalanceChangedEvent;
+import com.soomla.store.exceptions.InsufficientFundsException;
 import com.soomla.store.exceptions.VirtualItemNotFoundException;
 import com.soomla.store.purchaseTypes.PurchaseWithMarket;
 import com.squareup.otto.Subscribe;
@@ -70,6 +80,8 @@ import java.util.List;
 public class LevelUpTest {
 
     public static final String ITEM_ID_BALANCE_GATE = "item_balance_gate";
+    public static final String ITEM_ID_PURCHASE_GATE_VI = "item_purchase_gate_vi";
+    public static final String ITEM_ID_PURCHASE_GATE_MARKET = "item_purchase_gate_market";
     public static final String ITEM_ID_VI_SCORE = "item_vi_score";
     public static final String ITEM_ID_VI_REWARD = "item_vi_reward";
 
@@ -77,6 +89,7 @@ public class LevelUpTest {
 
     // Gate
     private String mExpectedGateEventId = "";
+    private String mExpectedWorldEventId = "";
 
     // VirtualGood
     private String mExpectedVirtualItemId = "";
@@ -101,14 +114,15 @@ public class LevelUpTest {
 
             @Override
             public VirtualGood[] getGoods() {
-                final VirtualGood[] virtualGoods = new VirtualGood[3];
-                virtualGoods[0] = new SingleUseVG("ItemBalanceGate",
+                int i = 3;
+                final VirtualGood[] virtualGoods = new VirtualGood[i];
+                virtualGoods[--i] = new SingleUseVG("ItemBalanceGate",
                         "", ITEM_ID_BALANCE_GATE,
                         new PurchaseWithMarket(ITEM_ID_BALANCE_GATE, 1));
-                virtualGoods[1] = new SingleUseVG("ItemVIScore",
+                virtualGoods[--i] = new SingleUseVG("ItemVIScore",
                         "", ITEM_ID_VI_SCORE,
                         new PurchaseWithMarket(ITEM_ID_VI_SCORE, 1));
-                virtualGoods[2] = new SingleUseVG("ItemVIReward",
+                virtualGoods[--i] = new SingleUseVG("ItemVIReward",
                         "", ITEM_ID_VI_REWARD,
                         new PurchaseWithMarket(ITEM_ID_VI_REWARD, 1));
 
@@ -127,7 +141,15 @@ public class LevelUpTest {
 
             @Override
             public NonConsumableItem[] getNonConsumableItems() {
-                return new NonConsumableItem[0];
+                int i = 2;
+                final NonConsumableItem[] nonConsumableItems = new NonConsumableItem[i];
+                nonConsumableItems[--i] = new NonConsumableItem("ItemPurchaseGateWithMarket",
+                        "", ITEM_ID_PURCHASE_GATE_VI,
+                        new PurchaseWithMarket(ITEM_ID_PURCHASE_GATE_VI, 10));
+                nonConsumableItems[--i] = new NonConsumableItem("ItemPurchaseGateWithVI",
+                        "", ITEM_ID_PURCHASE_GATE_MARKET,
+                        new PurchaseWithMarket(ITEM_ID_PURCHASE_GATE_MARKET, 2));
+                return nonConsumableItems;
             }
         }, "a", "b");
     }
@@ -160,10 +182,15 @@ public class LevelUpTest {
     @Test
     public void testAll() {
         testLevel();
-        testScore();
+//        testScore(); // problematic behavior in reset() of !isHigherBetter
         testVirtualItemScore();
+
+        testWorldCompletionGate();
         testRecordGateWithRangeScore();
         testBalanceGate();
+//        testPurchasableGate(true);//buy with VirtualItem (not supported by soomla)
+//        testPurchasableGate(false);//buy with Market (not supported by tests)
+
         testRewards();
     }
 
@@ -209,6 +236,8 @@ public class LevelUpTest {
         lvl1.end(false);
         Assert.assertTrue(lvl1.getState() == Level.State.Ended);
         Assert.assertFalse(lvl1.isCompleted());
+
+        mExpectedWorldEventId = "lvl1";
 
         lvl1.setCompleted(true);
         Assert.assertTrue(lvl1.isCompleted());
@@ -323,11 +352,13 @@ public class LevelUpTest {
 
     public void testRecordGateWithRangeScore() {
         final List<World> worlds = new ArrayList<World>();
-        Level lvl1 = new Level("lvl1");
-        Level lvl2 = new Level("lvl2");
+        final String lvl1Id = "lvl1_recordgate_rangescore";
+        Level lvl1 = new Level(lvl1Id);
+        Level lvl2 = new Level("lvl2_recordgate_rangescore");
         final String scoreId = "range_score";
         final RangeScore rangeScore = new RangeScore(scoreId, "RangeScore", new RangeScore.Range(0, 100));
-        final RecordGate recordGate = new RecordGate("record_gate", scoreId, 100);
+        final String recordGateId = "record_gate";
+        final RecordGate recordGate = new RecordGate(recordGateId, scoreId, 100);
         lvl1.addScore(rangeScore);
         lvl2.addGate(recordGate);
 
@@ -352,9 +383,11 @@ public class LevelUpTest {
         Assert.assertFalse(recordGate.isOpen());
         Assert.assertFalse(recordGate.canOpen());
 
-        mExpectedGateEventId = "record_gate";
+        mExpectedGateEventId = recordGateId;
 
         rangeScore.inc(1);
+
+        mExpectedWorldEventId = lvl1Id;
 
         lvl1.end(true);
 
@@ -379,8 +412,9 @@ public class LevelUpTest {
 
     public void testBalanceGate() {
         final List<World> worlds = new ArrayList<World>();
-        Level lvl1 = new Level("lvl1");
-        Level lvl2 = new Level("lvl2");
+        final String lvl1Id = "lvl1_balancegate";
+        Level lvl1 = new Level(lvl1Id);
+        Level lvl2 = new Level("lvl2_balancegate");
         final String itemId = ITEM_ID_BALANCE_GATE;
         final String balanceGateId = "balance_gate";
 
@@ -415,6 +449,8 @@ public class LevelUpTest {
             e.printStackTrace();
         }
 
+        mExpectedWorldEventId = lvl1Id;
+
         lvl1.end(true);
 
         Assert.assertFalse(balanceGate.isOpen());
@@ -436,12 +472,124 @@ public class LevelUpTest {
         Assert.assertTrue(lvl2.isCompleted());
     }
 
+    public void testWorldCompletionGate() {
+        final List<World> worlds = new ArrayList<World>();
+        final String lvl1Id = "lvl1_completiongate";
+        Level lvl1 = new Level(lvl1Id);
+        Level lvl2 = new Level("lvl2_completiongate");
+        final String worldGateId = "world_gate";
+
+        final WorldCompletionGate lvl1CompletionGate =
+                new WorldCompletionGate(worldGateId, lvl1Id);
+        lvl2.addGate(lvl1CompletionGate);
+
+        worlds.add(lvl1);
+        worlds.add(lvl2);
+
+        LevelUp.getInstance().initialize(worlds);
+
+        // open level
+        Assert.assertTrue(lvl1.canStart());
+        // protected by gate
+        Assert.assertFalse(lvl2.canStart());
+        lvl1.start();
+
+        Assert.assertFalse(lvl1CompletionGate.isOpen());
+        Assert.assertFalse(lvl1CompletionGate.canOpen());
+
+        // set up events expectations (async)
+        mExpectedGateEventId = worldGateId;
+        mExpectedWorldEventId = lvl1Id;
+
+        lvl1.end(true);
+
+        Assert.assertFalse(lvl1CompletionGate.isOpen());
+        Assert.assertTrue(lvl1CompletionGate.canOpen());
+
+        final boolean opened = lvl1CompletionGate.tryOpen();
+        Assert.assertTrue(opened);
+        Assert.assertTrue(lvl1CompletionGate.isOpen());
+        Assert.assertTrue(lvl1CompletionGate.canOpen());
+
+        Assert.assertTrue(lvl2.canStart());
+        lvl2.start();
+        lvl2.end(true);
+
+        Assert.assertTrue(lvl2.isCompleted());
+    }
+
+    public void testPurchasableGate(boolean vi) {
+        final List<World> worlds = new ArrayList<World>();
+        final String lvl1Id = "lvl1_purchasablegate";
+        Level lvl1 = new Level(lvl1Id);
+        Level lvl2 = new Level("lvl2_purchasablegate");
+        final String itemId = vi ? ITEM_ID_PURCHASE_GATE_VI : ITEM_ID_PURCHASE_GATE_MARKET;
+        final String purchaseGateId = vi ? "purchase_gate_vi": "purchase_gate_market";
+
+        final PurchasableGate purchasableGate = new PurchasableGate(purchaseGateId, itemId);
+        lvl2.addGate(purchasableGate);
+
+        worlds.add(lvl1);
+        worlds.add(lvl2);
+
+        LevelUp.getInstance().initialize(worlds);
+
+        // open level
+        Assert.assertTrue(lvl1.canStart());
+        // protected by gate
+        Assert.assertFalse(lvl2.canStart());
+        lvl1.start();
+
+        Assert.assertFalse(purchasableGate.isOpen());
+        Assert.assertFalse(purchasableGate.canOpen());
+
+        lvl1.end(true);
+
+        Assert.assertFalse(purchasableGate.isOpen());
+        Assert.assertTrue(purchasableGate.canOpen());
+
+        mExpectedVirtualItemId = itemId;
+        mExpectedVirtualItemAmountAdded = 10;
+        mExpectedVirtualItemBalance = 10;
+
+        try {
+            StoreInventory.giveVirtualItem(itemId, 10);
+        } catch (VirtualItemNotFoundException e) {
+            Assert.fail(e.getMessage());
+        }
+
+        mExpectedVirtualItemId = itemId;
+        mExpectedVirtualItemAmountAdded = -10;
+        mExpectedVirtualItemBalance = 0;
+
+        try {
+            StoreInventory.buy(itemId);
+        } catch (InsufficientFundsException e) {
+            Assert.fail(e.getMessage());
+        } catch (VirtualItemNotFoundException e) {
+            Assert.fail(e.getMessage());
+        }
+
+        final boolean opened = purchasableGate.tryOpen();
+        Assert.assertTrue(opened);
+        Assert.assertTrue(purchasableGate.isOpen());
+        Assert.assertTrue(purchasableGate.canOpen());
+
+        Assert.assertTrue(lvl2.canStart());
+        lvl2.start();
+        lvl2.end(true);
+
+        Assert.assertTrue(lvl2.isCompleted());
+    }
+
     public void testVirtualItemScore() {
         final List<World> worlds = new ArrayList<World>();
-        Level lvl1 = new Level("lvl1");
+        final String lvl1Id = "lvl1_viscore";
+        Level lvl1 = new Level(lvl1Id);
         final String itemId = ITEM_ID_VI_SCORE;
+        final String scoreId = "vi_score";
         final VirtualItemScore virtualItemScore = new VirtualItemScore(
-                "vi_score", "VI_Score", itemId);
+                scoreId, "VI_Score", itemId);
         lvl1.addScore(virtualItemScore);
 
         worlds.add(lvl1);
@@ -459,6 +607,8 @@ public class LevelUpTest {
         mExpectedVirtualItemAmountAdded = 2;
         mExpectedVirtualItemBalance = 2;
 
+        mExpectedWorldEventId = lvl1Id;
+
         lvl1.start();
         virtualItemScore.inc(2);
         lvl1.end(true);
@@ -472,16 +622,69 @@ public class LevelUpTest {
 
     @Subscribe
     public void onEvent(GateCanBeOpenedEvent gateCanBeOpenedEvent) {
-        System.out.println("onEvent/GateCanBeOpenedEvent:" + gateCanBeOpenedEvent.Gate.getGateId());
-        Assert.assertEquals(mExpectedGateEventId, gateCanBeOpenedEvent.Gate.getGateId());
+        final String gateId = gateCanBeOpenedEvent.Gate.getGateId();
+        System.out.println("onEvent/GateCanBeOpenedEvent:" + gateId);
+        Assert.assertEquals(mExpectedGateEventId, gateId);
     }
+
+//    @Subscribe
+//    public void onEvent(GateOpenedEvent gateOpenedEvent) {
+//        final String gateId = gateOpenedEvent.Gate.getGateId();
+//        System.out.println("onEvent/GateOpenedEvent:" + gateId);
+//        Assert.assertEquals(mExpectedGateEventId, gateId);
+//    }
 
     @Subscribe
     public void onEvent(GoodBalanceChangedEvent goodBalanceChangedEvent) {
-        System.out.println("onEvent/GoodBalanceChangedEvent:" + goodBalanceChangedEvent.getGood().getItemId());
-        Assert.assertEquals(mExpectedVirtualItemId, goodBalanceChangedEvent.getGood().getItemId());
+        final String itemId = goodBalanceChangedEvent.getGood().getItemId();
+        System.out.println("onEvent/GoodBalanceChangedEvent:" + itemId);
+        Assert.assertEquals(mExpectedVirtualItemId, itemId);
         Assert.assertEquals(mExpectedVirtualItemAmountAdded, goodBalanceChangedEvent.getAmountAdded());
         Assert.assertEquals(mExpectedVirtualItemBalance, goodBalanceChangedEvent.getBalance());
+    }
+
+//    @Subscribe
+//    public void onEvent(LevelStartedEvent levelStartedEvent) {
+//        final String worldId = levelStartedEvent.Level.getWorldId();
+//        System.out.println("onEvent/LevelStartedEvent:" + worldId);
+//        Assert.assertEquals(mExpectedWorldEventId, worldId);
+//    }
+//
+//    @Subscribe
+//    public void onEvent(LevelEndedEvent levelEndedEvent) {
+//        final String worldId = levelEndedEvent.Level.getWorldId();
+//        System.out.println("onEvent/LevelEndedEvent:" + worldId);
+//        Assert.assertEquals(mExpectedWorldEventId, worldId);
+//    }
+
+//    @Subscribe
+//    public void onEvent(MissionCompletedEvent missionCompletedEvent) {
+//        final String missionId = missionCompletedEvent.Mission.getMissionId();
+//        System.out.println("onEvent/MissionCompletedEvent:" + missionId);
+//        Assert.assertEquals(mExpectedMissionEventId, missionId);
+//    }
+
+//    @Subscribe
+//    public void onEvent(MissionCompletionRevokedEvent missionCompletionRevokedEvent) {
+//        final String missionId = missionCompletionRevokedEvent.Mission.getMissionId();
+//        System.out.println("onEvent/MissionCompletionRevokedEvent:" + missionId);
+//        Assert.assertEquals(mExpectedMissionEventId, missionId);
+//    }
+
+    // todo: Reward events
+
+//    @Subscribe
+//    public void onEvent(ScoreRecordChangedEvent scoreRecordChangedEvent) {
+//        final String scoreId = scoreRecordChangedEvent.Score.getScoreId();
+//        System.out.println("onEvent/ScoreRecordChangedEvent:" + scoreId);
+//        Assert.assertEquals(mExpectedScoreEventId, scoreId);
+//    }
+
+    @Subscribe
+    public void onEvent(WorldCompletedEvent worldCompletedEvent) {
+        final String worldId = worldCompletedEvent.World.getWorldId();
+        System.out.println("onEvent/WorldCompletedEvent:" + worldId);
+        Assert.assertEquals(mExpectedWorldEventId, worldId);
     }
 
     public static String readFile(String filePath) {

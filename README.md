@@ -64,44 +64,56 @@ This can be either a badge, a virtual item from the game's economy (sword, coins
 
  `git clone https://github.com/soomla/android-levelup`
 
-2. Change the value of `StoreConfig.SOOM_SEC` to a secret of you choice. Do this now!
+2. Change the value of `SoomlaConfig.SOOM_SEC` to a secret of you choice. Do this now!
    **You can't change this value after you publish your game!**
-<!-- Soon to change to SoomlaConfig.SOOM_SEC -->
+   > In previous versions this was in StoreConfig.SOOM_SEC
 
-3. Create your own implementation of your game structure. See examples [here](#example-usages):
+3. Initialize Soomla with:
+```Java
+SoomlaConfig.getInstance().init(["YOUR CUSTOM GAME SECRET HERE"])
+```
+  > Note this is a different secret value than the one set in (2)
 
-      ```Java
-      List<World> worlds = ...
+4. Create your own implementation of your game structure.
+
+    ```Java
+      List<World> worlds = ... // (See example below)
       LevelUp.getInstance().initialize(worlds);
       ```
 
-    > Soon this will support an external json definitions file.
+    > Soon we will support a json definitions file for the structure.
 
 And that's it ! You now have access to all your game progress modeling abilities.
 
 
 Here is an example:
 
-Lets say you have a _Level_ you call `LEVEL_1` and a _VirtualCurrency_ you call `COIN_CURRENCY`:
+Lets say we have 2 _Levels_ we call `lvl1` and `lvl2`. `lvl1` is open to start the game, but `lvl2` can only be unlocked by a market purchase:
 
 ```Java
-      VirtualCurrencyPack TEN_COINS_PACK = new VirtualCurrencyPack(
-            "10 Coins",                                     // name
-            "A pack of 10 coins",                           // description
-            "10_coins",                                     // item id
-            10,                                             // number of currencies in the pack
-            COIN_CURRENCY_ITEM_ID,                          // the currency associated with this pack
-            new PurchaseWithMarket("com.soomla.ten_coin_pack", 1.99));
-    ```
-
-Now you can use _StoreInventory_ to buy your new VirtualCurrencyPack:
-
-```Java
-        StoreInventory.buy(TEN_COINS_PACK.getItemId());
+  List<World> worlds = new ArrayList<World>();
+  Level lvl1 = new Level("lvl1");
+  Level lvl2 = new Level("lvl2");
+  PurchasableGate purchaseGate = new   PurchasableGate("gate_id_lvl2", "item_id_lvl2_gate");
+  lvl2.addGate(purchaseGate);
+  worlds.add(lvl1);
+  worlds.add(lvl2);
+  LevelUp.getInstance().initialize(worlds);
 ```
+
+Now `lvl2` is protected by the gate, and cannot `start()` until that item is purchased.
+The item can be purchased using Soomla's _StoreInventory_ :
+
+```Java
+  StoreInventory.buy("item_id_lvl2_gate");
+```
+
+The item id `"item_id_lvl2_gate"` should also be defined in Soomla's `IStoreAssets`.
+For more details on integrating with Soomla's IAP APIs (android-store) please see next section.
 
 ## Integration with Soomla android-store
 
+In order for the
 Please follow steps in [android-store](https://github.com/soomla/android-store) for the _Store_ part of the setup.
 Then, you can use the **store-related _LevelUp_ classes**, such as _VirtualItemScore_ or _VirtualItemReward_.
 
@@ -114,8 +126,7 @@ Then, you can use the **profile-related _LevelUp_ classes**, such as _SocialMiss
 
 ## Debugging
 
-<!-- SoomlaConfig.logDebug soon -->
-In order to debug android-store, set `StoreConfig.logDebug` to `true`. This will print all of _android-store's_ debugging messages to logcat.
+In order to debug android-store, set `SoomlaConfig.logDebug` to `true`. This will print all of _android-store's_ debugging messages to logcat.
 
 ## Storage & Meta-Data
 
@@ -148,7 +159,7 @@ The on-device storage is encrypted and kept in a SQLite database. SOOMLA is prep
 
 If you want to protect your game from 'bad people' (and who doesn't?!), you might want to follow some guidelines:
 
-+ SOOMLA keeps the game's data in an encrypted database. In order to encrypt your data, SOOMLA generates a private key out of several parts of information. The Custom Secret is one of them. SOOMLA recommends that you provide this value when initializing `StoreController` and before you release your game. BE CAREFUL: You can change this value once! If you try to change it again, old data from the database will become unavailable.
++ SOOMLA keeps the game's data in an encrypted database. In order to encrypt your data, SOOMLA generates a private key out of several parts of information. The Custom Secret is one of them. SOOMLA recommends that you provide this value when initializing `SoomlaConfig` and before you release your game. BE CAREFUL: You can change this value once! If you try to change it again, old data from the database will become unavailable.
 + Following Google's recommendation, SOOMLA also recommends that you split your public key and construct it on runtime or even use bit manipulation on it in order to hide it. The key itself is not secret information but if someone replaces it, your application might get fake messages that might harm it.
 
 ## Event Handling

@@ -253,7 +253,12 @@ public class LevelUpTest {
         Assert.assertFalse(scoreAsc.hasRecordReached(31));
 
         scoreDsc.setStartValue(100);
+
+        // todo: I think reset behavior is a bug/confusing with dsc score
+        // todo: it will set a latest+record of zero which cannot be broken
+        // todo: later by positive numbers
         scoreDsc.reset();
+
         Assert.assertEquals(100, scoreDsc.getTempScore(), 0.01);
         scoreDsc.dec(50);
         Assert.assertEquals(50, scoreDsc.getTempScore(), 0.01);

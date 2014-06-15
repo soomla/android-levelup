@@ -19,6 +19,10 @@ package com.soomla.levelup;
 import com.soomla.levelup.events.GateCanBeOpenedEvent;
 import com.soomla.levelup.gates.BalanceGate;
 import com.soomla.levelup.gates.RecordGate;
+import com.soomla.levelup.rewards.BadgeReward;
+import com.soomla.levelup.rewards.RandomReward;
+import com.soomla.levelup.rewards.SequenceReward;
+import com.soomla.levelup.rewards.VirtualItemReward;
 import com.soomla.levelup.scoring.RangeScore;
 import com.soomla.levelup.scoring.Score;
 import com.soomla.levelup.scoring.VirtualItemScore;
@@ -67,6 +71,7 @@ public class LevelUpTest {
 
     public static final String ITEM_ID_BALANCE_GATE = "item_balance_gate";
     public static final String ITEM_ID_VI_SCORE = "item_vi_score";
+    public static final String ITEM_ID_VI_REWARD = "item_vi_reward";
 
     /** event expectations **/
 
@@ -96,13 +101,17 @@ public class LevelUpTest {
 
             @Override
             public VirtualGood[] getGoods() {
-                final VirtualGood[] virtualGoods = new VirtualGood[2];
+                final VirtualGood[] virtualGoods = new VirtualGood[3];
                 virtualGoods[0] = new SingleUseVG("ItemBalanceGate",
                         "", ITEM_ID_BALANCE_GATE,
                         new PurchaseWithMarket(ITEM_ID_BALANCE_GATE, 1));
                 virtualGoods[1] = new SingleUseVG("ItemVIScore",
                         "", ITEM_ID_VI_SCORE,
                         new PurchaseWithMarket(ITEM_ID_VI_SCORE, 1));
+                virtualGoods[2] = new SingleUseVG("ItemVIReward",
+                        "", ITEM_ID_VI_REWARD,
+                        new PurchaseWithMarket(ITEM_ID_VI_REWARD, 1));
+
                 return virtualGoods;
             }
 
@@ -151,9 +160,11 @@ public class LevelUpTest {
     @Test
     public void testAll() {
         testLevel();
+        testScore();
+        testVirtualItemScore();
         testRecordGateWithRangeScore();
         testBalanceGate();
-        testVirtualItemScore();
+        testRewards();
     }
 
     public void testLevel() {
@@ -213,51 +224,96 @@ public class LevelUpTest {
         Score scoreAsc = new Score("score_asc", "ScoreAsc", higherIsBetter);
         Score scoreDsc = new Score("score_dsc", "ScoreDsc", !higherIsBetter);
 
-        Assert.assertEquals(scoreAsc.getTempScore(), 0, 0.01);
+        Assert.assertEquals(0, scoreAsc.getTempScore(), 0.01);
         scoreAsc.setStartValue(0);
         scoreAsc.inc(1);
-        Assert.assertEquals(scoreAsc.getTempScore(), 1, 0.01);
+        Assert.assertEquals(1, scoreAsc.getTempScore(), 0.01);
         scoreAsc.dec(1);
-        Assert.assertEquals(scoreAsc.getTempScore(), 0, 0.01);
+        Assert.assertEquals(0, scoreAsc.getTempScore(), 0.01);
         scoreAsc.inc(10);
-        Assert.assertEquals(scoreAsc.getTempScore(), 10, 0.01);
+        Assert.assertEquals(10, scoreAsc.getTempScore(), 0.01);
         scoreAsc.saveAndReset();
-        Assert.assertEquals(scoreAsc.getLatest(), 10, 0.01);
-        Assert.assertEquals(scoreAsc.getTempScore(), 0, 0.01);
+        Assert.assertEquals(10, scoreAsc.getLatest(), 0.01);
+        Assert.assertEquals(0, scoreAsc.getTempScore(), 0.01);
         scoreAsc.setTempScore(20);
         scoreAsc.reset();
-        Assert.assertEquals(scoreAsc.getLatest(), 10, 0.01);
-        Assert.assertEquals(scoreAsc.getTempScore(), 0, 0.01);
+        Assert.assertEquals(0, scoreAsc.getLatest(), 0.01);
+        Assert.assertEquals(0, scoreAsc.getTempScore(), 0.01);
         scoreAsc.setTempScore(30);
         Assert.assertTrue(scoreAsc.hasTempReached(30));
         Assert.assertFalse(scoreAsc.hasTempReached(31));
         scoreAsc.saveAndReset();
-        Assert.assertEquals(scoreAsc.getLatest(), 30, 0.01);
-        Assert.assertEquals(scoreAsc.getRecord(), 30, 0.01);
+        Assert.assertEquals(30, scoreAsc.getLatest(), 0.01);
+        Assert.assertEquals(30, scoreAsc.getRecord(), 0.01);
         scoreAsc.setTempScore(15);
         scoreAsc.saveAndReset();
-        Assert.assertEquals(scoreAsc.getLatest(), 15, 0.01);
-        Assert.assertEquals(scoreAsc.getRecord(), 30, 0.01);
+        Assert.assertEquals(15, scoreAsc.getLatest(), 0.01);
+        Assert.assertEquals(30, scoreAsc.getRecord(), 0.01);
         Assert.assertTrue(scoreAsc.hasRecordReached(30));
         Assert.assertFalse(scoreAsc.hasRecordReached(31));
 
         scoreDsc.setStartValue(100);
-        Assert.assertEquals(scoreAsc.getTempScore(), 100, 0.01);
+        scoreDsc.reset();
+        Assert.assertEquals(100, scoreDsc.getTempScore(), 0.01);
         scoreDsc.dec(50);
-        Assert.assertEquals(scoreAsc.getTempScore(), 50, 0.01);
+        Assert.assertEquals(50, scoreDsc.getTempScore(), 0.01);
         scoreDsc.saveAndReset(); // start value is 100
-        Assert.assertEquals(scoreDsc.getLatest(), 50, 0.01);
-        Assert.assertEquals(scoreAsc.getTempScore(), 100, 0.01);
+        Assert.assertEquals(50, scoreDsc.getLatest(), 0.01);
+        Assert.assertEquals(100, scoreDsc.getTempScore(), 0.01);
         scoreDsc.setTempScore(20);
         scoreDsc.saveAndReset();
-        Assert.assertEquals(scoreDsc.getLatest(), 20, 0.01);
-        Assert.assertEquals(scoreDsc.getRecord(), 20, 0.01);
+        Assert.assertEquals(20, scoreDsc.getLatest(), 0.01);
+        Assert.assertEquals(20, scoreDsc.getRecord(), 0.01);
         scoreDsc.setTempScore(30);
         scoreDsc.saveAndReset();
-        Assert.assertEquals(scoreDsc.getLatest(), 30, 0.01);
-        Assert.assertEquals(scoreDsc.getRecord(), 20, 0.01);
+        Assert.assertEquals(30, scoreDsc.getLatest(), 0.01);
+        Assert.assertEquals(20, scoreDsc.getRecord(), 0.01);
         Assert.assertTrue(scoreAsc.hasRecordReached(20));
         Assert.assertFalse(scoreAsc.hasRecordReached(19));
+    }
+
+    public void testRewards() {
+        boolean given;
+//        BadgeReward badgeReward = new BadgeReward();
+//        badgeReward.setRepeatable(false);
+//        Assert.assertFalse(badgeReward.isOwned());
+//        given = badgeReward.give();
+//        Assert.assertTrue(given);
+//        given = badgeReward.give();
+//        Assert.assertFalse(given);
+//        Assert.assertTrue(badgeReward.isOwned());
+//
+//        RandomReward randomReward = new RandomReward();
+//        SequenceReward sequenceReward = new SequenceReward();
+
+        VirtualItemReward virtualItemReward = new VirtualItemReward("vi_reward", "VIReward", 3, ITEM_ID_VI_REWARD);
+        virtualItemReward.setRepeatable(true);
+
+        try {
+            Assert.assertEquals(0, StoreInventory.getVirtualItemBalance(ITEM_ID_VI_REWARD));
+        } catch (VirtualItemNotFoundException e) {
+            Assert.fail(e.getMessage());
+        }
+
+        // expected events (async)
+        mExpectedVirtualItemId = ITEM_ID_VI_REWARD;
+        mExpectedVirtualItemAmountAdded = 3;
+        mExpectedVirtualItemBalance = 3;
+
+        given = virtualItemReward.give();
+        Assert.assertTrue(given);
+
+        mExpectedVirtualItemAmountAdded = 3;
+        mExpectedVirtualItemBalance = 6;
+
+        given = virtualItemReward.give();
+        Assert.assertTrue(given);
+
+        try {
+            Assert.assertEquals(6, StoreInventory.getVirtualItemBalance(ITEM_ID_VI_REWARD));
+        } catch (VirtualItemNotFoundException e) {
+            Assert.fail(e.getMessage());
+        }
     }
 
     public void testRecordGateWithRangeScore() {
@@ -388,7 +444,7 @@ public class LevelUpTest {
         LevelUp.getInstance().initialize(worlds);
 
         try {
-            Assert.assertEquals(StoreInventory.getVirtualItemBalance(itemId), 0);
+            Assert.assertEquals(0, StoreInventory.getVirtualItemBalance(itemId));
         } catch (VirtualItemNotFoundException e) {
             Assert.fail(e.getMessage());
         }
@@ -403,7 +459,7 @@ public class LevelUpTest {
         lvl1.end(true);
 
         try {
-            Assert.assertEquals(StoreInventory.getVirtualItemBalance(itemId), 2);
+            Assert.assertEquals(2, StoreInventory.getVirtualItemBalance(itemId));
         } catch (VirtualItemNotFoundException e) {
             Assert.fail(e.getMessage());
         }
@@ -412,15 +468,15 @@ public class LevelUpTest {
     @Subscribe
     public void onEvent(GateCanBeOpenedEvent gateCanBeOpenedEvent) {
         System.out.println("onEvent/GateCanBeOpenedEvent:" + gateCanBeOpenedEvent.Gate.getGateId());
-        Assert.assertEquals(gateCanBeOpenedEvent.Gate.getGateId(), mExpectedGateEventId);
+        Assert.assertEquals(mExpectedGateEventId, gateCanBeOpenedEvent.Gate.getGateId());
     }
 
     @Subscribe
     public void onEvent(GoodBalanceChangedEvent goodBalanceChangedEvent) {
         System.out.println("onEvent/GoodBalanceChangedEvent:" + goodBalanceChangedEvent.getGood().getItemId());
-        Assert.assertEquals(goodBalanceChangedEvent.getGood().getItemId(), mExpectedVirtualItemId);
-        Assert.assertEquals(goodBalanceChangedEvent.getAmountAdded(), mExpectedVirtualItemAmountAdded);
-        Assert.assertEquals(goodBalanceChangedEvent.getBalance(), mExpectedVirtualItemBalance);
+        Assert.assertEquals(mExpectedVirtualItemId, goodBalanceChangedEvent.getGood().getItemId());
+        Assert.assertEquals(mExpectedVirtualItemAmountAdded, goodBalanceChangedEvent.getAmountAdded());
+        Assert.assertEquals(mExpectedVirtualItemBalance, goodBalanceChangedEvent.getBalance());
     }
 
     public static String readFile(String filePath) {

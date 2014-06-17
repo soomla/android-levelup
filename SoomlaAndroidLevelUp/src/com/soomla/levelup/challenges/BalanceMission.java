@@ -17,7 +17,7 @@
 package com.soomla.levelup.challenges;
 
 import com.soomla.levelup.data.BPJSONConsts;
-import com.soomla.levelup.rewards.Reward;
+import com.soomla.rewards.Reward;
 import com.soomla.store.StoreUtils;
 import com.soomla.store.events.CurrencyBalanceChangedEvent;
 import com.soomla.store.events.GoodBalanceChangedEvent;

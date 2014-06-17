@@ -19,8 +19,8 @@ package com.soomla.levelup.challenges;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.MissionStorage;
 import com.soomla.levelup.events.MissionCompletionRevokedEvent;
-import com.soomla.levelup.rewards.Reward;
-import com.soomla.levelup.util.JSONFactory;
+import com.soomla.rewards.Reward;
+import com.soomla.util.JSONFactory;
 import com.soomla.store.BusProvider;
 import com.soomla.store.StoreUtils;
 

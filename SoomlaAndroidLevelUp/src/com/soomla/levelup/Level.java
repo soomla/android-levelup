@@ -23,12 +23,8 @@ import com.soomla.levelup.events.LevelEndedEvent;
 import com.soomla.levelup.events.LevelStartedEvent;
 import com.soomla.levelup.gates.GatesList;
 import com.soomla.levelup.scoring.Score;
-import com.soomla.levelup.scoring.VirtualItemScore;
-import com.soomla.levelup.util.JSONFactory;
 import com.soomla.store.BusProvider;
-import com.soomla.store.StoreInventory;
 import com.soomla.store.StoreUtils;
-import com.soomla.store.exceptions.VirtualItemNotFoundException;
 
 import org.json.JSONException;
 import org.json.JSONObject;

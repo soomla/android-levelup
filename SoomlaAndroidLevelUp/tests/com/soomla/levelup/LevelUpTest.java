@@ -17,8 +17,10 @@
 package com.soomla.levelup;
 
 import com.soomla.levelup.events.GateCanBeOpenedEvent;
+import com.soomla.levelup.events.GateOpenedEvent;
 import com.soomla.levelup.events.LevelEndedEvent;
 import com.soomla.levelup.events.LevelStartedEvent;
+import com.soomla.levelup.events.ScoreRecordChangedEvent;
 import com.soomla.levelup.events.WorldCompletedEvent;
 import com.soomla.levelup.gates.BalanceGate;
 import com.soomla.levelup.gates.PurchasableGate;
@@ -82,6 +84,8 @@ public class LevelUpTest {
     // Gate
     private String mExpectedGateEventId = "";
     private String mExpectedWorldEventId = "";
+    private String mExpectedScoreEventId = "";
+    private double mExpectedRecordValue = 0;
 
     // VirtualGood
     private String mExpectedVirtualItemId = "";
@@ -409,6 +413,8 @@ public class LevelUpTest {
         Assert.assertFalse(recordGate.canOpen());
 
         mExpectedGateEventId = recordGateId;
+        mExpectedScoreEventId = scoreId;
+        mExpectedRecordValue = 100;
 
         rangeScore.inc(1);
 
@@ -639,11 +645,12 @@ public class LevelUpTest {
         }
 
         // set up events expectations (async)
+        mExpectedWorldEventId = lvl1Id;
         mExpectedVirtualItemId = itemId;
         mExpectedVirtualItemAmountAdded = 2;
         mExpectedVirtualItemBalance = 2;
-
-        mExpectedWorldEventId = lvl1Id;
+        mExpectedScoreEventId = scoreId;
+        mExpectedRecordValue = 2;
 
         lvl1.start();
         virtualItemScore.inc(2);
@@ -663,12 +670,12 @@ public class LevelUpTest {
         Assert.assertEquals(mExpectedGateEventId, gateId);
     }
 
-//    @Subscribe
-//    public void onEvent(GateOpenedEvent gateOpenedEvent) {
-//        final String gateId = gateOpenedEvent.Gate.getGateId();
-//        System.out.println("onEvent/GateOpenedEvent:" + gateId);
-//        Assert.assertEquals(mExpectedGateEventId, gateId);
-//    }
+    @Subscribe
+    public void onEvent(GateOpenedEvent gateOpenedEvent) {
+        final String gateId = gateOpenedEvent.Gate.getGateId();
+        System.out.println("onEvent/GateOpenedEvent:" + gateId);
+        Assert.assertEquals(mExpectedGateEventId, gateId);
+    }
 
     @Subscribe
     public void onEvent(GoodBalanceChangedEvent goodBalanceChangedEvent) {
@@ -709,12 +716,14 @@ public class LevelUpTest {
 
     // todo: Reward events
 
-//    @Subscribe
-//    public void onEvent(ScoreRecordChangedEvent scoreRecordChangedEvent) {
-//        final String scoreId = scoreRecordChangedEvent.Score.getScoreId();
-//        System.out.println("onEvent/ScoreRecordChangedEvent:" + scoreId);
-//        Assert.assertEquals(mExpectedScoreEventId, scoreId);
-//    }
+    @Subscribe
+    public void onEvent(ScoreRecordChangedEvent scoreRecordChangedEvent) {
+        final String scoreId = scoreRecordChangedEvent.Score.getScoreId();
+        final double record = scoreRecordChangedEvent.Score.getRecord();
+        System.out.println("onEvent/ScoreRecordChangedEvent:" + scoreId + "->" + record);
+        Assert.assertEquals(mExpectedScoreEventId, scoreId);
+        Assert.assertEquals(mExpectedRecordValue, record, 0.01);
+    }
 
     @Subscribe
     public void onEvent(WorldCompletedEvent worldCompletedEvent) {

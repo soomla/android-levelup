@@ -16,6 +16,7 @@
 
 package com.soomla.levelup;
 
+import com.soomla.levelup.challenges.BalanceMission;
 import com.soomla.levelup.events.GateCanBeOpenedEvent;
 import com.soomla.levelup.events.GateOpenedEvent;
 import com.soomla.levelup.events.LevelEndedEvent;
@@ -30,6 +31,7 @@ import com.soomla.levelup.gates.RecordGate;
 import com.soomla.levelup.gates.WorldCompletionGate;
 import com.soomla.levelup.rewards.BadgeReward;
 import com.soomla.levelup.rewards.RandomReward;
+import com.soomla.levelup.rewards.Reward;
 import com.soomla.levelup.rewards.SequenceReward;
 import com.soomla.levelup.rewards.VirtualItemReward;
 import com.soomla.levelup.scoring.RangeScore;
@@ -71,6 +73,8 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Created by oriargov on 6/12/14.
@@ -305,6 +309,33 @@ public class LevelUpTest {
         Assert.assertTrue(scoreAsc.hasRecordReached(20));
         Assert.assertFalse(scoreAsc.hasRecordReached(19));
     }
+
+//    public void testBalanceMission() {
+//        // todo: rename and add to IStoreAssets setUp
+//        final String missionId = "star_balance_mission_id";
+//        final String starItemId = "star";
+//        final String rewardId = "mega_star_reward_id";
+//        final String megaStarItemId = "mega_star";
+//
+//        final VirtualItemReward virtualItemReward = new VirtualItemReward(rewardId, "MegaStarReward", 1, megaStarItemId);
+//        List<Reward> rewards = new ArrayList<Reward>();
+//        rewards.add(virtualItemReward);
+//        BalanceMission balanceMission = new BalanceMission(missionId, "StarBalanceMission", rewards, starItemId, 5);
+//
+//        // todo: assert basics
+//        // todo: give less and assert false rewarded
+//        // todo: set event expectations
+//
+//        try {
+//            StoreInventory.giveVirtualItem(starItemId, 5);
+//        } catch (VirtualItemNotFoundException e) {
+//            Assert.fail(e.getMessage());
+//        }
+//
+//        balanceMission.isCompleted(); // true
+//        virtualItemReward.isOwned(); // true
+//
+//    }
 
     public void testRewards() {
         boolean given;

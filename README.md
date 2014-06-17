@@ -135,24 +135,132 @@ The on-device storage is encrypted and kept in a SQLite database. SOOMLA is prep
 ## Example Usages
 **Example Usages**
 
-* Give the user 10 pieces of a virtual currency with itemId "currency_coin":
+* Mission with Reward (collect 5 stars to get 1 mega star)
 
-    ```Java
-    StoreInventory.giveVirtualItem("currency_coin", 10);
-    ```
+```Java
+VirtualItemReward virtualItemReward = new VirtualItemReward("mega_star_reward_id", "MegaStarReward", 1, megaStarItemId);
+List<Reward> rewards = new ArrayList<Reward>();
+rewards.add(virtualItemReward);
+BalanceMission balanceMission = new BalanceMission("star_balance_mission_id", "StarBalanceMission", rewards, "star", 5);
 
-* Take 10 virtual goods with itemId "green_hat":
+// use the store to give the items out, usually this will be called from in-game events
+// such as player collecting the stars
+StoreInventory.giveVirtualItem(starItemId, 5);
 
-    ```Java
-    StoreInventory.takeVirtualItem("green_hat", 10);
-    ```
+// events posted:
+// 1. MissionCompletedEvent
+// 2. RewardGivenEvent
 
-* Get the current balance of a virtual good with itemId "green_hat" (here we decided to show you the 'long' way. you can also use StoreInventory):
+// now the mission is complete, and reward given
+balanceMission.isCompleted(); // true
+virtualItemReward.isOwned(); // true
 
-    ```Java
-    VirtualGood greenHat = (VirtualGood)StoreInfo.getVirtualItem("green_hat");
-    int greenHatsBalance = StorageManager.getVirtualGoodsStorage().getBalance(greenHat);
-    ```
+```
+
+* Challenge (Multi-Mission)
+
+```Java
+
+```
+
+* GatesList
+
+```Java
+
+```
+
+* RecordGate with RangeScore
+
+```Java
+List<World> worlds = new ArrayList<World>();
+String lvl1Id = "lvl1_recordgate_rangescore";
+Level lvl1 = new Level(lvl1Id);
+Level lvl2 = new Level("lvl2_recordgate_rangescore");
+String scoreId = "range_score";
+RangeScore rangeScore = new RangeScore(scoreId, "RangeScore", new RangeScore.Range(0, 100));
+String recordGateId = "record_gate";
+RecordGate recordGate = new RecordGate(recordGateId, scoreId, 100);
+lvl1.addScore(rangeScore);
+lvl2.addGate(recordGate);
+
+worlds.add(lvl1);
+worlds.add(lvl2);
+
+LevelUp.getInstance().initialize(worlds);
+
+lvl1.start();
+
+// LevelStartedEvent
+
+rangeScore.inc(100);
+
+// events posted:
+// GateCanBeOpenedEvent
+
+lvl1.end(true);
+
+// events posted:
+// LevelEndedEvent
+// WorldCompletedEvent (lvl1)
+// [ScoreRecordChangedEvent] - if record was broken
+
+recordGate.canOpen(); // true
+recordGate.isOpen(); // false, didn't try to open yet
+
+boolean opened = recordGate.tryOpen(); // opened == true
+
+// events posted:
+// GateOpenedEvent
+
+recordGate.isOpen(); // true
+recordGate.canOpen(); // true
+
+lvl2.canStart(); // true
+lvl2.start();
+lvl2.end(true);
+
+// events posted:
+// WorldCompletedEvent (lvl2)
+
+lvl2.isCompleted(); // true
+```
+
+* VirtualItemScore
+
+```Java
+List<World> worlds = new ArrayList<World>();
+String lvl1Id = "lvl1_viscore";
+Level lvl1 = new Level(lvl1Id);
+String itemId = ITEM_ID_VI_SCORE;
+String scoreId = "vi_score";
+VirtualItemScore virtualItemScore = new VirtualItemScore(
+        scoreId, "VI_Score", itemId);
+lvl1.addScore(virtualItemScore);
+
+worlds.add(lvl1);
+
+LevelUp.getInstance().initialize(worlds);
+
+StoreInventory.getVirtualItemBalance(itemId)); // 0
+
+// set up events expectations
+mExpectedVirtualItemId = itemId;
+mExpectedVirtualItemAmountAdded = 2;
+mExpectedVirtualItemBalance = 2;
+
+mExpectedWorldEventId = lvl1Id;
+
+lvl1.start();
+// LevelStartedEvent
+virtualItemScore.inc(2);
+lvl1.end(true);
+
+try {
+    Assert.assertEquals(2, StoreInventory.getVirtualItemBalance(itemId));
+} catch (VirtualItemNotFoundException e) {
+    Assert.fail(e.getMessage());
+}
+```
 
 ## Security
 

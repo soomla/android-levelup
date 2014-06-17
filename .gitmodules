@@ -1,3 +1,5 @@
 [submodule "submodules/android-store"]
 	path = submodules/android-store
 	url = https://github.com/soomla/android-store
+	branch = soomlaCore
+

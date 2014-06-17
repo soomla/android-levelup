@@ -16,11 +16,11 @@
 
 package com.soomla.levelup.gates;
 
+import com.soomla.BusProvider;
+import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.events.GateOpenedEvent;
 import com.soomla.util.JSONFactory;
-import com.soomla.store.BusProvider;
-import com.soomla.store.StoreUtils;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
@@ -127,7 +127,7 @@ public abstract class GatesList extends Gate {
             }
             jsonObject.put(BPJSONConsts.BP_GATES, gatesArr);
         } catch (JSONException e) {
-            StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
+            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
 
         return jsonObject;

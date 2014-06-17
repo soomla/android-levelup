@@ -16,6 +16,7 @@
 
 package com.soomla.levelup.data;
 
+import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.scoring.Score;
 import com.soomla.store.data.StorageManager;
@@ -55,7 +56,7 @@ public class ScoreStorage {
         String key = keyLatestScore(scoreId);
         String val = String.valueOf(latest);
 
-        StorageManager.getKeyValueStorage().setValue(key, val);
+        KeyValueStorage.setValue(key, val);
     }
 
     /**
@@ -67,7 +68,7 @@ public class ScoreStorage {
     public static double getLatestScore(Score score) {
         String scoreId = score.getScoreId();
         String key = keyLatestScore(scoreId);
-        String val = StorageManager.getKeyValueStorage().getValue(key);
+        String val = KeyValueStorage.getValue(key);
 
         return val == null ? 0 : Double.parseDouble(val);
     }
@@ -87,7 +88,7 @@ public class ScoreStorage {
         String key = keyRecordScore(scoreId);
         String val = String.valueOf(record);
 
-        StorageManager.getKeyValueStorage().setValue(key, val);
+        KeyValueStorage.setValue(key, val);
     }
 
     /**
@@ -99,7 +100,7 @@ public class ScoreStorage {
     public static double getRecordScore(Score score) {
         String scoreId = score.getScoreId();
         String key = keyRecordScore(scoreId);
-        String val = StorageManager.getKeyValueStorage().getValue(key);
+        String val = KeyValueStorage.getValue(key);
 
         return val == null ? 0 : Double.parseDouble(val);
     }

@@ -16,13 +16,13 @@
 
 package com.soomla.levelup.gates;
 
+import com.soomla.BusProvider;
+import com.soomla.SoomlaUtils;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.World;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.events.GateCanBeOpenedEvent;
 import com.soomla.levelup.events.WorldCompletedEvent;
-import com.soomla.store.BusProvider;
-import com.soomla.store.StoreUtils;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONException;
@@ -80,7 +80,7 @@ public class WorldCompletionGate extends Gate {
             jsonObject.put(BPJSONConsts.BP_ASSOCWORLDID, mAssociatedWorldId);
             jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
-            StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
+            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
 
         return jsonObject;

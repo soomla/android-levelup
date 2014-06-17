@@ -16,10 +16,11 @@
 
 package com.soomla.levelup.data;
 
+import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.events.GateOpenedEvent;
 import com.soomla.levelup.gates.Gate;
-import com.soomla.store.BusProvider;
+import com.soomla.BusProvider;
 import com.soomla.store.data.StorageManager;
 
 /**
@@ -55,13 +56,13 @@ public class GateStorage {
         String key = keyGateOpen(gateId);
 
         if (open) {
-            StorageManager.getKeyValueStorage().setValue(key, "yes");
+            KeyValueStorage.setValue(key, "yes");
 
             if (notify) {
                 BusProvider.getInstance().post(new GateOpenedEvent(gate));
             }
         } else {
-            StorageManager.getKeyValueStorage().deleteKeyValue(key);
+            KeyValueStorage.deleteKeyValue(key);
         }
     }
 
@@ -75,7 +76,7 @@ public class GateStorage {
         String gateId = gate.getGateId();
         String key = keyGateOpen(gateId);
 
-        String val = StorageManager.getKeyValueStorage().getValue(key);
+        String val = KeyValueStorage.getValue(key);
 
         return val != null;
     }

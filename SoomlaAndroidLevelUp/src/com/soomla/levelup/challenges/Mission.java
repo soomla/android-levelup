@@ -16,13 +16,13 @@
 
 package com.soomla.levelup.challenges;
 
+import com.soomla.BusProvider;
+import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.MissionStorage;
 import com.soomla.levelup.events.MissionCompletionRevokedEvent;
 import com.soomla.rewards.Reward;
 import com.soomla.util.JSONFactory;
-import com.soomla.store.BusProvider;
-import com.soomla.store.StoreUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -140,7 +140,7 @@ public abstract class Mission {
             }
             jsonObject.put(BPJSONConsts.BP_REWARDS, rewardsArr);
         } catch (JSONException e) {
-            StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
+            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
 
         return jsonObject;

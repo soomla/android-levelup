@@ -16,10 +16,10 @@
 
 package com.soomla.levelup.gates;
 
+import com.soomla.BusProvider;
+import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.BPJSONConsts;
-import com.soomla.store.BusProvider;
-import com.soomla.store.StoreController;
-import com.soomla.store.StoreUtils;
+import com.soomla.store.SoomlaStore;
 import com.soomla.store.data.StoreInfo;
 import com.soomla.store.domain.PurchasableVirtualItem;
 import com.soomla.store.events.MarketPurchaseEvent;
@@ -87,7 +87,7 @@ public class PurchasableGate extends Gate {
             jsonObject.put(BPJSONConsts.BP_ASSOCITEMID, mAssociatedItemId);
             jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
-            StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
+            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
 
         return jsonObject;
@@ -101,13 +101,13 @@ public class PurchasableGate extends Gate {
         try {
             PurchasableVirtualItem pvi = (PurchasableVirtualItem) StoreInfo.getVirtualItem(mAssociatedItemId);
             PurchaseWithMarket ptype = (PurchaseWithMarket) pvi.getPurchaseType();
-            StoreController.getInstance().buyWithMarket(ptype.getMarketItem(), getGateId());
+            SoomlaStore.getInstance().buyWithMarket(ptype.getMarketItem(), getGateId());
             return true;
         } catch (VirtualItemNotFoundException e) {
-            StoreUtils.LogError(TAG, "The item needed for purchase doesn't exist. itemId: " +
+            SoomlaUtils.LogError(TAG, "The item needed for purchase doesn't exist. itemId: " +
                     mAssociatedItemId);
         } catch (ClassCastException e) {
-            StoreUtils.LogError(TAG, "The associated item is not a purchasable item. itemId: " +
+            SoomlaUtils.LogError(TAG, "The associated item is not a purchasable item. itemId: " +
                     mAssociatedItemId);
         }
 

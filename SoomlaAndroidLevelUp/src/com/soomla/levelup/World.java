@@ -16,6 +16,7 @@
 
 package com.soomla.levelup;
 
+import com.soomla.SoomlaUtils;
 import com.soomla.levelup.challenges.Challenge;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.WorldStorage;
@@ -24,7 +25,6 @@ import com.soomla.levelup.gates.GatesList;
 import com.soomla.levelup.gates.GatesListAND;
 import com.soomla.levelup.scoring.Score;
 import com.soomla.util.JSONFactory;
-import com.soomla.store.StoreUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -144,7 +144,7 @@ public class World {
         return sJSONFactory.create(jsonObject, sTypeMap);
 
 //        if(jsonObject == null) {
-//            StoreUtils.LogWarning(TAG, "fromJSONObject: jsonObject is null");
+//            SoomlaUtils.LogWarning(TAG, "fromJSONObject: jsonObject is null");
 //            return null;
 //        }
 //
@@ -159,10 +159,10 @@ public class World {
 //                world = new Level(jsonObject);
 //            }
 //            else {
-//                StoreUtils.LogError(TAG, "unknown world type:" + type);
+//                SoomlaUtils.LogError(TAG, "unknown world type:" + type);
 //            }
 //        } catch (JSONException e) {
-//            StoreUtils.LogError(TAG, "fromJSONObject JSONException:" + e.getMessage());
+//            SoomlaUtils.LogError(TAG, "fromJSONObject JSONException:" + e.getMessage());
 //        }
 //
 //        return world;
@@ -200,7 +200,7 @@ public class World {
             jsonObject.put(BPJSONConsts.BP_CHALLENGES, challengesArr);
 
         } catch (JSONException e) {
-            StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
+            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
 
         return jsonObject;
@@ -252,7 +252,7 @@ public class World {
     public void setScore(String scoreId, double scoreVal) {
         Score score = mScores.get(scoreId);
         if (score == null) {
-            StoreUtils.LogError(TAG, "(setScore) Can't find scoreId: " + scoreId + "  worldId: " + mWorldId);
+            SoomlaUtils.LogError(TAG, "(setScore) Can't find scoreId: " + scoreId + "  worldId: " + mWorldId);
             return;
         }
         score.setTempScore(scoreVal);

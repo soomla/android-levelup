@@ -16,12 +16,12 @@
 
 package com.soomla.levelup.gates;
 
+import com.soomla.BusProvider;
+import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.GateStorage;
 import com.soomla.levelup.events.GateCanBeOpenedEvent;
-import com.soomla.store.BusProvider;
 import com.soomla.store.StoreInventory;
-import com.soomla.store.StoreUtils;
 import com.soomla.store.events.CurrencyBalanceChangedEvent;
 import com.soomla.store.events.GoodBalanceChangedEvent;
 import com.soomla.store.exceptions.VirtualItemNotFoundException;
@@ -87,7 +87,7 @@ public class BalanceGate extends Gate {
             jsonObject.put(BPJSONConsts.BP_DESIRED_BALANCE, mDesiredBalance);
             jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
-            StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
+            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
 
         return jsonObject;
@@ -109,7 +109,7 @@ public class BalanceGate extends Gate {
                 return false;
             }
         } catch (VirtualItemNotFoundException e) {
-            StoreUtils.LogError(TAG, "(canPass) Couldn't find itemId. itemId: " + mAssociatedItemId);
+            SoomlaUtils.LogError(TAG, "(canPass) Couldn't find itemId. itemId: " + mAssociatedItemId);
             return false;
         }
         return true;
@@ -121,7 +121,7 @@ public class BalanceGate extends Gate {
             try {
                 StoreInventory.takeVirtualItem(mAssociatedItemId, mDesiredBalance);
             } catch (VirtualItemNotFoundException e) {
-                StoreUtils.LogError(TAG, "(open) Couldn't find itemId. itemId: " + mAssociatedItemId);
+                SoomlaUtils.LogError(TAG, "(open) Couldn't find itemId. itemId: " + mAssociatedItemId);
                 return false;
             }
 

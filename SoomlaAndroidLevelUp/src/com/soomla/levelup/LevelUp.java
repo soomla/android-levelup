@@ -16,20 +16,17 @@
 
 package com.soomla.levelup;
 
+import com.soomla.SoomlaUtils;
+import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.scoring.Score;
-import com.soomla.store.StoreUtils;
-import com.soomla.store.data.StorageManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The top level container for the android-levelup model and definitions.
@@ -85,9 +82,9 @@ public class LevelUp {
      */
     private void save() {
         String bp_json = toJSONObject().toString();
-        StoreUtils.LogDebug(TAG, "saving LevelUp to DB. json is: " + bp_json);
+        SoomlaUtils.LogDebug(TAG, "saving LevelUp to DB. json is: " + bp_json);
         String key = DB_KEY_PREFIX + "model";
-        StorageManager.getKeyValueStorage().setValue(key, bp_json);
+        KeyValueStorage.setValue(key, bp_json);
     }
 
 //    public void load() {}

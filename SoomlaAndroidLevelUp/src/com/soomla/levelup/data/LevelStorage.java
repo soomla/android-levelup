@@ -16,6 +16,7 @@
 
 package com.soomla.levelup.data;
 
+import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.Level;
 import com.soomla.store.data.StorageManager;
@@ -57,13 +58,13 @@ public class LevelStorage {
         String key = keySlowestDuration(levelId);
         String val = String.valueOf(duration);
 
-        StorageManager.getKeyValueStorage().setValue(key, val);
+        KeyValueStorage.setValue(key, val);
     }
 
     public static double getSlowestDuration(Level level) {
         String levelId = level.getWorldId();
         String key = keySlowestDuration(levelId);
-        String val = StorageManager.getKeyValueStorage().getValue(key);
+        String val = KeyValueStorage.getValue(key);
 
         return val == null ? Double.MIN_VALUE : Double.parseDouble(val);
     }
@@ -73,13 +74,13 @@ public class LevelStorage {
         String key = keyFastestDuration(levelId);
         String val = String.valueOf(duration);
 
-        StorageManager.getKeyValueStorage().setValue(key, val);
+        KeyValueStorage.setValue(key, val);
     }
 
     public static double getFastestDuration(Level level) {
         String levelId = level.getWorldId();
         String key = keyFastestDuration(levelId);
-        String val = StorageManager.getKeyValueStorage().getValue(key);
+        String val = KeyValueStorage.getValue(key);
 
         return val == null ? Double.MAX_VALUE : Double.parseDouble(val);
     }
@@ -97,7 +98,7 @@ public class LevelStorage {
         String levelId = level.getWorldId();
         String startedStr = "" + (started + 1);
         String key = keyTimesStarted(levelId);
-        StorageManager.getKeyValueStorage().setValue(key, startedStr);
+        KeyValueStorage.setValue(key, startedStr);
 
         return started+1;
     }
@@ -111,7 +112,7 @@ public class LevelStorage {
         String levelId = level.getWorldId();
         String startedStr = "" + (started - 1);
         String key = keyTimesStarted(levelId);
-        StorageManager.getKeyValueStorage().setValue(key, startedStr);
+        KeyValueStorage.setValue(key, startedStr);
 
         return started-1;
     }
@@ -120,7 +121,7 @@ public class LevelStorage {
 
         String levelId = level.getWorldId();
         String key = keyTimesStarted(levelId);
-        String val = StorageManager.getKeyValueStorage().getValue(key);
+        String val = KeyValueStorage.getValue(key);
 
         int started = 0;
         if (val != null) {
@@ -142,7 +143,7 @@ public class LevelStorage {
         String levelId = level.getWorldId();
         String playedStr = "" + (played + 1);
         String key = keyTimesPlayed(levelId);
-        StorageManager.getKeyValueStorage().setValue(key, playedStr);
+        KeyValueStorage.setValue(key, playedStr);
 
         return played+1;
     }
@@ -156,7 +157,7 @@ public class LevelStorage {
         String levelId = level.getWorldId();
         String playedStr = "" + (played - 1);
         String key = keyTimesPlayed(levelId);
-        StorageManager.getKeyValueStorage().setValue(key, playedStr);
+        KeyValueStorage.setValue(key, playedStr);
 
         return played-1;
     }
@@ -165,7 +166,7 @@ public class LevelStorage {
 
         String levelId = level.getWorldId();
         String key = keyTimesPlayed(levelId);
-        String val = StorageManager.getKeyValueStorage().getValue(key);
+        String val = KeyValueStorage.getValue(key);
 
         int played = 0;
         if (val != null) {

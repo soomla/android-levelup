@@ -16,6 +16,7 @@
 
 package com.soomla.levelup;
 
+import com.soomla.SoomlaUtils;
 import com.soomla.levelup.challenges.Challenge;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.LevelStorage;
@@ -23,8 +24,7 @@ import com.soomla.levelup.events.LevelEndedEvent;
 import com.soomla.levelup.events.LevelStartedEvent;
 import com.soomla.levelup.gates.GatesList;
 import com.soomla.levelup.scoring.Score;
-import com.soomla.store.BusProvider;
-import com.soomla.store.StoreUtils;
+import com.soomla.BusProvider;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -106,7 +106,7 @@ public class Level extends World {
         try {
             jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
-            StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
+            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
 
         return jsonObject;
@@ -142,7 +142,7 @@ public class Level extends World {
      * @return
      */
     public boolean start() {
-        StoreUtils.LogDebug(TAG, "Starting level with worldId: " + getWorldId());
+        SoomlaUtils.LogDebug(TAG, "Starting level with worldId: " + getWorldId());
 
         if (!canStart()) {
             return false;
@@ -212,7 +212,7 @@ public class Level extends World {
 
         // check end() called without matching start()
         if(mStartTime == 0) {
-            StoreUtils.LogError(TAG, "end() called without prior start()! ignoring.");
+            SoomlaUtils.LogError(TAG, "end() called without prior start()! ignoring.");
             return;
         }
 

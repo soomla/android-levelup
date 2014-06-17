@@ -16,8 +16,8 @@
 
 package com.soomla.levelup.scoring;
 
+import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.BPJSONConsts;
-import com.soomla.store.StoreUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,7 +82,7 @@ public class RangeScore extends Score {
             jsonObject.put(BPJSONConsts.BP_SCORE_RANGE, mRange.toJSONObject());
             jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
-            StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
+            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
 
         return jsonObject;
@@ -168,7 +168,7 @@ public class RangeScore extends Score {
                 jsonObject.put(BPJSONConsts.BP_SCORE_RANGE_LOW, mLow);
                 jsonObject.put(BPJSONConsts.BP_SCORE_RANGE_HIGH, mHigh);
             } catch (JSONException e) {
-                StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
+                SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
             }
 
             return jsonObject;

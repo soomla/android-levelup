@@ -16,11 +16,11 @@
 
 package com.soomla.levelup.scoring;
 
+import com.soomla.BusProvider;
+import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.ScoreStorage;
 import com.soomla.levelup.events.ScoreRecordChangedEvent;
-import com.soomla.store.BusProvider;
-import com.soomla.store.StoreUtils;
 import com.soomla.util.JSONFactory;
 
 import org.json.JSONException;
@@ -99,7 +99,7 @@ public class Score {
             jsonObject.put(BPJSONConsts.BP_SCORE_HIGHBETTER, mHigherBetter);
             jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
         } catch (JSONException e) {
-            StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
+            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
 
         return jsonObject;
@@ -110,7 +110,7 @@ public class Score {
         return sJSONFactory.create(jsonObject, sTypeMap);
 
 //        if(jsonObject == null) {
-//            StoreUtils.LogWarning(TAG, "fromJSONObject: jsonObject is null");
+//            SoomlaUtils.LogWarning(TAG, "fromJSONObject: jsonObject is null");
 //            return null;
 //        }
 //
@@ -128,10 +128,10 @@ public class Score {
 //                score = new VirtualItemScore(jsonObject);
 //            }
 //            else {
-//                StoreUtils.LogError(TAG, "unknown score type:" + type);
+//                SoomlaUtils.LogError(TAG, "unknown score type:" + type);
 //            }
 //        } catch (JSONException e) {
-//            StoreUtils.LogError(TAG, "fromJSONObject JSONException:" + e.getMessage());
+//            SoomlaUtils.LogError(TAG, "fromJSONObject JSONException:" + e.getMessage());
 //        }
 //
 //        return score;

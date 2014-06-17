@@ -16,9 +16,9 @@
 
 package com.soomla.levelup.gates;
 
+import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.GateStorage;
-import com.soomla.store.StoreUtils;
 import com.soomla.util.JSONFactory;
 
 import org.json.JSONException;
@@ -65,7 +65,7 @@ public abstract class Gate {
         try {
             jsonObject.put(BPJSONConsts.BP_GATE_GATEID, mGateId);
         } catch (JSONException e) {
-            StoreUtils.LogError(TAG, "An error occurred while generating JSON object.");
+            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
 
         return jsonObject;

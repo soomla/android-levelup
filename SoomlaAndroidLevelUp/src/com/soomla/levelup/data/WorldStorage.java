@@ -16,11 +16,11 @@
 
 package com.soomla.levelup.data;
 
+import com.soomla.BusProvider;
+import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.World;
 import com.soomla.levelup.events.WorldCompletedEvent;
-import com.soomla.store.BusProvider;
-import com.soomla.store.data.StorageManager;
 
 /**
  * Created by refaelos on 13/05/14.
@@ -44,13 +44,13 @@ public class WorldStorage {
         String key = keyWorldCompleted(worldId);
 
         if (completed) {
-            StorageManager.getKeyValueStorage().setValue(key, "yes");
+            KeyValueStorage.setValue(key, "yes");
 
             if (notify) {
                 BusProvider.getInstance().post(new WorldCompletedEvent(world));
             }
         } else {
-            StorageManager.getKeyValueStorage().deleteKeyValue(key);
+            KeyValueStorage.deleteKeyValue(key);
         }
     }
 
@@ -58,7 +58,7 @@ public class WorldStorage {
         String worldId = world.getWorldId();
         String key = keyWorldCompleted(worldId);
 
-        String val = StorageManager.getKeyValueStorage().getValue(key);
+        String val = KeyValueStorage.getValue(key);
 
         return val != null;
     }

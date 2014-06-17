@@ -16,10 +16,18 @@
 
 package com.soomla.levelup;
 
+import com.soomla.BusProvider;
+import com.soomla.Soomla;
+import com.soomla.SoomlaApp;
+import com.soomla.events.RewardGivenEvent;
+import com.soomla.events.RewardTakenEvent;
+import com.soomla.levelup.challenges.RecordMission;
 import com.soomla.levelup.events.GateCanBeOpenedEvent;
 import com.soomla.levelup.events.GateOpenedEvent;
 import com.soomla.levelup.events.LevelEndedEvent;
 import com.soomla.levelup.events.LevelStartedEvent;
+import com.soomla.levelup.events.MissionCompletedEvent;
+import com.soomla.levelup.events.MissionCompletionRevokedEvent;
 import com.soomla.levelup.events.ScoreRecordChangedEvent;
 import com.soomla.levelup.events.WorldCompletedEvent;
 import com.soomla.levelup.gates.BalanceGate;
@@ -29,10 +37,10 @@ import com.soomla.levelup.gates.WorldCompletionGate;
 import com.soomla.levelup.scoring.RangeScore;
 import com.soomla.levelup.scoring.Score;
 import com.soomla.levelup.scoring.VirtualItemScore;
-import com.soomla.store.BusProvider;
+import com.soomla.rewards.BadgeReward;
+import com.soomla.rewards.Reward;
 import com.soomla.store.IStoreAssets;
-import com.soomla.store.SoomlaApp;
-import com.soomla.store.StoreController;
+import com.soomla.store.SoomlaStore;
 import com.soomla.store.StoreInventory;
 import com.soomla.store.domain.NonConsumableItem;
 import com.soomla.store.domain.VirtualCategory;
@@ -69,7 +77,7 @@ import java.util.List;
 /**
  * Created by oriargov on 6/12/14.
  */
-@Config(emulateSdk = 18)
+@Config(emulateSdk = 18, manifest = "tests/AndroidManifest.xml")
 @RunWith(RobolectricTestRunner.class)
 public class LevelUpTest {
 
@@ -81,7 +89,8 @@ public class LevelUpTest {
 
     /** event expectations **/
 
-    // Gate
+    private String mExpectedMissionEventId = "";
+    private String mExpectedRewardEventId = "";
     private String mExpectedGateEventId = "";
     private String mExpectedWorldEventId = "";
     private String mExpectedScoreEventId = "";
@@ -94,10 +103,11 @@ public class LevelUpTest {
 
     @Before
     public void setUp() throws Exception {
-        SoomlaApp.setExternalContext(Robolectric.application);
+        SoomlaApp.setExternalContext(Robolectric.application);//this line must be first
+        Soomla.initialize("LevelUpTestSecret");
         BusProvider.getInstance().register(this);
 
-        StoreController.getInstance().initialize(new IStoreAssets() {
+        SoomlaStore.getInstance().initialize(new IStoreAssets() {
             @Override
             public int getVersion() {
                 return 1;
@@ -147,7 +157,7 @@ public class LevelUpTest {
                         new PurchaseWithMarket(ITEM_ID_PURCHASE_GATE_MARKET, 2));
                 return nonConsumableItems;
             }
-        }, "a", "b");
+        });
     }
 
     @After
@@ -178,8 +188,14 @@ public class LevelUpTest {
     @Test
     public void testAll() {
         testLevel();
-//        testScore(); // problematic behavior in reset() of !isHigherBetter
+        testScoreAsc();
+//        testScoreDsc(); // problematic behavior in reset() of !isHigherBetter
         testVirtualItemScore();
+
+        testRecordMission();
+//        restBalanceMission();
+        testChallenge();
+
 
         testWorldCompletionGate();
         testRecordGateWithRangeScore();
@@ -187,7 +203,7 @@ public class LevelUpTest {
 //        testPurchasableGate(true);//buy with VirtualItem (not supported by soomla)
 //        testPurchasableGate(false);//buy with Market (not supported by tests)
 
-        testRewards();
+//        testRewards();
     }
 
     public void testLevel() {
@@ -244,10 +260,12 @@ public class LevelUpTest {
         Assert.assertEquals(1, lvl1.getTimesStarted());
     }
 
-    public void testScore() {
+    public void testScoreAsc() {
         boolean higherIsBetter = true;
-        Score scoreAsc = new Score("score_asc", "ScoreAsc", higherIsBetter);
-        Score scoreDsc = new Score("score_dsc", "ScoreDsc", !higherIsBetter);
+        final String scoreId = "score_asc";
+        Score scoreAsc = new Score(scoreId, "ScoreAsc", higherIsBetter);
+
+        mExpectedScoreEventId = scoreId;
 
         Assert.assertEquals(0, scoreAsc.getTempScore(), 0.01);
         scoreAsc.setStartValue(0);
@@ -257,6 +275,7 @@ public class LevelUpTest {
         Assert.assertEquals(0, scoreAsc.getTempScore(), 0.01);
         scoreAsc.inc(10);
         Assert.assertEquals(10, scoreAsc.getTempScore(), 0.01);
+        mExpectedRecordValue = 10;
         scoreAsc.saveAndReset();
         Assert.assertEquals(10, scoreAsc.getLatest(), 0.01);
         Assert.assertEquals(0, scoreAsc.getTempScore(), 0.01);
@@ -267,17 +286,25 @@ public class LevelUpTest {
         scoreAsc.setTempScore(30);
         Assert.assertTrue(scoreAsc.hasTempReached(30));
         Assert.assertFalse(scoreAsc.hasTempReached(31));
+        mExpectedRecordValue = 30;
         scoreAsc.saveAndReset();
         Assert.assertEquals(30, scoreAsc.getLatest(), 0.01);
         Assert.assertEquals(30, scoreAsc.getRecord(), 0.01);
         scoreAsc.setTempScore(15);
+        mExpectedRecordValue = 30;
         scoreAsc.saveAndReset();
         Assert.assertEquals(15, scoreAsc.getLatest(), 0.01);
         Assert.assertEquals(30, scoreAsc.getRecord(), 0.01);
         Assert.assertTrue(scoreAsc.hasRecordReached(30));
         Assert.assertFalse(scoreAsc.hasRecordReached(31));
+    }
 
-        scoreDsc.setStartValue(100);
+    public void testScoreDsc() {
+        boolean higherIsBetter = false;
+        final String scoreId = "score_dsc";
+        Score scoreDsc = new Score(scoreId, "ScoreDsc", !higherIsBetter);
+
+        mExpectedScoreEventId = scoreId;
 
         // todo: I think reset behavior is a bug/confusing with dsc score
         // todo: it will set a latest+record of zero which cannot be broken
@@ -287,47 +314,80 @@ public class LevelUpTest {
         Assert.assertEquals(100, scoreDsc.getTempScore(), 0.01);
         scoreDsc.dec(50);
         Assert.assertEquals(50, scoreDsc.getTempScore(), 0.01);
+        mExpectedRecordValue = 50;
         scoreDsc.saveAndReset(); // start value is 100
         Assert.assertEquals(50, scoreDsc.getLatest(), 0.01);
         Assert.assertEquals(100, scoreDsc.getTempScore(), 0.01);
         scoreDsc.setTempScore(20);
+        mExpectedRecordValue = 20;
         scoreDsc.saveAndReset();
         Assert.assertEquals(20, scoreDsc.getLatest(), 0.01);
         Assert.assertEquals(20, scoreDsc.getRecord(), 0.01);
         scoreDsc.setTempScore(30);
+        mExpectedRecordValue = 20;
         scoreDsc.saveAndReset();
         Assert.assertEquals(30, scoreDsc.getLatest(), 0.01);
         Assert.assertEquals(20, scoreDsc.getRecord(), 0.01);
-        Assert.assertTrue(scoreAsc.hasRecordReached(20));
-        Assert.assertFalse(scoreAsc.hasRecordReached(19));
+        Assert.assertTrue(scoreDsc.hasRecordReached(20));
+        Assert.assertFalse(scoreDsc.hasRecordReached(19));
+    }
+
+    public void testRecordMission() {
+        final String missionId = "record_mission";
+        final String scoreId = "record_mission_score";
+        final String rewardId = "record_mission_reward_badge_id";
+        final double desiredScore = 55;
+        final BadgeReward badgeReward = new BadgeReward(rewardId, "RecordMissionBadge");
+        List<Reward> rewards = new ArrayList<Reward>();
+        rewards.add(badgeReward);
+        final RecordMission recordMission = new RecordMission(
+                missionId, "RecordMission", rewards, scoreId, desiredScore);
+        final Score score = new Score(scoreId, "RecordMissionScore", true);
+
+        mExpectedScoreEventId = scoreId;
+        mExpectedRecordValue = desiredScore;
+        mExpectedMissionEventId = missionId;
+        mExpectedRewardEventId = rewardId;
+
+        Assert.assertFalse(recordMission.isCompleted());
+        Assert.assertFalse(badgeReward.isOwned());
+
+        score.setTempScore(desiredScore);
+        score.saveAndReset();
+
+        Assert.assertTrue(recordMission.isCompleted());
+        Assert.assertTrue(badgeReward.isOwned());
     }
 
 //    public void testBalanceMission() {
 //        // todo: rename and add to IStoreAssets setUp
-//        final String missionId = "star_balance_mission_id";
-//        final String starItemId = "star";
-//        final String rewardId = "mega_star_reward_id";
-//        final String megaStarItemId = "mega_star";
+//        final String missionId = "balance_mission_id";
+//        final String balanceMissionItemId = "balance_mission_item_id";
+//        final String rewardId = "balance_mission_reward_id";
+//        final String megaStarItemId = "balance_mission_reward_item_id";
 //
-//        final VirtualItemReward virtualItemReward = new VirtualItemReward(rewardId, "MegaStarReward", 1, megaStarItemId);
+//        final VirtualItemReward virtualItemReward = new VirtualItemReward(rewardId, "ItemReward", 1, megaStarItemId);
 //        List<Reward> rewards = new ArrayList<Reward>();
 //        rewards.add(virtualItemReward);
-//        BalanceMission balanceMission = new BalanceMission(missionId, "StarBalanceMission", rewards, starItemId, 5);
+//        BalanceMission balanceMission = new BalanceMission(missionId, "BalanceMission", rewards, balanceMissionItemId, 5);
 //
 //        // todo: assert basics
 //        // todo: give less and assert false rewarded
 //        // todo: set event expectations
 //
 //        try {
-//            StoreInventory.giveVirtualItem(starItemId, 5);
+//            StoreInventory.giveVirtualItem(balanceMissionItemId, 5);
 //        } catch (VirtualItemNotFoundException e) {
 //            Assert.fail(e.getMessage());
 //        }
 //
 //        balanceMission.isCompleted(); // true
 //        virtualItemReward.isOwned(); // true
-//
 //    }
+
+    public void testChallenge() {
+
+    }
 
     public void testRewards() {
         boolean given;
@@ -438,7 +498,7 @@ public class LevelUpTest {
         Assert.assertTrue(lvl2.isCompleted());
 
         // test json serialization
-//        final String json = StorageManager.getKeyValueStorage().getValue(LevelUp.DB_KEY_PREFIX + "model");
+//        final String json = KeyValueStorage.getValue(LevelUp.DB_KEY_PREFIX + "model");
 //        writeFile("tests/levelup.json", json);
     }
 
@@ -700,21 +760,19 @@ public class LevelUpTest {
         Assert.assertEquals(mExpectedWorldEventId, worldId);
     }
 
-//    @Subscribe
-//    public void onEvent(MissionCompletedEvent missionCompletedEvent) {
-//        final String missionId = missionCompletedEvent.Mission.getMissionId();
-//        System.out.println("onEvent/MissionCompletedEvent:" + missionId);
-//        Assert.assertEquals(mExpectedMissionEventId, missionId);
-//    }
+    @Subscribe
+    public void onEvent(MissionCompletedEvent missionCompletedEvent) {
+        final String missionId = missionCompletedEvent.Mission.getMissionId();
+        System.out.println("onEvent/MissionCompletedEvent:" + missionId);
+        Assert.assertEquals(mExpectedMissionEventId, missionId);
+    }
 
-//    @Subscribe
-//    public void onEvent(MissionCompletionRevokedEvent missionCompletionRevokedEvent) {
-//        final String missionId = missionCompletionRevokedEvent.Mission.getMissionId();
-//        System.out.println("onEvent/MissionCompletionRevokedEvent:" + missionId);
-//        Assert.assertEquals(mExpectedMissionEventId, missionId);
-//    }
-
-    // todo: Reward events
+    @Subscribe
+    public void onEvent(MissionCompletionRevokedEvent missionCompletionRevokedEvent) {
+        final String missionId = missionCompletionRevokedEvent.Mission.getMissionId();
+        System.out.println("onEvent/MissionCompletionRevokedEvent:" + missionId);
+        Assert.assertEquals(mExpectedMissionEventId, missionId);
+    }
 
     @Subscribe
     public void onEvent(ScoreRecordChangedEvent scoreRecordChangedEvent) {
@@ -730,6 +788,20 @@ public class LevelUpTest {
         final String worldId = worldCompletedEvent.World.getWorldId();
         System.out.println("onEvent/WorldCompletedEvent:" + worldId);
         Assert.assertEquals(mExpectedWorldEventId, worldId);
+    }
+
+    @Subscribe
+    public void onEvent(RewardGivenEvent rewardGivenEvent) {
+        final String rewardId = rewardGivenEvent.Reward.getRewardId();
+        System.out.println("onEvent/RewardGivenEvent:" + rewardId);
+        Assert.assertEquals(mExpectedRewardEventId, rewardId);
+    }
+
+    @Subscribe
+    public void onEvent(RewardTakenEvent rewardTakenEvent) {
+        final String rewardId = rewardTakenEvent.Reward.getRewardId();
+        System.out.println("onEvent/RewardTakenEvent:" + rewardId);
+        Assert.assertEquals(mExpectedRewardEventId, rewardId);
     }
 
     public static String readFile(String filePath) {

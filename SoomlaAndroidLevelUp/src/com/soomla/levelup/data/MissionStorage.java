@@ -16,10 +16,14 @@
 
 package com.soomla.levelup.data;
 
+import com.soomla.SoomlaApp;
+import com.soomla.SoomlaUtils;
+import com.soomla.data.KeyValDatabase;
+import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.challenges.Mission;
 import com.soomla.levelup.events.MissionCompletedEvent;
-import com.soomla.store.BusProvider;
+import com.soomla.BusProvider;
 import com.soomla.store.data.StorageManager;
 
 /**
@@ -55,13 +59,12 @@ public class MissionStorage {
         String key = keyMissionCompleted(missionId);
 
         if (completed) {
-            StorageManager.getKeyValueStorage().setValue(key, "yes");
-
+            KeyValueStorage.setValue(key, "yes");
             if (notify) {
                 BusProvider.getInstance().post(new MissionCompletedEvent(mission));
             }
         } else {
-            StorageManager.getKeyValueStorage().deleteKeyValue(key);
+            KeyValueStorage.deleteKeyValue(key);
         }
     }
 
@@ -76,7 +79,7 @@ public class MissionStorage {
         String missionId = mission.getMissionId();
         String key = keyMissionCompleted(missionId);
 
-        String val = StorageManager.getKeyValueStorage().getValue(key);
+        String val = KeyValueStorage.getValue(key);
 
         return val != null;
     }

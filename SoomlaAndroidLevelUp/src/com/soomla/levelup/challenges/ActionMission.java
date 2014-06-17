@@ -16,7 +16,7 @@
 
 package com.soomla.levelup.challenges;
 
-import com.soomla.levelup.rewards.Reward;
+import com.soomla.rewards.Reward;
 
 import java.util.List;
 

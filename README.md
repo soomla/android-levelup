@@ -64,24 +64,21 @@ This can be either a badge, a virtual item from the game's economy (sword, coins
 
  `git clone https://github.com/soomla/android-levelup`
 
-2. Change the value of `SoomlaConfig.SOOM_SEC` to a secret of you choice. Do this now!
-   **You can't change this value after you publish your game!**
-   > In previous versions this was in StoreConfig.SOOM_SEC
+2. Initialize Soomla using your secret key.
+This will encrypt any sensitive local data Soomla will store on the device:
 
-3. Initialize Soomla with:
-```Java
-SoomlaConfig.getInstance().init(["YOUR CUSTOM GAME SECRET HERE"])
-```
-  > Note this is a different secret value than the one set in (2)
+  ```Java
+  Soomla.initialize(["YOUR CUSTOM GAME SECRET HERE"])
+  ```
+3. Initialize Soomla LevelUp, using your own implementation of your game structure:
 
-4. Create your own implementation of your game structure.
-
-    ```Java
-      List<World> worlds = ... // (See example below)
-      LevelUp.getInstance().initialize(worlds);
-      ```
+  ```Java
+    List<World> worlds = ... // (See example below)
+    LevelUp.getInstance().initialize(worlds);
+  ```
 
     > Soon we will support a json definitions file for the structure.
+
 
 And that's it ! You now have access to all your game progress modeling abilities.
 
@@ -134,6 +131,8 @@ The on-device storage is encrypted and kept in a SQLite database. SOOMLA is prep
 
 ## Example Usages
 **Example Usages**
+
+  > Examples using virtual items are dependent on android-store module, with proper SoomlaStore initialization and IStoreAssets definitions. See the android-store integration section for more details.
 
 * Mission with Reward (collect 5 stars to get 1 mega star)
 
@@ -241,8 +240,6 @@ worlds.add(lvl1);
 
 LevelUp.getInstance().initialize(worlds);
 
-StoreInventory.getVirtualItemBalance(itemId)); // 0
-
 // set up events expectations
 mExpectedVirtualItemId = itemId;
 mExpectedVirtualItemAmountAdded = 2;
@@ -267,7 +264,7 @@ try {
 
 If you want to protect your game from 'bad people' (and who doesn't?!), you might want to follow some guidelines:
 
-+ SOOMLA keeps the game's data in an encrypted database. In order to encrypt your data, SOOMLA generates a private key out of several parts of information. The Custom Secret is one of them. SOOMLA recommends that you provide this value when initializing `SoomlaConfig` and before you release your game. BE CAREFUL: You can change this value once! If you try to change it again, old data from the database will become unavailable.
++ SOOMLA keeps the game's data in an encrypted database. In order to encrypt your data, SOOMLA generates a private key out of several parts of information. The Custom Secret is one of them. SOOMLA recommends that you provide this value when initializing with `Soomla.initialize()` and before you release your game. BE CAREFUL: You can change this value once! If you try to change it again, old data from the database will become unavailable.
 + Following Google's recommendation, SOOMLA also recommends that you split your public key and construct it on runtime or even use bit manipulation on it in order to hide it. The key itself is not secret information but if someone replaces it, your application might get fake messages that might harm it.
 
 ## Event Handling

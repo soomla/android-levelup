@@ -16,13 +16,12 @@
 
 package com.soomla.levelup.scoring;
 
-import com.soomla.levelup.Level;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.ScoreStorage;
 import com.soomla.levelup.events.ScoreRecordChangedEvent;
-import com.soomla.levelup.util.JSONFactory;
 import com.soomla.store.BusProvider;
 import com.soomla.store.StoreUtils;
+import com.soomla.util.JSONFactory;
 
 import org.json.JSONException;
 import org.json.JSONObject;

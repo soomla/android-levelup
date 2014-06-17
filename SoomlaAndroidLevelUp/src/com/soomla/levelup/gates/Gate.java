@@ -16,11 +16,10 @@
 
 package com.soomla.levelup.gates;
 
-import com.soomla.levelup.challenges.BalanceMission;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.GateStorage;
-import com.soomla.levelup.util.JSONFactory;
 import com.soomla.store.StoreUtils;
+import com.soomla.util.JSONFactory;
 
 import org.json.JSONException;
 import org.json.JSONObject;

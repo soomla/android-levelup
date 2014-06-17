@@ -23,7 +23,7 @@ import com.soomla.levelup.gates.Gate;
 import com.soomla.levelup.gates.GatesList;
 import com.soomla.levelup.gates.GatesListAND;
 import com.soomla.levelup.scoring.Score;
-import com.soomla.levelup.util.JSONFactory;
+import com.soomla.util.JSONFactory;
 import com.soomla.store.StoreUtils;
 
 import org.json.JSONArray;

@@ -18,7 +18,7 @@ package com.soomla.levelup.challenges;
 
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.events.MissionCompletedEvent;
-import com.soomla.levelup.rewards.Reward;
+import com.soomla.rewards.Reward;
 import com.soomla.store.StoreUtils;
 import com.squareup.otto.Subscribe;
 

@@ -49,6 +49,8 @@ public abstract class GatesList extends Gate {
     public GatesList(String gateId) {
         super(gateId);
         mGates = new ArrayList<Gate>();
+
+        registerEvents();
     }
 
     /**
@@ -62,6 +64,8 @@ public abstract class GatesList extends Gate {
         super(gateId);
         mGates = new ArrayList<Gate>();
         mGates.add(singleGate);
+
+        registerEvents();
     }
 
     /**

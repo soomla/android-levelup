@@ -35,6 +35,9 @@ import com.soomla.levelup.events.MissionCompletionRevokedEvent;
 import com.soomla.levelup.events.ScoreRecordChangedEvent;
 import com.soomla.levelup.events.WorldCompletedEvent;
 import com.soomla.levelup.gates.BalanceGate;
+import com.soomla.levelup.gates.Gate;
+import com.soomla.levelup.gates.GatesListAND;
+import com.soomla.levelup.gates.GatesListOR;
 import com.soomla.levelup.gates.PurchasableGate;
 import com.soomla.levelup.gates.RecordGate;
 import com.soomla.levelup.gates.WorldCompletionGate;
@@ -207,6 +210,8 @@ public class LevelUpTest {
         testBalanceGate();
 //        testPurchasableGate(true);//buy with VirtualItem (not supported by soomla)
 //        testPurchasableGate(false);//buy with Market (not supported by tests)
+
+        testGatesList();
 
 //        testRewards();
     }
@@ -711,6 +716,89 @@ public class LevelUpTest {
         lvl2.end(true);
 
         Assert.assertTrue(lvl2.isCompleted());
+    }
+
+    public void testGatesList() {
+        final String recordGateId1 = "gates_list_record_gate_id1";
+        final String scoreId1 = "gates_list_score_id1";
+        final double desiredRecord1 = 10;
+        final String recordGateId2 = "gates_list_record_gate_id2";
+        final String scoreId2 = "gates_list_score_id2";
+        final double desiredRecord2 = 20;
+
+        Score score1 = new Score(scoreId1, "GatesListScore1", true);
+        Score score2 = new Score(scoreId2, "GatesListScore2", true);
+
+        final List<World> worlds = new ArrayList<World>();
+        final String lvl1Id = "lvl1_gates_list";
+        Level lvl1 = new Level(lvl1Id);
+        lvl1.addScore(score1);
+        lvl1.addScore(score2);
+        worlds.add(lvl1);
+
+        RecordGate recordGate1 = new RecordGate(recordGateId1, scoreId1, desiredRecord1);
+        RecordGate recordGate2 = new RecordGate(recordGateId2, scoreId2, desiredRecord2);
+
+        List<Gate> gates = new ArrayList<Gate>();
+        gates.add(recordGate1);
+        gates.add(recordGate2);
+
+        final String gateListORId = "gate_list_OR_id";
+        GatesListOR gatesListOR = new GatesListOR(gateListORId, gates);
+
+        final String gateListANDId = "gate_list_AND_id";
+        GatesListAND gatesListAND = new GatesListAND(gateListANDId, gates);
+
+        LevelUp.getInstance().initialize(worlds);
+
+        mExpectedGateEventId = recordGateId1;
+        mExpectedScoreEventId = scoreId1;
+        mExpectedRecordValue = desiredRecord1;
+
+        score1.setTempScore(desiredRecord1);
+        score1.saveAndReset();
+
+        Assert.assertTrue(recordGate1.canOpen());
+        Assert.assertFalse(recordGate1.isOpen());
+
+        Assert.assertTrue(recordGate1.tryOpen());
+
+        Assert.assertTrue(gatesListOR.canOpen());
+        // todo: could be confusing, no need to tryOpen it
+        Assert.assertTrue(gatesListOR.isOpen());
+
+        Assert.assertFalse(gatesListAND.canOpen());
+        Assert.assertFalse(gatesListAND.isOpen());
+
+        mExpectedGateEventId = gateListORId;
+
+        // todo: could be confusing, no need to tryOpen it
+        Assert.assertTrue(gatesListOR.tryOpen());
+
+        mExpectedGateEventId = recordGateId2;
+        mExpectedScoreEventId = scoreId2;
+        mExpectedRecordValue = desiredRecord2;
+
+        score2.setTempScore(desiredRecord2);
+        score2.saveAndReset();
+
+        Assert.assertTrue(recordGate2.canOpen());
+        Assert.assertFalse(recordGate2.isOpen());
+
+        Assert.assertTrue(recordGate2.tryOpen());
+
+        Assert.assertTrue(gatesListOR.canOpen());
+        Assert.assertTrue(gatesListOR.isOpen());
+
+        Assert.assertTrue(gatesListAND.canOpen());
+        // todo: could be confusing, no need to tryOpen it
+        Assert.assertTrue(gatesListAND.isOpen());
+
+        mExpectedGateEventId = gateListANDId;
+
+        // todo: could be confusing, no need to tryOpen it
+        Assert.assertTrue(gatesListOR.tryOpen());
+        Assert.assertTrue(gatesListAND.isOpen());
     }
 
     public void testVirtualItemScore() {

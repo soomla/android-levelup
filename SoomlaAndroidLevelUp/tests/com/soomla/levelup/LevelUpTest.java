@@ -16,24 +16,14 @@
 
 package com.soomla.levelup;
 
-import com.soomla.levelup.challenges.BalanceMission;
 import com.soomla.levelup.events.GateCanBeOpenedEvent;
-import com.soomla.levelup.events.GateOpenedEvent;
 import com.soomla.levelup.events.LevelEndedEvent;
 import com.soomla.levelup.events.LevelStartedEvent;
-import com.soomla.levelup.events.MissionCompletedEvent;
-import com.soomla.levelup.events.MissionCompletionRevokedEvent;
-import com.soomla.levelup.events.ScoreRecordChangedEvent;
 import com.soomla.levelup.events.WorldCompletedEvent;
 import com.soomla.levelup.gates.BalanceGate;
 import com.soomla.levelup.gates.PurchasableGate;
 import com.soomla.levelup.gates.RecordGate;
 import com.soomla.levelup.gates.WorldCompletionGate;
-import com.soomla.levelup.rewards.BadgeReward;
-import com.soomla.levelup.rewards.RandomReward;
-import com.soomla.levelup.rewards.Reward;
-import com.soomla.levelup.rewards.SequenceReward;
-import com.soomla.levelup.rewards.VirtualItemReward;
 import com.soomla.levelup.scoring.RangeScore;
 import com.soomla.levelup.scoring.Score;
 import com.soomla.levelup.scoring.VirtualItemScore;
@@ -73,8 +63,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Created by oriargov on 6/12/14.
@@ -209,6 +197,8 @@ public class LevelUpTest {
         Assert.assertTrue(lvl1.canStart());
         Assert.assertTrue(lvl1.getState() == Level.State.Idle);
 
+        mExpectedWorldEventId = "lvl1";
+
         lvl1.start();
         Assert.assertTrue(lvl1.getState() == Level.State.Running);
 
@@ -240,8 +230,6 @@ public class LevelUpTest {
         lvl1.end(false);
         Assert.assertTrue(lvl1.getState() == Level.State.Ended);
         Assert.assertFalse(lvl1.isCompleted());
-
-        mExpectedWorldEventId = "lvl1";
 
         lvl1.setCompleted(true);
         Assert.assertTrue(lvl1.isCompleted());
@@ -351,6 +339,7 @@ public class LevelUpTest {
 //        RandomReward randomReward = new RandomReward();
 //        SequenceReward sequenceReward = new SequenceReward();
 
+        /*
         VirtualItemReward virtualItemReward = new VirtualItemReward("vi_reward", "VIReward", 3, ITEM_ID_VI_REWARD);
         virtualItemReward.setRepeatable(true);
 
@@ -379,13 +368,15 @@ public class LevelUpTest {
         } catch (VirtualItemNotFoundException e) {
             Assert.fail(e.getMessage());
         }
+        */
     }
 
     public void testRecordGateWithRangeScore() {
         final List<World> worlds = new ArrayList<World>();
         final String lvl1Id = "lvl1_recordgate_rangescore";
         Level lvl1 = new Level(lvl1Id);
-        Level lvl2 = new Level("lvl2_recordgate_rangescore");
+        final String lvl2Id = "lvl2_recordgate_rangescore";
+        Level lvl2 = new Level(lvl2Id);
         final String scoreId = "range_score";
         final RangeScore rangeScore = new RangeScore(scoreId, "RangeScore", new RangeScore.Range(0, 100));
         final String recordGateId = "record_gate";
@@ -402,6 +393,9 @@ public class LevelUpTest {
         Assert.assertTrue(lvl1.canStart());
         // protected by gate
         Assert.assertFalse(lvl2.canStart());
+
+        mExpectedWorldEventId = lvl1Id;
+
         lvl1.start();
 
         int i = 0;
@@ -418,8 +412,6 @@ public class LevelUpTest {
 
         rangeScore.inc(1);
 
-        mExpectedWorldEventId = lvl1Id;
-
         lvl1.end(true);
 
         Assert.assertFalse(recordGate.isOpen());
@@ -431,6 +423,9 @@ public class LevelUpTest {
         Assert.assertTrue(recordGate.canOpen());
 
         Assert.assertTrue(lvl2.canStart());
+
+        mExpectedWorldEventId = lvl2Id;
+
         lvl2.start();
         lvl2.end(true);
 
@@ -445,7 +440,8 @@ public class LevelUpTest {
         final List<World> worlds = new ArrayList<World>();
         final String lvl1Id = "lvl1_balancegate";
         Level lvl1 = new Level(lvl1Id);
-        Level lvl2 = new Level("lvl2_balancegate");
+        final String lvl2Id = "lvl2_balancegate";
+        Level lvl2 = new Level(lvl2Id);
         final String itemId = ITEM_ID_BALANCE_GATE;
         final String balanceGateId = "balance_gate";
 
@@ -461,16 +457,18 @@ public class LevelUpTest {
         Assert.assertTrue(lvl1.canStart());
         // protected by gate
         Assert.assertFalse(lvl2.canStart());
-        lvl1.start();
-
-        Assert.assertFalse(balanceGate.isOpen());
-        Assert.assertFalse(balanceGate.canOpen());
 
         // set up events expectations (async)
+        mExpectedWorldEventId = lvl1Id;
         mExpectedGateEventId = balanceGateId;
         mExpectedVirtualItemId = itemId;
         mExpectedVirtualItemAmountAdded = 1;
         mExpectedVirtualItemBalance = 1;
+
+        lvl1.start();
+
+        Assert.assertFalse(balanceGate.isOpen());
+        Assert.assertFalse(balanceGate.canOpen());
 
         try {
             StoreInventory.giveVirtualItem(itemId, 1);
@@ -479,8 +477,6 @@ public class LevelUpTest {
         } catch (VirtualItemNotFoundException e) {
             e.printStackTrace();
         }
-
-        mExpectedWorldEventId = lvl1Id;
 
         lvl1.end(true);
 
@@ -497,6 +493,9 @@ public class LevelUpTest {
         Assert.assertTrue(balanceGate.canOpen());
 
         Assert.assertTrue(lvl2.canStart());
+
+        mExpectedWorldEventId = lvl2Id;
+
         lvl2.start();
         lvl2.end(true);
 
@@ -507,7 +506,8 @@ public class LevelUpTest {
         final List<World> worlds = new ArrayList<World>();
         final String lvl1Id = "lvl1_completiongate";
         Level lvl1 = new Level(lvl1Id);
-        Level lvl2 = new Level("lvl2_completiongate");
+        final String lvl2Id = "lvl2_completiongate";
+        Level lvl2 = new Level(lvl2Id);
         final String worldGateId = "world_gate";
 
         final WorldCompletionGate lvl1CompletionGate =
@@ -523,6 +523,9 @@ public class LevelUpTest {
         Assert.assertTrue(lvl1.canStart());
         // protected by gate
         Assert.assertFalse(lvl2.canStart());
+
+        mExpectedWorldEventId = lvl1Id;
+
         lvl1.start();
 
         Assert.assertFalse(lvl1CompletionGate.isOpen());
@@ -530,7 +533,6 @@ public class LevelUpTest {
 
         // set up events expectations (async)
         mExpectedGateEventId = worldGateId;
-        mExpectedWorldEventId = lvl1Id;
 
         lvl1.end(true);
 
@@ -543,6 +545,9 @@ public class LevelUpTest {
         Assert.assertTrue(lvl1CompletionGate.canOpen());
 
         Assert.assertTrue(lvl2.canStart());
+
+        mExpectedWorldEventId = lvl2Id;
+
         lvl2.start();
         lvl2.end(true);
 
@@ -674,19 +679,19 @@ public class LevelUpTest {
         Assert.assertEquals(mExpectedVirtualItemBalance, goodBalanceChangedEvent.getBalance());
     }
 
-//    @Subscribe
-//    public void onEvent(LevelStartedEvent levelStartedEvent) {
-//        final String worldId = levelStartedEvent.Level.getWorldId();
-//        System.out.println("onEvent/LevelStartedEvent:" + worldId);
-//        Assert.assertEquals(mExpectedWorldEventId, worldId);
-//    }
-//
-//    @Subscribe
-//    public void onEvent(LevelEndedEvent levelEndedEvent) {
-//        final String worldId = levelEndedEvent.Level.getWorldId();
-//        System.out.println("onEvent/LevelEndedEvent:" + worldId);
-//        Assert.assertEquals(mExpectedWorldEventId, worldId);
-//    }
+    @Subscribe
+    public void onEvent(LevelStartedEvent levelStartedEvent) {
+        final String worldId = levelStartedEvent.Level.getWorldId();
+        System.out.println("onEvent/LevelStartedEvent:" + worldId);
+        Assert.assertEquals(mExpectedWorldEventId, worldId);
+    }
+
+    @Subscribe
+    public void onEvent(LevelEndedEvent levelEndedEvent) {
+        final String worldId = levelEndedEvent.Level.getWorldId();
+        System.out.println("onEvent/LevelEndedEvent:" + worldId);
+        Assert.assertEquals(mExpectedWorldEventId, worldId);
+    }
 
 //    @Subscribe
 //    public void onEvent(MissionCompletedEvent missionCompletedEvent) {

@@ -147,8 +147,9 @@ BalanceMission balanceMission = new BalanceMission("star_balance_mission_id", "S
 StoreInventory.giveVirtualItem(starItemId, 5);
 
 // events posted:
-// 1. MissionCompletedEvent
-// 2. RewardGivenEvent
+// 1. GoodBalanceChangedEvent
+// 2. MissionCompletedEvent
+// 3. RewardGivenEvent
 
 // now the mission is complete, and reward given
 balanceMission.isCompleted(); // true
@@ -249,8 +250,17 @@ mExpectedWorldEventId = lvl1Id;
 
 lvl1.start();
 // LevelStartedEvent
+
 virtualItemScore.inc(2);
+
+// GoodBalanceChangedEvent
+
 lvl1.end(true);
+
+// events posted:
+// LevelEndedEvent
+// WorldCompletedEvent (lvl1)
+// [ScoreRecordChangedEvent] - if record was broken
 
 try {
     Assert.assertEquals(2, StoreInventory.getVirtualItemBalance(itemId));

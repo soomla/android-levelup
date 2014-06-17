@@ -117,6 +117,12 @@ public class Challenge extends Mission {
      */
     @Override
     public boolean isCompleted() {
+        // could happen in construction
+        // need to return false in order to register for child events
+        if(mMissions == null) {
+            return false;
+        }
+
         for (Mission mission : mMissions) {
             if (!mission.isCompleted()) {
                 return false;

@@ -21,6 +21,10 @@ import com.soomla.Soomla;
 import com.soomla.SoomlaApp;
 import com.soomla.events.RewardGivenEvent;
 import com.soomla.events.RewardTakenEvent;
+import com.soomla.levelup.challenges.ActionMission;
+import com.soomla.levelup.challenges.BalanceMission;
+import com.soomla.levelup.challenges.Challenge;
+import com.soomla.levelup.challenges.Mission;
 import com.soomla.levelup.challenges.RecordMission;
 import com.soomla.levelup.events.GateCanBeOpenedEvent;
 import com.soomla.levelup.events.GateOpenedEvent;
@@ -44,6 +48,7 @@ import com.soomla.store.SoomlaStore;
 import com.soomla.store.StoreInventory;
 import com.soomla.store.domain.NonConsumableItem;
 import com.soomla.store.domain.VirtualCategory;
+import com.soomla.store.domain.rewards.VirtualItemReward;
 import com.soomla.store.domain.virtualCurrencies.VirtualCurrency;
 import com.soomla.store.domain.virtualCurrencies.VirtualCurrencyPack;
 import com.soomla.store.domain.virtualGoods.SingleUseVG;
@@ -90,6 +95,7 @@ public class LevelUpTest {
     /** event expectations **/
 
     private String mExpectedMissionEventId = "";
+    private String mExpectedChallengeId = "";
     private String mExpectedRewardEventId = "";
     private String mExpectedGateEventId = "";
     private String mExpectedWorldEventId = "";
@@ -195,7 +201,6 @@ public class LevelUpTest {
         testRecordMission();
 //        restBalanceMission();
         testChallenge();
-
 
         testWorldCompletionGate();
         testRecordGateWithRangeScore();
@@ -340,9 +345,9 @@ public class LevelUpTest {
         final BadgeReward badgeReward = new BadgeReward(rewardId, "RecordMissionBadge");
         List<Reward> rewards = new ArrayList<Reward>();
         rewards.add(badgeReward);
+        final Score score = new Score(scoreId, "RecordMissionScore", true);
         final RecordMission recordMission = new RecordMission(
                 missionId, "RecordMission", rewards, scoreId, desiredScore);
-        final Score score = new Score(scoreId, "RecordMissionScore", true);
 
         mExpectedScoreEventId = scoreId;
         mExpectedRecordValue = desiredScore;
@@ -359,34 +364,60 @@ public class LevelUpTest {
         Assert.assertTrue(badgeReward.isOwned());
     }
 
-//    public void testBalanceMission() {
-//        // todo: rename and add to IStoreAssets setUp
-//        final String missionId = "balance_mission_id";
-//        final String balanceMissionItemId = "balance_mission_item_id";
-//        final String rewardId = "balance_mission_reward_id";
-//        final String megaStarItemId = "balance_mission_reward_item_id";
-//
-//        final VirtualItemReward virtualItemReward = new VirtualItemReward(rewardId, "ItemReward", 1, megaStarItemId);
-//        List<Reward> rewards = new ArrayList<Reward>();
-//        rewards.add(virtualItemReward);
-//        BalanceMission balanceMission = new BalanceMission(missionId, "BalanceMission", rewards, balanceMissionItemId, 5);
-//
-//        // todo: assert basics
-//        // todo: give less and assert false rewarded
-//        // todo: set event expectations
-//
-//        try {
-//            StoreInventory.giveVirtualItem(balanceMissionItemId, 5);
-//        } catch (VirtualItemNotFoundException e) {
-//            Assert.fail(e.getMessage());
-//        }
-//
-//        balanceMission.isCompleted(); // true
-//        virtualItemReward.isOwned(); // true
-//    }
+    public void testBalanceMission() {
+        // todo: rename and add to IStoreAssets setUp
+        final String missionId = "balance_mission_id";
+        final String balanceMissionItemId = "balance_mission_item_id";
+        final String rewardId = "balance_mission_reward_id";
+        final String megaStarItemId = "balance_mission_reward_item_id";
+
+        final VirtualItemReward virtualItemReward = new VirtualItemReward(rewardId, "ItemReward", 1, megaStarItemId);
+        List<Reward> rewards = new ArrayList<Reward>();
+        rewards.add(virtualItemReward);
+        BalanceMission balanceMission = new BalanceMission(missionId, "BalanceMission", rewards, balanceMissionItemId, 5);
+
+        // todo: assert basics
+        // todo: give less and assert false rewarded
+        // todo: set event expectations
+
+        try {
+            StoreInventory.giveVirtualItem(balanceMissionItemId, 5);
+        } catch (VirtualItemNotFoundException e) {
+            Assert.fail(e.getMessage());
+        }
+
+        balanceMission.isCompleted(); // true
+        virtualItemReward.isOwned(); // true
+    }
 
     public void testChallenge() {
+        final String missionId1 = "challenge_mission1";
+        final Mission mission1 = new ActionMission(missionId1, "ChallengeMission1");
+        final String missionId2 = "challenge_mission2";
+        final Mission mission2 = new ActionMission(missionId2, "ChallengeMission1");
+        final List<Mission> missions = new ArrayList<Mission>();
+        missions.add(mission1);
+        missions.add(mission2);
+        final List<Reward> rewards = new ArrayList<Reward>();
+        final String rewardId = "challenge_badge_reward_id";
+        final BadgeReward badgeReward = new BadgeReward(rewardId, "ChallengeBadgeRewardId");
+        rewards.add(badgeReward);
+        final String challengeId = "challenge_id";
+        Challenge challenge = new Challenge(challengeId, "Challenge", missions, rewards);
 
+        Assert.assertFalse(challenge.isCompleted());
+
+        mExpectedMissionEventId = missionId1;
+
+        mission1.setCompleted(true);
+
+        mExpectedMissionEventId = missionId2;
+        mExpectedChallengeId = challengeId;
+        mExpectedRewardEventId = rewardId;
+
+        mission2.setCompleted(true);
+
+        Assert.assertTrue(challenge.isCompleted());
     }
 
     public void testRewards() {
@@ -403,7 +434,6 @@ public class LevelUpTest {
 //        RandomReward randomReward = new RandomReward();
 //        SequenceReward sequenceReward = new SequenceReward();
 
-        /*
         VirtualItemReward virtualItemReward = new VirtualItemReward("vi_reward", "VIReward", 3, ITEM_ID_VI_REWARD);
         virtualItemReward.setRepeatable(true);
 
@@ -432,7 +462,6 @@ public class LevelUpTest {
         } catch (VirtualItemNotFoundException e) {
             Assert.fail(e.getMessage());
         }
-        */
     }
 
     public void testRecordGateWithRangeScore() {
@@ -763,8 +792,12 @@ public class LevelUpTest {
     @Subscribe
     public void onEvent(MissionCompletedEvent missionCompletedEvent) {
         final String missionId = missionCompletedEvent.Mission.getMissionId();
-        System.out.println("onEvent/MissionCompletedEvent:" + missionId);
-        Assert.assertEquals(mExpectedMissionEventId, missionId);
+        System.out.println("onEvent/MissionCompletedEvent:" + missionId
+                + "[challenge:" + missionCompletedEvent.IsChallenge + "]");
+
+        final String expectedMissionId = missionCompletedEvent.IsChallenge ?
+                mExpectedChallengeId : mExpectedMissionEventId;
+        Assert.assertEquals(expectedMissionId, missionId);
     }
 
     @Subscribe

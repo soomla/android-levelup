@@ -246,34 +246,6 @@ public class LevelUpTest {
 //
 //    }
 
-    /**
-     * todo: a problem in robolectric causes sqlite errors
-     * when running several tests per class (normal usage)
-     * the reason is the sqlite DB files being deleted between tests
-     * while the SqliteOpenHelper remains the same object
-     */
-    /*@Test*/
-    public void testAll() {
-        testLevel();
-        testScoreAsc();
-//        testScoreDsc(); // problematic behavior in reset() of !isHigherBetter
-        testVirtualItemScore();
-
-        testRecordMission();
-//        restBalanceMission();
-        testChallenge();
-
-        testWorldCompletionGate();
-        testRecordGateWithRangeScore();
-        testBalanceGate();
-//        testPurchasableGate(true);//buy with VirtualItem (not supported by soomla)
-//        testPurchasableGate(false);//buy with Market (not supported by tests)
-
-        testGatesList();
-
-//        testRewards();
-    }
-
     @Test
     public void testLevel() {
         final List<World> worlds = new ArrayList<World>();
@@ -370,7 +342,7 @@ public class LevelUpTest {
         Assert.assertFalse(scoreAsc.hasRecordReached(31));
     }
 
-    //@Test
+    @Test
     public void testScoreDsc() {
         boolean higherIsBetter = false;
         final String scoreId = "score_dsc";
@@ -430,6 +402,9 @@ public class LevelUpTest {
 
         Assert.assertTrue(recordMission.isCompleted());
         Assert.assertTrue(badgeReward.isOwned());
+
+        // test revoke
+        recordMission.setCompleted(false);
     }
 
     @Test

@@ -1,0 +1,1 @@
+ant -buildfile soomla-android-levelup.xml -Dsoomla.filename="AndroidLevelUp" all

@@ -355,8 +355,8 @@ public class LevelUpTest {
         // todo: it will set a latest+record of zero which cannot be broken
         // todo: later by positive numbers
         scoreDsc.reset();
-
         Assert.assertEquals(100, scoreDsc.getTempScore(), 0.01);
+        
         scoreDsc.dec(50);
         Assert.assertEquals(50, scoreDsc.getTempScore(), 0.01);
         mExpectedRecordValue = 50;

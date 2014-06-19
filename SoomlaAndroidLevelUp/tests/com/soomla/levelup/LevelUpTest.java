@@ -147,6 +147,7 @@ public class LevelUpTest {
         mVirtualItemExpectationQueue.clear();
 
         if(!firstSetupDone) {
+            System.out.println("==firstSetup==");
             deleteDB();
 
             firstSetupDone = true;
@@ -221,7 +222,7 @@ public class LevelUpTest {
 
     @AfterClass
     public static void deleteDB() {
-        System.out.println("==firstSetup==");
+        System.out.println("==deleteDB==");
         // for some reason this doesn't work (even outside @AfterClass notation)
 //        System.out.println("app.deleteDatabase:" +
 //                Robolectric.application.deleteDatabase(ShadowSQLiteOpenHelper.DB_NAME));
@@ -486,6 +487,12 @@ public class LevelUpTest {
         mission2.setCompleted(true);
 
         Assert.assertTrue(challenge.isCompleted());
+
+        // test revoke
+        mExpectedMissionEventId = missionId1;
+        mission1.setCompleted(false);
+        Assert.assertFalse(challenge.isCompleted());
+        Assert.assertFalse(badgeReward.isOwned());
     }
 
     @Test
@@ -954,8 +961,12 @@ public class LevelUpTest {
     @Subscribe
     public void onEvent(MissionCompletionRevokedEvent missionCompletionRevokedEvent) {
         final String missionId = missionCompletionRevokedEvent.Mission.getMissionId();
-        System.out.println("onEvent/MissionCompletionRevokedEvent:" + missionId);
-        Assert.assertEquals(mExpectedMissionEventId, missionId);
+        System.out.println("onEvent/MissionCompletionRevokedEvent:" + missionId
+                + "[challenge:" + missionCompletionRevokedEvent.IsChallenge + "]");
+
+        final String expectedMissionId = missionCompletionRevokedEvent.IsChallenge ?
+                mExpectedChallengeId : mExpectedMissionEventId;
+        Assert.assertEquals(expectedMissionId, missionId);
     }
 
     @Subscribe

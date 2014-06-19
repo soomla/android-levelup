@@ -16,9 +16,12 @@
 
 package com.soomla.levelup.challenges;
 
+import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.data.MissionStorage;
 import com.soomla.levelup.events.MissionCompletedEvent;
+import com.soomla.levelup.events.MissionCompletionRevokedEvent;
 import com.soomla.rewards.Reward;
 import com.squareup.otto.Subscribe;
 
@@ -149,12 +152,30 @@ public class Challenge extends Mission {
                 }
             }
 
-            if (completed) {
+            if(completed) {
                 setCompleted(true);
             }
         }
     }
 
+    @Subscribe
+    public void onMissionRevoked(MissionCompletionRevokedEvent missionCompletionRevokedEvent) {
+        if (mMissions.contains(missionCompletionRevokedEvent.Mission)) {
+            // if the challenge was completed before, but now one of its child missions
+            // was uncompleted - the challenge is revoked as well
+            if (MissionStorage.isCompleted(this)) {
+                setCompleted(false);
+            }
+        }
+    }
+
+    /**
+     * ignore unregisterEvents() since challenge can be revoked by child missions revoked
+     */
+    @Override
+    protected void unregisterEvents() {
+        SoomlaUtils.LogDebug(TAG, "ignore unregisterEvents() since challenge can be revoked by child missions revoked");
+    }
 
     /** Private Members **/
 

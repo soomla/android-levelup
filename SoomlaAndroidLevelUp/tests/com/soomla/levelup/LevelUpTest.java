@@ -484,6 +484,9 @@ public class LevelUpTest {
         mExpectedChallengeId = challengeId;
         mExpectedRewardEventId = rewardId;
 
+        Assert.assertFalse(challenge.isCompleted());
+        Assert.assertFalse(badgeReward.isOwned());
+
         mission2.setCompleted(true);
 
         Assert.assertTrue(challenge.isCompleted());

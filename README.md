@@ -157,10 +157,49 @@ virtualItemReward.isOwned(); // true
 ```
 
 * Challenge (Multi-Mission)
-> coming soon
 
 ```Java
+final String missionId1 = "challenge_mission1";
+final Mission mission1 = new ActionMission(missionId1, "ChallengeMission1");
+final String missionId2 = "challenge_mission2";
+final Mission mission2 = new ActionMission(missionId2, "ChallengeMission1");
+final List<Mission> missions = new ArrayList<Mission>();
+missions.add(mission1);
+missions.add(mission2);
+final List<Reward> rewards = new ArrayList<Reward>();
+final String rewardId = "challenge_badge_reward_id";
+final BadgeReward badgeReward = new BadgeReward(rewardId, "ChallengeBadgeRewardId");
+rewards.add(badgeReward);
+final String challengeId = "challenge_id";
+Challenge challenge = new Challenge(challengeId, "Challenge", missions, rewards);
 
+challenge.isCompleted(); //false
+
+mission1.setCompleted(true);
+
+// events:
+// MissionCompleteEvent (mission1)
+
+mission2.setCompleted(true);
+
+// events:
+// MissionCompleteEvent (mission2)
+// MissionCompleteEvent (challenge)
+// RewardGivenEvent (badgeReward)
+
+challenge.isCompleted(); // true
+
+// revoke
+
+mission1.setCompleted(false);
+
+// events:
+// MissionCompletionRevokedEvent (mission1)
+// MissionCompletionRevokedEvent (challenge)
+// RewardTakenEvent (badgeReward)
+
+challenge.isCompleted(); // false
+badgeReward.isOwned(); // false
 ```
 
 * GatesList

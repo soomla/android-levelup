@@ -178,12 +178,12 @@ public class Score {
     }
 
     /**
-     * Resets the current score's value
+     * Resets the current score's value to mStartValue
      */
     public void reset() {
         mTempScore = mStartValue;
-        ScoreStorage.setRecordScore(this, 0);
-        ScoreStorage.setLatestScore(this, 0);
+        ScoreStorage.setRecordScore(this, /*0*/mStartValue);
+        ScoreStorage.setLatestScore(this, /*0*/mStartValue);
     }
 
     /**

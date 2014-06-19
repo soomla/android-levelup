@@ -19,9 +19,7 @@ package com.soomla.levelup.gates;
 import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.BPJSONConsts;
-import com.soomla.levelup.events.GateOpenedEvent;
 import com.soomla.util.JSONFactory;
-import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +48,9 @@ public abstract class GatesList extends Gate {
         super(gateId);
         mGates = new ArrayList<Gate>();
 
+        // "fake" gates with 1 sub-gate are auto open
+        mAutoOpenBehavior = true;
+
         registerEvents();
     }
 
@@ -64,6 +65,9 @@ public abstract class GatesList extends Gate {
         super(gateId);
         mGates = new ArrayList<Gate>();
         mGates.add(singleGate);
+
+        // "fake" gates with 1 sub-gate are auto open
+        mAutoOpenBehavior = true;
 
         registerEvents();
     }
@@ -104,6 +108,11 @@ public abstract class GatesList extends Gate {
             }
         }
 
+        if (mGates.size() < 2) {
+            // "fake" gates with 1 sub-gate are auto open
+            mAutoOpenBehavior = true;
+        }
+
         registerEvents();
     }
 
@@ -113,7 +122,7 @@ public abstract class GatesList extends Gate {
         }
     }
 
-    private void unregisterEvents() {
+    protected void unregisterEvents() {
         BusProvider.getInstance().unregister(this);
     }
 
@@ -145,12 +154,6 @@ public abstract class GatesList extends Gate {
         mGates.add(gate);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public abstract boolean isOpen();
-
     public int size() {
         return mGates.size();
     }
@@ -160,30 +163,28 @@ public abstract class GatesList extends Gate {
      */
     @Override
     public boolean tryOpenInner() {
-        for (Gate gate : mGates) {
-            gate.tryOpen();
+        if(mAutoOpenBehavior) {
+            for (Gate gate : mGates) {
+                gate.tryOpen();
+            }
+
+            return isOpen();
         }
+        else {
+            if (canOpen()) {
+                forceOpen(true);
+                return true;
+            }
 
-        return isOpen();
-    }
-
-    /** Events **/
-
-    @Subscribe
-    public void onGateOpenedEvent(GateOpenedEvent gateOpenedEvent) {
-        final boolean open = tryOpen();
-        if(open) {
-            unregisterEvents();
+            return false;
         }
     }
-
 
     /** Setters and Getters */
 
     public List<Gate> getGates() {
         return mGates;
     }
-
 
     /** Private Members */
 
@@ -198,4 +199,10 @@ public abstract class GatesList extends Gate {
     }
 
     protected List<Gate> mGates;
+
+    // does opening child gates cause us to auto-open (or just canOpen)?
+    protected boolean mAutoOpenBehavior = false;
+
+    // children require to say true to canOpen or isOpen for our canOpen?
+    protected boolean mChildrenCanOpenIsEnough = false;
 }

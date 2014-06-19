@@ -16,8 +16,13 @@
 
 package com.soomla.levelup.gates;
 
+import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.data.GateStorage;
+import com.soomla.levelup.events.GateCanBeOpenedEvent;
+import com.soomla.levelup.events.GateOpenedEvent;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -99,23 +104,73 @@ public class GatesListAND extends GatesList {
      */
     @Override
     public boolean isOpen() {
+        if(mAutoOpenBehavior) {
+            for (Gate gate : mGates) {
+                if (!gate.isOpen()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        else {
+            return super.isOpen();
+        }
+    }
+
+    @Override
+    public boolean canOpen() {
         for (Gate gate : mGates) {
-            if (!gate.isOpen()) {
+            if ((mChildrenCanOpenIsEnough && !gate.canOpen()) || !gate.isOpen()) {
                 return false;
             }
         }
         return true;
     }
 
-    @Override
-    public boolean canOpen() {
+    /** Events **/
+
+    // If canOpen is defined as true when all sub-gates canOpen
+    // use this subscription
+
+    @Subscribe
+    public void onGateCanOpenEvent(GateCanBeOpenedEvent gateCanBeOpenedEvent) {
+        if(!mChildrenCanOpenIsEnough || !mGates.contains(gateCanBeOpenedEvent.Gate))
+            return; // handled by GateOpenedEvent
+
+        boolean allCanOpen = true;
         for (Gate gate : mGates) {
             if (!gate.canOpen()) {
-                return false;
+                allCanOpen = false;
+                break;
             }
         }
-        return true;
+
+        if (allCanOpen) {
+            BusProvider.getInstance().post(new GateCanBeOpenedEvent(this));
+        }
     }
+
+    // If canOpen is defined as true when all sub-gates isOpen
+    // use this subscription
+
+    @Subscribe
+    public void onGateOpenedEvent(GateOpenedEvent gateOpenedEvent) {
+        if(mChildrenCanOpenIsEnough || !mGates.contains(gateOpenedEvent.Gate))
+            return; // handled by GateCanBeOpenedEvent
+
+        boolean allOpen = true;
+        for (Gate gate : mGates) {
+            if (/*!gate.isOpen()*/!GateStorage.isOpen(gate)) {
+                allOpen = false;
+                break;
+            }
+        }
+
+        if (allOpen && !GateStorage.isOpen(this)) {
+            BusProvider.getInstance().post(new GateCanBeOpenedEvent(this));
+        }
+    }
+
 
 
     /** Private Members */

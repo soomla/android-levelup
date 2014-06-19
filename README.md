@@ -129,7 +129,7 @@ In order to debug android-store, set `SoomlaConfig.logDebug` to `true`. This wil
 The on-device storage is encrypted and kept in a SQLite database. SOOMLA is preparing a cloud-based storage service that will allow this SQLite to be synced to a cloud-based repository that you'll define.
 
 ## Example Usages
-**Example Usages**
+**check out the `tests` branch for more examples and updates on these**
 
   > Examples using virtual items are dependent on android-store module, with proper SoomlaStore initialization and IStoreAssets definitions. See the android-store integration section for more details.
 
@@ -153,20 +153,6 @@ StoreInventory.giveVirtualItem(starItemId, 5);
 // now the mission is complete, and reward given
 balanceMission.isCompleted(); // true
 virtualItemReward.isOwned(); // true
-
-```
-
-* Challenge (Multi-Mission)
-> coming soon
-
-```Java
-
-```
-
-* GatesList
-> coming soon
-
-```Java
 
 ```
 
@@ -269,6 +255,139 @@ try {
     Assert.fail(e.getMessage());
 }
 ```
+
+* Challenge (Multi-Mission)
+
+```Java
+final String missionId1 = "challenge_mission1";
+final Mission mission1 = new ActionMission(missionId1, "ChallengeMission1");
+final String missionId2 = "challenge_mission2";
+final Mission mission2 = new ActionMission(missionId2, "ChallengeMission1");
+final List<Mission> missions = new ArrayList<Mission>();
+missions.add(mission1);
+missions.add(mission2);
+final List<Reward> rewards = new ArrayList<Reward>();
+final String rewardId = "challenge_badge_reward_id";
+final BadgeReward badgeReward = new BadgeReward(rewardId, "ChallengeBadgeRewardId");
+rewards.add(badgeReward);
+final String challengeId = "challenge_id";
+Challenge challenge = new Challenge(challengeId, "Challenge", missions, rewards);
+
+challenge.isCompleted(); //false
+
+mission1.setCompleted(true);
+
+// events:
+// MissionCompleteEvent (mission1)
+
+mission2.setCompleted(true);
+
+// events:
+// MissionCompleteEvent (mission2)
+// MissionCompleteEvent (challenge)
+// RewardGivenEvent (badgeReward)
+
+challenge.isCompleted(); // true
+
+// revoke
+
+mission1.setCompleted(false);
+
+// events:
+// MissionCompletionRevokedEvent (mission1)
+// MissionCompletionRevokedEvent (challenge)
+// RewardTakenEvent (badgeReward)
+
+challenge.isCompleted(); // false
+badgeReward.isOwned(); // false
+```
+
+* GatesList
+> Note that currently a `GatesList` gate is automatically opened when sub-gates fulfill the `GatesList` requirement. This is different from a single `Gate`, which has a `canOpen` state separate from `isOpen`
+
+```Java
+final String recordGateId1 = "gates_list_record_gate_id1";
+final String scoreId1 = "gates_list_score_id1";
+final double desiredRecord1 = 10;
+final String recordGateId2 = "gates_list_record_gate_id2";
+final String scoreId2 = "gates_list_score_id2";
+final double desiredRecord2 = 20;
+
+Score score1 = new Score(scoreId1, "GatesListScore1", true);
+Score score2 = new Score(scoreId2, "GatesListScore2", true);
+
+final List<World> worlds = new ArrayList<World>();
+final String lvl1Id = "lvl1_gates_list";
+Level lvl1 = new Level(lvl1Id);
+lvl1.addScore(score1);
+lvl1.addScore(score2);
+worlds.add(lvl1);
+
+RecordGate recordGate1 = new RecordGate(recordGateId1, scoreId1, desiredRecord1);
+RecordGate recordGate2 = new RecordGate(recordGateId2, scoreId2, desiredRecord2);
+
+List<Gate> gates = new ArrayList<Gate>();
+gates.add(recordGate1);
+gates.add(recordGate2);
+
+final String gateListORId = "gate_list_OR_id";
+GatesListOR gatesListOR = new GatesListOR(gateListORId, gates);
+
+final String gateListANDId = "gate_list_AND_id";
+GatesListAND gatesListAND = new GatesListAND(gateListANDId, gates);
+
+LevelUp.getInstance().initialize(worlds);
+
+score1.setTempScore(desiredRecord1);
+score1.saveAndReset();
+
+// onEvent/ScoreRecordChangedEvent:gates_list_score_id1->10.0
+// onEvent/GateCanBeOpenedEvent:gates_list_record_gate_id1
+
+recordGate1.canOpen(); // true
+recordGate1.isOpen(); // false
+
+recordGate1.tryOpen(); // should succeed (and return true)
+
+// onEvent/GateOpenedEvent:gates_list_record_gate_id1
+
+gatesListOR.canOpen(); // true (at least one sub-gate is open)
+// could be confusing, no need to tryOpen it
+gatesListOR.isOpen(); // true!
+//gatesListOR.tryOpen(); // not needed
+
+gatesListAND.canOpen(); // false (all sub-gates need to be open for AND)
+gatesListAND.isOpen(); // false
+
+
+score2.setTempScore(desiredRecord2);
+score2.saveAndReset();
+
+//onEvent/ScoreRecordChangedEvent:gates_list_score_id2->20.0
+
+recordGate2.canOpen(); // true
+recordGate2.isOpen(); // false
+
+recordGate2.tryOpen(); // should succeed (and return true)
+
+//onEvent/GateCanBeOpenedEvent:gates_list_record_gate_id2
+//onEvent/GateOpenedEvent:gates_list_record_gate_id2
+
+gatesListOR.canOpen(); // still true
+gatesListOR.isOpen(); // still true
+
+gatesListAND.canOpen(); // true
+// todo: could be confusing, no need to tryOpen it
+gatesListAND.isOpen(); // true
+
+mExpectedGateEventId = gateListANDId;
+
+// could be confusing, no need to tryOpen it
+Assert.assertTrue(gatesListOR.tryOpen());
+Assert.assertTrue(gatesListAND.isOpen());
+```
+
+
 
 ## Security
 

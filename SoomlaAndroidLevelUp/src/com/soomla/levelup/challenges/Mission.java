@@ -165,22 +165,28 @@ public abstract class Mission {
     public void setCompleted(boolean completed) {
         MissionStorage.setCompleted(this, completed);
         if (completed) {
-
+            // events not interesting until revoked
             unregisterEvents();
-
-            // The mission is completed, giving the rewards.
-            for(Reward reward : mRewards) {
-                reward.give();
-            }
+            giveRewards();
         }
         else {
             BusProvider.getInstance().post(new MissionCompletionRevokedEvent(this));
-            for (Reward reward : mRewards) {
-                reward.take();
-            }
-
+            takeRewards();
             // listen again for chance to be completed
             registerEvents();
+        }
+    }
+
+    protected void takeRewards() {
+        for (Reward reward : mRewards) {
+            reward.take();
+        }
+    }
+
+    protected void giveRewards() {
+        // The mission is completed, giving the rewards.
+        for(Reward reward : mRewards) {
+            reward.give();
         }
     }
 

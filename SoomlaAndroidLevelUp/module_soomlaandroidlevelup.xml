@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_soomlaandroidlevelup" default="compile.module.soomlaandroidlevelup">
+  <dirname property="module.soomlaandroidlevelup.basedir" file="${ant.file.module_soomlaandroidlevelup}"/>
+
+    <property name="aidl" value="${jdk.home.android.platform.tools}aidl" />
+    <property name="framework-aidl" value="${jdk.home.android.platform}framework.aidl" />
+
+  <property name="module.jdk.home.soomlaandroidlevelup" value="${jdk.home.android}"/>
+  <property name="module.jdk.bin.soomlaandroidlevelup" value="${jdk.bin.android}"/>
+  <property name="module.jdk.classpath.soomlaandroidlevelup" value="jdk.classpath.android"/>
+
+  <property name="compiler.args.soomlaandroidlevelup" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+
+  <property name="soomlaandroidlevelup.output.dir" value="${module.soomlaandroidlevelup.basedir}/out/production/soomlaandroidlevelup"/>
+
+  <path id="soomlaandroidlevelup.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+
+  <path id="soomlaandroidlevelup.module.production.classpath">
+    <path refid="${module.jdk.classpath.soomlaandroidlevelup}"/>
+    <pathelement location="${basedir}/../build/square-otto-1.3.2.jar"/>
+    <pathelement location="${basedir}/../build/SoomlaAndroidCore.jar"/>
+      <pathelement location="${basedir}/../build/AndroidStore.jar"/>
+  </path>
+
+  <path id="soomlaandroidlevelup.runtime.production.module.classpath">
+    <pathelement location="${soomlaandroidlevelup.output.dir}"/>
+    <pathelement location="${basedir}/../build/square-otto-1.3.2.jar"/>
+    <pathelement location="${basedir}/../build/SoomlaAndroidCore.jar"/>
+      <pathelement location="${basedir}/../build/AndroidStore.jar"/>
+  </path>
+
+  <path id="soomlaandroidlevelup.module.classpath">
+    <path refid="${module.jdk.classpath.soomlaandroidlevelup}"/>
+    <pathelement location="${soomlaandroidlevelup.output.dir}"/>
+    <pathelement location="${basedir}/../build/square-otto-1.3.2.jar"/>
+    <pathelement location="${basedir}/../build/SoomlaAndroidCore.jar"/>
+      <pathelement location="${basedir}/../build/AndroidStore.jar"/>
+  </path>
+
+  <path id="soomlaandroidlevelup.runtime.module.classpath">
+    <pathelement location="${soomlaandroidlevelup.output.dir}"/>
+    <pathelement location="${basedir}/../build/square-otto-1.3.2.jar"/>
+    <pathelement location="${basedir}/../build/SoomlaAndroidCore.jar"/>
+      <pathelement location="${basedir}/../build/AndroidStore.jar"/>
+  </path>
+
+
+  <patternset id="excluded.from.module.soomlaandroidlevelup">
+    <patternset refid="ignored.files"/>
+  </patternset>
+
+  <patternset id="excluded.from.compilation.soomlaandroidlevelup">
+    <patternset refid="compiler.excluded"/>
+    <patternset refid="excluded.from.module.soomlaandroidlevelup"/>
+  </patternset>
+
+  <path id="soomlaandroidlevelup.module.sourcepath">
+    <dirset dir="${module.soomlaandroidlevelup.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+
+  <target name="config">
+
+    <property name="config-target-path" value="${basedir}/src/com/soomla/levelup/"/>
+
+    <!-- Copy the configuration file, replacing tokens in the file. -->
+    <copy file="config/StoreConfig.java" todir="${config-target-path}"
+          overwrite="true" encoding="utf-8">
+     <filterset>
+      <filter token="CONFIG.LOGGING" value="${logging}"/>
+     </filterset>
+    </copy>
+
+    <!-- Now set it to read-only, as we don't want people accidentally
+         editing the wrong one. NOTE: This step is unnecessary, but I do
+         it so the developers remember that this is not the original file. -->
+    <!-- <chmod file="${config-target-path}/StoreConfig.java" perm="-w"/> -->
+    <!-- <attrib file="${config-target-path}/StoreConfig.java" readonly="true"/> -->
+
+   </target>
+
+    <target name="compile.module.soomlaandroidlevelup" depends="compile.module.soomlaandroidlevelup.production" description="Compile module soomlaandroidlevelup"/>
+
+  <target name="compile.module.soomlaandroidlevelup.production" description="Compile module soomlaandroidlevelup; production classes">
+    <mkdir dir="${soomlaandroidlevelup.output.dir}"/>
+    <javac destdir="${soomlaandroidlevelup.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.soomlaandroidlevelup}/javac">
+      <compilerarg line="${compiler.args.soomlaandroidlevelup}"/>
+      <bootclasspath refid="soomlaandroidlevelup.module.bootclasspath"/>
+      <classpath refid="soomlaandroidlevelup.module.production.classpath"/>
+      <src refid="soomlaandroidlevelup.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.soomlaandroidlevelup"/>
+    </javac>
+
+    <copy todir="${soomlaandroidlevelup.output.dir}">
+      <fileset dir="${module.soomlaandroidlevelup.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+        <patternset refid="excluded.from.compilation.soomlaandroidlevelup"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="clean.module.soomlaandroidlevelup" description="cleanup module">
+    <delete dir="${soomlaandroidlevelup.output.dir}"/>
+  </target>
+</project>

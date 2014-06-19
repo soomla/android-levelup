@@ -341,20 +341,14 @@ LevelUp.getInstance().initialize(worlds);
 score1.setTempScore(desiredRecord1);
 score1.saveAndReset();
 
-// onEvent/ScoreRecordChangedEvent:gates_list_score_id1->10.0
-// onEvent/GateCanBeOpenedEvent:gates_list_record_gate_id1
-
 recordGate1.canOpen(); // true
 recordGate1.isOpen(); // false
 
 recordGate1.tryOpen(); // should succeed (and return true)
 
-// onEvent/GateOpenedEvent:gates_list_record_gate_id1
-
 gatesListOR.canOpen(); // true (at least one sub-gate is open)
-// could be confusing, no need to tryOpen it
-gatesListOR.isOpen(); // true!
-//gatesListOR.tryOpen(); // not needed
+gatesListOR.isOpen(); // false
+gatesListOR.tryOpen(); // should succeed (and return true)
 
 gatesListAND.canOpen(); // false (all sub-gates need to be open for AND)
 gatesListAND.isOpen(); // false
@@ -363,30 +357,33 @@ gatesListAND.isOpen(); // false
 score2.setTempScore(desiredRecord2);
 score2.saveAndReset();
 
-//onEvent/ScoreRecordChangedEvent:gates_list_score_id2->20.0
-
 recordGate2.canOpen(); // true
 recordGate2.isOpen(); // false
 
 recordGate2.tryOpen(); // should succeed (and return true)
 
-//onEvent/GateCanBeOpenedEvent:gates_list_record_gate_id2
-//onEvent/GateOpenedEvent:gates_list_record_gate_id2
-
 gatesListOR.canOpen(); // still true
 gatesListOR.isOpen(); // still true
 
 gatesListAND.canOpen(); // true
-// todo: could be confusing, no need to tryOpen it
+gatesListAND.isOpen(); // false
+
+gatesListOR.tryOpen(); // should succeed (and return true)
 gatesListAND.isOpen(); // true
 
-mExpectedGateEventId = gateListANDId;
+// event sequence for this example:
+ScoreRecordChangedEvent:gates_list_score_id1->100.0
+GateCanBeOpenedEvent:gates_list_record_gate_id1[list=false]
+GateOpenedEvent:gates_list_record_gate_id1[list=false]
+GateCanBeOpenedEvent:gate_list_OR_id[list=true]
+GateOpenedEvent:gate_list_OR_id[list=true]
+ScoreRecordChangedEvent:gates_list_score_id2->200.0
+GateCanBeOpenedEvent:gates_list_record_gate_id2[list=false]
+GateOpenedEvent:gates_list_record_gate_id2[list=false]
+GateCanBeOpenedEvent:gate_list_AND_id[list=true]
+GateOpenedEvent:gate_list_AND_id[list=true]
 
-// could be confusing, no need to tryOpen it
-Assert.assertTrue(gatesListOR.tryOpen());
-Assert.assertTrue(gatesListAND.isOpen());
 ```
-
 
 
 ## Security

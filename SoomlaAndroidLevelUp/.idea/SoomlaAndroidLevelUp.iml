@@ -35,7 +35,9 @@
           <root url="jar://$MODULE_DIR$/tests/robolectric-2.3-jar-with-dependencies.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/tests/robolectric-2.3-sources.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="inheritedJdk" />
@@ -55,7 +57,9 @@
           <root url="jar://$MODULE_DIR$/../submodules/android-store/build/SoomlaAndroidCore.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../../soomla-android-core/src" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">

@@ -110,7 +110,6 @@ For more details on integrating with Soomla's IAP APIs (android-store) please se
 
 ## Integration with Soomla android-store
 
-In order for the
 Please follow steps in [android-store](https://github.com/soomla/android-store) for the _Store_ part of the setup.
 Then, you can use the **store-related _LevelUp_ classes**, such as _VirtualItemScore_ or _VirtualItemReward_.
 
@@ -158,12 +157,14 @@ virtualItemReward.isOwned(); // true
 ```
 
 * Challenge (Multi-Mission)
+> coming soon
 
 ```Java
 
 ```
 
 * GatesList
+> coming soon
 
 ```Java
 

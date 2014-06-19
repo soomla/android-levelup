@@ -16,6 +16,9 @@
 
 package com.soomla.levelup;
 
+import android.annotation.TargetApi;
+import android.os.Build;
+
 import com.soomla.BusProvider;
 import com.soomla.Soomla;
 import com.soomla.SoomlaApp;
@@ -63,9 +66,11 @@ import com.soomla.store.purchaseTypes.PurchaseWithMarket;
 import com.squareup.otto.Subscribe;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
@@ -79,21 +84,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * Created by oriargov on 6/12/14.
  */
-@Config(emulateSdk = 18, manifest = "tests/AndroidManifest.xml")
+@TargetApi(Build.VERSION_CODES.GINGERBREAD)
+@Config(emulateSdk = 18,
+        manifest = "tests/AndroidManifest.xml"
+        ,shadows = { ShadowSQLiteOpenHelper.class }
+)
 @RunWith(RobolectricTestRunner.class)
 public class LevelUpTest {
 
     public static final String ITEM_ID_BALANCE_GATE = "item_balance_gate";
+    public static final String ITEM_ID_BALANCE_MISSION = "balance_mission_item_id";
+    public static final String ITEM_ID_BALANCE_MISSION_REWARD = "balance_mission_reward_item_id";
     public static final String ITEM_ID_PURCHASE_GATE_VI = "item_purchase_gate_vi";
     public static final String ITEM_ID_PURCHASE_GATE_MARKET = "item_purchase_gate_market";
     public static final String ITEM_ID_VI_SCORE = "item_vi_score";
     public static final String ITEM_ID_VI_REWARD = "item_vi_reward";
+
+    private static boolean firstSetupDone = false;
 
     /** event expectations **/
 
@@ -106,15 +121,36 @@ public class LevelUpTest {
     private double mExpectedRecordValue = 0;
 
     // VirtualGood
-    private String mExpectedVirtualItemId = "";
-    private int mExpectedVirtualItemAmountAdded = -1;
-    private int mExpectedVirtualItemBalance = -1;
+    private static class VirtualItemBalanceEventExpectation {
+        public final String ExpectedVirtualItemId;
+        public final int ExpectedVirtualItemAmountAdded;
+        public final int ExpectedVirtualItemBalance;
+
+        private VirtualItemBalanceEventExpectation(String expectedVirtualItemId,
+                                                   int expectedVirtualItemAmountAdded,
+                                                   int expectedVirtualItemBalance) {
+            ExpectedVirtualItemId = expectedVirtualItemId;
+            ExpectedVirtualItemAmountAdded = expectedVirtualItemAmountAdded;
+            ExpectedVirtualItemBalance = expectedVirtualItemBalance;
+        }
+    }
+
+    private Queue<VirtualItemBalanceEventExpectation> mVirtualItemExpectationQueue =
+        new ArrayDeque<VirtualItemBalanceEventExpectation>();
 
     @Before
     public void setUp() throws Exception {
         SoomlaApp.setExternalContext(Robolectric.application);//this line must be first
         Soomla.initialize("LevelUpTestSecret");
         BusProvider.getInstance().register(this);
+
+        mVirtualItemExpectationQueue.clear();
+
+        if(!firstSetupDone) {
+            deleteDB();
+
+            firstSetupDone = true;
+        }
 
         SoomlaStore.getInstance().initialize(new IStoreAssets() {
             @Override
@@ -129,11 +165,17 @@ public class LevelUpTest {
 
             @Override
             public VirtualGood[] getGoods() {
-                int i = 3;
+                int i = 5;
                 final VirtualGood[] virtualGoods = new VirtualGood[i];
                 virtualGoods[--i] = new SingleUseVG("ItemBalanceGate",
                         "", ITEM_ID_BALANCE_GATE,
                         new PurchaseWithMarket(ITEM_ID_BALANCE_GATE, 1));
+                virtualGoods[--i] = new SingleUseVG("ItemBalanceMission",
+                        "", ITEM_ID_BALANCE_MISSION,
+                        new PurchaseWithMarket(ITEM_ID_BALANCE_MISSION, 1));
+                virtualGoods[--i] = new SingleUseVG("ItemBalanceMissionReward",
+                        "", ITEM_ID_BALANCE_MISSION_REWARD,
+                        new PurchaseWithMarket(ITEM_ID_BALANCE_MISSION_REWARD, 1));
                 virtualGoods[--i] = new SingleUseVG("ItemVIScore",
                         "", ITEM_ID_VI_SCORE,
                         new PurchaseWithMarket(ITEM_ID_VI_SCORE, 1));
@@ -171,7 +213,23 @@ public class LevelUpTest {
 
     @After
     public void tearDown() throws Exception {
+        // assert no expected events did not fire
+        Assert.assertTrue(mVirtualItemExpectationQueue.isEmpty());
+
         BusProvider.getInstance().unregister(this);
+    }
+
+    @AfterClass
+    public static void deleteDB() {
+        System.out.println("==firstSetup==");
+        // for some reason this doesn't work (even outside @AfterClass notation)
+//        System.out.println("app.deleteDatabase:" +
+//                Robolectric.application.deleteDatabase(ShadowSQLiteOpenHelper.DB_NAME));
+        // clear database files manually
+        System.out.println("delete db file:" +
+                new File(ShadowSQLiteOpenHelper.DB_NAME).delete());
+        System.out.println("delete db journal file:" +
+                new File(ShadowSQLiteOpenHelper.DB_NAME + "-journal").delete());
     }
 
 //    @Test
@@ -194,7 +252,7 @@ public class LevelUpTest {
      * the reason is the sqlite DB files being deleted between tests
      * while the SqliteOpenHelper remains the same object
      */
-    @Test
+    /*@Test*/
     public void testAll() {
         testLevel();
         testScoreAsc();
@@ -216,6 +274,7 @@ public class LevelUpTest {
 //        testRewards();
     }
 
+    @Test
     public void testLevel() {
         final List<World> worlds = new ArrayList<World>();
         Level lvl1 = new Level("lvl1");
@@ -270,6 +329,7 @@ public class LevelUpTest {
         Assert.assertEquals(1, lvl1.getTimesStarted());
     }
 
+    @Test
     public void testScoreAsc() {
         boolean higherIsBetter = true;
         final String scoreId = "score_asc";
@@ -290,6 +350,7 @@ public class LevelUpTest {
         Assert.assertEquals(10, scoreAsc.getLatest(), 0.01);
         Assert.assertEquals(0, scoreAsc.getTempScore(), 0.01);
         scoreAsc.setTempScore(20);
+        mExpectedRecordValue = 0;
         scoreAsc.reset();
         Assert.assertEquals(0, scoreAsc.getLatest(), 0.01);
         Assert.assertEquals(0, scoreAsc.getTempScore(), 0.01);
@@ -309,6 +370,7 @@ public class LevelUpTest {
         Assert.assertFalse(scoreAsc.hasRecordReached(31));
     }
 
+    //@Test
     public void testScoreDsc() {
         boolean higherIsBetter = false;
         final String scoreId = "score_dsc";
@@ -342,6 +404,7 @@ public class LevelUpTest {
         Assert.assertFalse(scoreDsc.hasRecordReached(19));
     }
 
+    @Test
     public void testRecordMission() {
         final String missionId = "record_mission";
         final String scoreId = "record_mission_score";
@@ -369,32 +432,57 @@ public class LevelUpTest {
         Assert.assertTrue(badgeReward.isOwned());
     }
 
+    @Test
     public void testBalanceMission() {
-        // todo: rename and add to IStoreAssets setUp
         final String missionId = "balance_mission_id";
         final String balanceMissionItemId = "balance_mission_item_id";
         final String rewardId = "balance_mission_reward_id";
-        final String megaStarItemId = "balance_mission_reward_item_id";
+        final String rewardItemId = "balance_mission_reward_item_id";
 
-        final VirtualItemReward virtualItemReward = new VirtualItemReward(rewardId, "ItemReward", 1, megaStarItemId);
+        final VirtualItemReward virtualItemReward = new VirtualItemReward(rewardId, "ItemReward", 1, rewardItemId);
         List<Reward> rewards = new ArrayList<Reward>();
         rewards.add(virtualItemReward);
-        BalanceMission balanceMission = new BalanceMission(missionId, "BalanceMission", rewards, balanceMissionItemId, 5);
+        BalanceMission balanceMission = new BalanceMission(
+                missionId, "BalanceMission",
+                rewards, balanceMissionItemId, 5);
 
-        // todo: assert basics
-        // todo: give less and assert false rewarded
-        // todo: set event expectations
-
+        // assert basics
+        Assert.assertFalse(balanceMission.isCompleted());
+        Assert.assertFalse(virtualItemReward.isOwned());
         try {
-            StoreInventory.giveVirtualItem(balanceMissionItemId, 5);
+            Assert.assertEquals(0, StoreInventory.getVirtualItemBalance(ITEM_ID_BALANCE_MISSION));
         } catch (VirtualItemNotFoundException e) {
             Assert.fail(e.getMessage());
         }
 
-        balanceMission.isCompleted(); // true
-        virtualItemReward.isOwned(); // true
+        // give less and assert false completed/rewarded
+        // set event expectations
+        mVirtualItemExpectationQueue.add(new VirtualItemBalanceEventExpectation(ITEM_ID_BALANCE_MISSION, 3, 3));
+        try {
+            StoreInventory.giveVirtualItem(balanceMissionItemId, 3);
+        } catch (VirtualItemNotFoundException e) {
+            Assert.fail(e.getMessage());
+        }
+
+        // set event expectations
+        mVirtualItemExpectationQueue.add(new VirtualItemBalanceEventExpectation(ITEM_ID_BALANCE_MISSION, 2, 5));
+        // this will happen directly after
+        mVirtualItemExpectationQueue.add(new VirtualItemBalanceEventExpectation(ITEM_ID_BALANCE_MISSION_REWARD, 1, 1));
+
+        mExpectedMissionEventId = missionId;
+        mExpectedRewardEventId = rewardId;
+
+        try {
+            StoreInventory.giveVirtualItem(balanceMissionItemId, 2);
+        } catch (VirtualItemNotFoundException e) {
+            Assert.fail(e.getMessage());
+        }
+
+        Assert.assertTrue(balanceMission.isCompleted());
+        Assert.assertTrue(virtualItemReward.isOwned());
     }
 
+    @Test
     public void testChallenge() {
         final String missionId1 = "challenge_mission1";
         final Mission mission1 = new ActionMission(missionId1, "ChallengeMission1");
@@ -425,6 +513,7 @@ public class LevelUpTest {
         Assert.assertTrue(challenge.isCompleted());
     }
 
+    @Test
     public void testRewards() {
         boolean given;
 //        BadgeReward badgeReward = new BadgeReward();
@@ -439,7 +528,8 @@ public class LevelUpTest {
 //        RandomReward randomReward = new RandomReward();
 //        SequenceReward sequenceReward = new SequenceReward();
 
-        VirtualItemReward virtualItemReward = new VirtualItemReward("vi_reward", "VIReward", 3, ITEM_ID_VI_REWARD);
+        final String rewardId = "vi_reward";
+        VirtualItemReward virtualItemReward = new VirtualItemReward(rewardId, "VIReward", 3, ITEM_ID_VI_REWARD);
         virtualItemReward.setRepeatable(true);
 
         try {
@@ -449,15 +539,13 @@ public class LevelUpTest {
         }
 
         // expected events (async)
-        mExpectedVirtualItemId = ITEM_ID_VI_REWARD;
-        mExpectedVirtualItemAmountAdded = 3;
-        mExpectedVirtualItemBalance = 3;
+        mExpectedRewardEventId = rewardId;
+        mVirtualItemExpectationQueue.add(new VirtualItemBalanceEventExpectation(ITEM_ID_VI_REWARD, 3, 3));
 
         given = virtualItemReward.give();
         Assert.assertTrue(given);
 
-        mExpectedVirtualItemAmountAdded = 3;
-        mExpectedVirtualItemBalance = 6;
+        mVirtualItemExpectationQueue.add(new VirtualItemBalanceEventExpectation(ITEM_ID_VI_REWARD, 3, 6));
 
         given = virtualItemReward.give();
         Assert.assertTrue(given);
@@ -469,6 +557,7 @@ public class LevelUpTest {
         }
     }
 
+    @Test
     public void testRecordGateWithRangeScore() {
         final List<World> worlds = new ArrayList<World>();
         final String lvl1Id = "lvl1_recordgate_rangescore";
@@ -536,6 +625,7 @@ public class LevelUpTest {
 //        writeFile("tests/levelup.json", json);
     }
 
+    @Test
     public void testBalanceGate() {
         final List<World> worlds = new ArrayList<World>();
         final String lvl1Id = "lvl1_balancegate";
@@ -561,9 +651,7 @@ public class LevelUpTest {
         // set up events expectations (async)
         mExpectedWorldEventId = lvl1Id;
         mExpectedGateEventId = balanceGateId;
-        mExpectedVirtualItemId = itemId;
-        mExpectedVirtualItemAmountAdded = 1;
-        mExpectedVirtualItemBalance = 1;
+        mVirtualItemExpectationQueue.add(new VirtualItemBalanceEventExpectation(itemId, 1, 1));
 
         lvl1.start();
 
@@ -583,9 +671,7 @@ public class LevelUpTest {
         Assert.assertFalse(balanceGate.isOpen());
         Assert.assertTrue(balanceGate.canOpen());
 
-        mExpectedVirtualItemId = itemId;
-        mExpectedVirtualItemAmountAdded = -1;
-        mExpectedVirtualItemBalance = 0;
+        mVirtualItemExpectationQueue.add(new VirtualItemBalanceEventExpectation(itemId, -1, 0));
 
         final boolean opened = balanceGate.tryOpen();
         Assert.assertTrue(opened);
@@ -602,6 +688,7 @@ public class LevelUpTest {
         Assert.assertTrue(lvl2.isCompleted());
     }
 
+    @Test
     public void testWorldCompletionGate() {
         final List<World> worlds = new ArrayList<World>();
         final String lvl1Id = "lvl1_completiongate";
@@ -654,6 +741,7 @@ public class LevelUpTest {
         Assert.assertTrue(lvl2.isCompleted());
     }
 
+    @Theory
     public void testPurchasableGate(boolean vi) {
         final List<World> worlds = new ArrayList<World>();
         final String lvl1Id = "lvl1_purchasablegate";
@@ -684,9 +772,7 @@ public class LevelUpTest {
         Assert.assertFalse(purchasableGate.isOpen());
         Assert.assertTrue(purchasableGate.canOpen());
 
-        mExpectedVirtualItemId = itemId;
-        mExpectedVirtualItemAmountAdded = 10;
-        mExpectedVirtualItemBalance = 10;
+        mVirtualItemExpectationQueue.add(new VirtualItemBalanceEventExpectation(itemId, 10, 10));
 
         try {
             StoreInventory.giveVirtualItem(itemId, 10);
@@ -694,9 +780,7 @@ public class LevelUpTest {
             Assert.fail(e.getMessage());
         }
 
-        mExpectedVirtualItemId = itemId;
-        mExpectedVirtualItemAmountAdded = -10;
-        mExpectedVirtualItemBalance = 0;
+        mVirtualItemExpectationQueue.add(new VirtualItemBalanceEventExpectation(itemId, -10, 0));
 
         try {
             StoreInventory.buy(itemId);
@@ -718,6 +802,7 @@ public class LevelUpTest {
         Assert.assertTrue(lvl2.isCompleted());
     }
 
+    @Test
     public void testGatesList() {
         final String recordGateId1 = "gates_list_record_gate_id1";
         final String scoreId1 = "gates_list_score_id1";
@@ -801,6 +886,7 @@ public class LevelUpTest {
         Assert.assertTrue(gatesListAND.isOpen());
     }
 
+    @Test
     public void testVirtualItemScore() {
         final List<World> worlds = new ArrayList<World>();
         final String lvl1Id = "lvl1_viscore";
@@ -823,9 +909,7 @@ public class LevelUpTest {
 
         // set up events expectations (async)
         mExpectedWorldEventId = lvl1Id;
-        mExpectedVirtualItemId = itemId;
-        mExpectedVirtualItemAmountAdded = 2;
-        mExpectedVirtualItemBalance = 2;
+        mVirtualItemExpectationQueue.add(new VirtualItemBalanceEventExpectation(itemId, 2, 2));
         mExpectedScoreEventId = scoreId;
         mExpectedRecordValue = 2;
 
@@ -858,9 +942,13 @@ public class LevelUpTest {
     public void onEvent(GoodBalanceChangedEvent goodBalanceChangedEvent) {
         final String itemId = goodBalanceChangedEvent.getGood().getItemId();
         System.out.println("onEvent/GoodBalanceChangedEvent:" + itemId);
-        Assert.assertEquals(mExpectedVirtualItemId, itemId);
-        Assert.assertEquals(mExpectedVirtualItemAmountAdded, goodBalanceChangedEvent.getAmountAdded());
-        Assert.assertEquals(mExpectedVirtualItemBalance, goodBalanceChangedEvent.getBalance());
+
+        Assert.assertFalse(mVirtualItemExpectationQueue.isEmpty());
+        VirtualItemBalanceEventExpectation expectation = mVirtualItemExpectationQueue.remove();
+
+        Assert.assertEquals(expectation.ExpectedVirtualItemId, itemId);
+        Assert.assertEquals(expectation.ExpectedVirtualItemAmountAdded, goodBalanceChangedEvent.getAmountAdded());
+        Assert.assertEquals(expectation.ExpectedVirtualItemBalance, goodBalanceChangedEvent.getBalance());
     }
 
     @Subscribe

@@ -91,22 +91,6 @@ public class Level extends World {
         super(jsonObject);
     }
 
-    /**
-     * Converts the current <code>Level</code> to a JSONObject.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>Level</code>.
-     */
-    public JSONObject toJSONObject(){
-        JSONObject jsonObject = super.toJSONObject();
-        try {
-            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
-        } catch (JSONException e) {
-            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
-        }
-
-        return jsonObject;
-    }
-
     public int getTimesStarted() {
         return LevelStorage.getTimesStarted(this);
     }

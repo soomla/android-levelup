@@ -104,7 +104,6 @@ public class Challenge extends Mission {
                 missionsArr.put(mission.toJSONObject());
             }
             jsonObject.put(LUJSONConsts.LU_MISSIONS, missionsArr);
-            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

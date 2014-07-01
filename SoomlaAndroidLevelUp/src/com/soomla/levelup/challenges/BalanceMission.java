@@ -91,7 +91,6 @@ public class BalanceMission extends Mission {
         try {
             jsonObject.put(LUJSONConsts.LU_ASSOCITEMID, mAssociatedItemId);
             jsonObject.put(LUJSONConsts.LU_DESIRED_BALANCE, mDesiredBalance);
-            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

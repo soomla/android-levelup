@@ -25,9 +25,6 @@ import com.soomla.util.JSONFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Represents a score in the game. A simple game usually has one generic numeric score
  * which grows as the user progresses in the game. A game can also have multiple

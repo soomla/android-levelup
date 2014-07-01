@@ -17,7 +17,7 @@
 package com.soomla.levelup.gates;
 
 import com.soomla.SoomlaUtils;
-import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.data.JSONConsts;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +36,6 @@ import java.util.List;
  */
 public class GatesListOR extends GatesList {
 
-    public static final String TYPE_NAME = "listOR";
 
     /**
      * Constructor
@@ -86,7 +85,7 @@ public class GatesListOR extends GatesList {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
-            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
+            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

@@ -18,6 +18,7 @@ package com.soomla.levelup.gates;
 
 import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
+import com.soomla.data.JSONConsts;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.events.ScoreRecordChangedEvent;
@@ -36,7 +37,6 @@ import org.json.JSONObject;
  */
 public class RecordGate extends Gate {
 
-    public static final String TYPE_NAME = "record";
 
     /**
      * Constructor
@@ -82,7 +82,7 @@ public class RecordGate extends Gate {
         try {
             jsonObject.put(BPJSONConsts.BP_ASSOCSCOREID, mAssociatedScoreId);
             jsonObject.put(BPJSONConsts.BP_DESIRED_RECORD, mDesiredRecord);
-            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
+            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

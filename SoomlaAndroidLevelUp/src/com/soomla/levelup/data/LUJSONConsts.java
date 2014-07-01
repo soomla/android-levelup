@@ -44,15 +44,6 @@ public class LUJSONConsts {
     public static final String LU_SCORE_RANGE_HIGH = "high";
 
 
-    /** Reward **/
-
-    public static final String LU_REWARDS = "rewards";
-    public static final String LU_REWARD_REWARDID = "rewardId";
-    public static final String LU_REWARD_AMOUNT = "amount";
-    public static final String LU_REWARD_ICONURL = "iconUrl";
-    public static final String LU_REWARD_REPEAT = "repeatable";
-
-
     /** Gate **/
 
     public static final String LU_GATES = "gates";

@@ -80,7 +80,7 @@ public abstract class Mission {
         mName = jsonObject.getString(LUJSONConsts.LU_NAME);
 
         mRewards = new ArrayList<Reward>();
-        JSONArray rewardsArr = jsonObject.getJSONArray(LUJSONConsts.LU_REWARDS);
+        JSONArray rewardsArr = jsonObject.getJSONArray(JSONConsts.SOOM_REWARDS);
 
         // Iterate over all missions in the JSON array and for each one create
         // an instance according to the mission type
@@ -137,7 +137,7 @@ public abstract class Mission {
             for (Reward reward : mRewards) {
                 rewardsArr.put(reward.toJSONObject());
             }
-            jsonObject.put(LUJSONConsts.LU_REWARDS, rewardsArr);
+            jsonObject.put(JSONConsts.SOOM_REWARDS, rewardsArr);
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

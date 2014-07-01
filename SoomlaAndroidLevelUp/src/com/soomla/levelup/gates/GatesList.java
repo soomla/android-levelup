@@ -16,7 +16,6 @@
 
 package com.soomla.levelup.gates;
 
-import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
 import com.soomla.data.JSONConsts;
 import com.soomla.levelup.data.BPJSONConsts;
@@ -27,9 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A representation of one or more <code>Gate</code>s which together define
@@ -52,7 +49,6 @@ public abstract class GatesList extends Gate {
         // "fake" gates with 1 sub-gate are auto open
         mAutoOpenBehavior = true;
 
-        registerEvents();
     }
 
     /**
@@ -69,8 +65,6 @@ public abstract class GatesList extends Gate {
 
         // "fake" gates with 1 sub-gate are auto open
         mAutoOpenBehavior = true;
-
-        registerEvents();
     }
 
     /**
@@ -83,8 +77,6 @@ public abstract class GatesList extends Gate {
     public GatesList(String gateId, List<Gate> gates) {
         super(gateId);
         mGates = gates;
-
-        registerEvents();
     }
 
     /**
@@ -113,18 +105,6 @@ public abstract class GatesList extends Gate {
             // "fake" gates with 1 sub-gate are auto open
             mAutoOpenBehavior = true;
         }
-
-        registerEvents();
-    }
-
-    private void registerEvents() {
-        if(!isOpen()) {
-            BusProvider.getInstance().register(this);
-        }
-    }
-
-    protected void unregisterEvents() {
-        BusProvider.getInstance().unregister(this);
     }
 
     /**

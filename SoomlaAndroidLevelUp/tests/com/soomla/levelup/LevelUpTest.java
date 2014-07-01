@@ -29,7 +29,6 @@ import com.soomla.levelup.challenges.BalanceMission;
 import com.soomla.levelup.challenges.Challenge;
 import com.soomla.levelup.challenges.Mission;
 import com.soomla.levelup.challenges.RecordMission;
-import com.soomla.levelup.events.GateCanBeOpenedEvent;
 import com.soomla.levelup.events.GateOpenedEvent;
 import com.soomla.levelup.events.LevelEndedEvent;
 import com.soomla.levelup.events.LevelStartedEvent;
@@ -796,7 +795,7 @@ public class LevelUpTest {
         Assert.assertTrue(lvl2.isCompleted());
     }
 
-    @Test /* should pass iff GatesList.mAutoOpenBehavior == true */
+    @Test /* should pass iff GatesList.mAutoOpenBehavior == false */
     public void testGatesList() {
         final String recordGateId1 = "gates_list_record_gate_id1";
         final String scoreId1 = "gates_list_score_id1";
@@ -876,7 +875,7 @@ public class LevelUpTest {
         Assert.assertTrue(gatesListAND.isOpen());
     }
 
-    @Test /* should pass iff GatesList.mAutoOpenBehavior == false */
+    @Test /* should pass iff GatesList.mAutoOpenBehavior == true */
     public void testGatesListAutoOpenBehavior() {
 //        GatesList.mChildrenCanOpenIsEnough = true;
 //        GatesList.mAutoOpenBehavior = true;
@@ -997,21 +996,6 @@ public class LevelUpTest {
         } catch (VirtualItemNotFoundException e) {
             Assert.fail(e.getMessage());
         }
-    }
-
-    @Subscribe
-    public void onEvent(GateCanBeOpenedEvent gateCanBeOpenedEvent) {
-        final String gateId = gateCanBeOpenedEvent.Gate.getGateId();
-        final boolean isGatesList = gateCanBeOpenedEvent.Gate instanceof GatesList;
-
-        final boolean isAdHocGate = UUID_REGEX.matcher(gateId).matches();
-
-        final String expectedGateEventId = isGatesList ?
-                (isAdHocGate ? gateId : mExpectedGatesListEventId) :
-                        mExpectedGateEventId;
-
-        System.out.println("onEvent/GateCanBeOpenedEvent:" + gateId + "[list=" + isGatesList + "]");
-        Assert.assertEquals(expectedGateEventId, gateId);
     }
 
     @Subscribe

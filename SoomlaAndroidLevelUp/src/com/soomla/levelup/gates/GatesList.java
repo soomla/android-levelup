@@ -202,7 +202,4 @@ public abstract class GatesList extends Gate {
 
     // does opening child gates cause us to auto-open (or just canOpen)?
     protected boolean mAutoOpenBehavior = false;
-
-    // children require to say true to canOpen or isOpen for our canOpen?
-    protected boolean mChildrenCanOpenIsEnough = false;
 }

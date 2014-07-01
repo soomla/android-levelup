@@ -170,7 +170,6 @@ public abstract class Mission {
             giveRewards();
         }
         else {
-            BusProvider.getInstance().post(new MissionCompletionRevokedEvent(this));
             takeRewards();
             // listen again for chance to be completed
             registerEvents();

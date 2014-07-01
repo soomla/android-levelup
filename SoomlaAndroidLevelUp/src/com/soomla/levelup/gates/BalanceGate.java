@@ -155,7 +155,7 @@ public class BalanceGate extends Gate {
     private void checkItemIdBalance(String itemId, int balance) {
         if (itemId.equals(mAssociatedItemId) && balance >= mDesiredBalance) {
             BusProvider.getInstance().unregister(this);
-            BusProvider.getInstance().post(new GateCanBeOpenedEvent(this));
+            // gate can open now
         }
     }
 

@@ -168,7 +168,6 @@ public class Score {
         double record = ScoreStorage.getRecordScore(this);
         if (hasTempReached(record)) {
             ScoreStorage.setRecordScore(this, mTempScore);
-            BusProvider.getInstance().post(new ScoreRecordChangedEvent(this));
         }
 
         performSaveActions();
@@ -182,6 +181,10 @@ public class Score {
      */
     public void reset() {
         mTempScore = mStartValue;
+        // 0 doesn't work well (confusing) for descending score
+        // if someone set higherBetter(false) and a start value of 100
+        // I think they expect reset to go back to 100, otherwise
+        // 0 is the best and current record and can't be beat
         ScoreStorage.setRecordScore(this, /*0*/mStartValue);
         ScoreStorage.setLatestScore(this, /*0*/mStartValue);
     }

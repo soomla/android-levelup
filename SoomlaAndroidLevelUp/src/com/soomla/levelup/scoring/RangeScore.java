@@ -56,6 +56,13 @@ public class RangeScore extends Score {
     public RangeScore(String scoreId, String name, boolean higherBetter, Range range) {
         super(scoreId, name, higherBetter);
         this.mRange = range;
+
+        // if the score is descending, the start value should be
+        // the high value, otherwise it's very confusing that the initial
+        // score is the lowest
+        if(!higherBetter) {
+            setStartValue(range.getHigh());
+        }
     }
 
     /**
@@ -68,6 +75,13 @@ public class RangeScore extends Score {
     public RangeScore(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
         mRange = new Range(jsonObject.getJSONObject(LUJSONConsts.LU_SCORE_RANGE));
+
+        // if the score is descending, the start value should be
+        // the high value, otherwise it's very confusing that the initial
+        // score is the lowest
+        if(!isHigherBetter()) {
+            setStartValue(mRange.getHigh());
+        }
     }
 
     /**
@@ -153,6 +167,10 @@ public class RangeScore extends Score {
         public Range(double low, double high) {
             mLow = low;
             mHigh = high;
+
+            if(mLow>=mHigh) {
+                throw new IllegalArgumentException("low isn't lower than high!");
+            }
         }
 
         /**
@@ -165,6 +183,10 @@ public class RangeScore extends Score {
         public Range(JSONObject jsonObject) throws JSONException {
             mLow = jsonObject.getDouble(LUJSONConsts.LU_SCORE_RANGE_LOW);
             mHigh = jsonObject.getDouble(LUJSONConsts.LU_SCORE_RANGE_HIGH);
+
+            if(mLow>=mHigh) {
+                throw new IllegalArgumentException("low isn't lower than high!");
+            }
         }
 
         /**

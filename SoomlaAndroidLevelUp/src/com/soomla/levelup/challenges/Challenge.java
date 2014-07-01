@@ -16,9 +16,9 @@
 
 package com.soomla.levelup.challenges;
 
-import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
-import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.data.JSONConsts;
+import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.levelup.data.MissionStorage;
 import com.soomla.levelup.events.MissionCompletedEvent;
 import com.soomla.levelup.events.MissionCompletionRevokedEvent;
@@ -41,7 +41,6 @@ import java.util.List;
  */
 public class Challenge extends Mission {
 
-    public static final String TYPE_NAME = "challenge";
 
     /**
      * Constructor
@@ -79,7 +78,7 @@ public class Challenge extends Mission {
         super(jsonObject);
 
         mMissions = new ArrayList<Mission>();
-        JSONArray missionsArr = jsonObject.getJSONArray(BPJSONConsts.BP_MISSIONS);
+        JSONArray missionsArr = jsonObject.getJSONArray(LUJSONConsts.LU_MISSIONS);
 
         // Iterate over all missions in the JSON array and for each one create
         // an instance according to the mission type
@@ -104,8 +103,7 @@ public class Challenge extends Mission {
             for (Mission mission : mMissions) {
                 missionsArr.put(mission.toJSONObject());
             }
-            jsonObject.put(BPJSONConsts.BP_MISSIONS, missionsArr);
-            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
+            jsonObject.put(LUJSONConsts.LU_MISSIONS, missionsArr);
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

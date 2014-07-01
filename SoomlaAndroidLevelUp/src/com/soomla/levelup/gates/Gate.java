@@ -18,15 +18,12 @@ package com.soomla.levelup.gates;
 
 import com.soomla.SoomlaUtils;
 import com.soomla.data.JSONConsts;
-import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.levelup.data.GateStorage;
 import com.soomla.util.JSONFactory;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A gate is an object which defines certain criteria for progressing
@@ -53,7 +50,7 @@ public abstract class Gate {
      * @throws JSONException
      */
     public Gate(JSONObject jsonObject) throws JSONException {
-        mGateId = jsonObject.getString(BPJSONConsts.BP_GATE_GATEID);
+        mGateId = jsonObject.getString(LUJSONConsts.LU_GATE_GATEID);
     }
 
     /**
@@ -65,7 +62,7 @@ public abstract class Gate {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
-            jsonObject.put(BPJSONConsts.BP_GATE_GATEID, mGateId);
+            jsonObject.put(LUJSONConsts.LU_GATE_GATEID, mGateId);
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

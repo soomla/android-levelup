@@ -355,6 +355,7 @@ public class LevelUpTest {
         final String scoreId = "score_dsc";
         Score scoreDsc = new Score(scoreId, "ScoreDsc", false);
         scoreDsc.setStartValue(100);
+        mExpectedRecordValue = 100;
 
         final String missionId = "score_dsc_record_mission_id";
         RecordMission recordMission = new RecordMission(missionId, "ScoreDscRecordMission", scoreId, desiredRecord);
@@ -383,6 +384,35 @@ public class LevelUpTest {
         Assert.assertEquals(20, scoreDsc.getRecord(), 0.01);
         Assert.assertTrue(scoreDsc.hasRecordReached(20));
         Assert.assertFalse(scoreDsc.hasRecordReached(19));
+    }
+
+    @Test
+    public void testRangeScoreOverflow() {
+        final String scoreIdUp = "testRangeScoreOverflow_score_up_id";
+        final RangeScore rangeScoreUp = new RangeScore(scoreIdUp, "RangeScore", true, new RangeScore.Range(0, 100));
+        final String scoreIdDown = "testRangeScoreOverflow_score_down_id";
+        final RangeScore rangeScoreDown = new RangeScore(scoreIdDown, "RangeScore", false, new RangeScore.Range(0, 100));
+        rangeScoreDown.setStartValue(100);
+
+        mExpectedScoreEventId = "testRangeScoreOverflow_score_up_id";
+        mExpectedRecordValue = 0;
+
+        rangeScoreUp.inc(101);
+        Assert.assertEquals(100, rangeScoreUp.getTempScore(), 0.01);
+        rangeScoreUp.reset();
+        rangeScoreUp.inc(5);
+        rangeScoreUp.dec(10);
+        Assert.assertEquals(0, rangeScoreUp.getTempScore(), 0.01);
+
+        mExpectedScoreEventId = "testRangeScoreOverflow_score_down_id";
+        mExpectedRecordValue = 100;
+
+        rangeScoreDown.dec(101);
+        Assert.assertEquals(0, rangeScoreDown.getTempScore(), 0.01);
+        rangeScoreDown.reset();
+        rangeScoreDown.dec(5);
+        rangeScoreDown.inc(10);
+        Assert.assertEquals(100, rangeScoreDown.getTempScore(), 0.01);
     }
 
     @Test

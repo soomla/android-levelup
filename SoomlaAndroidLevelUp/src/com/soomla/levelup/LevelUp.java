@@ -18,7 +18,7 @@ package com.soomla.levelup;
 
 import com.soomla.SoomlaUtils;
 import com.soomla.data.KeyValueStorage;
-import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.levelup.scoring.Score;
 
 import org.json.JSONArray;
@@ -81,10 +81,10 @@ public class LevelUp {
      * Persists the entire levelup model to storage.
      */
     private void save() {
-        String bp_json = toJSONObject().toString();
-        SoomlaUtils.LogDebug(TAG, "saving LevelUp to DB. json is: " + bp_json);
+        String lu_json = toJSONObject().toString();
+        SoomlaUtils.LogDebug(TAG, "saving LevelUp to DB. json is: " + lu_json);
         String key = DB_KEY_PREFIX + "model";
-        KeyValueStorage.setValue(key, bp_json);
+        KeyValueStorage.setValue(key, lu_json);
     }
 
 //    public void load() {}
@@ -105,7 +105,7 @@ public class LevelUp {
             for (World world : mInitialWorlds.values()) {
                 worldsJSON.put(world.toJSONObject());
             }
-            jsonObject.put(BPJSONConsts.BP_WORLDS, worldsJSON);
+            jsonObject.put(LUJSONConsts.LU_WORLDS, worldsJSON);
         } catch (JSONException e) {
             e.printStackTrace();
         }

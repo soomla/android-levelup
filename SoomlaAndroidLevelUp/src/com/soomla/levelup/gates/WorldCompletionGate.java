@@ -21,7 +21,7 @@ import com.soomla.SoomlaUtils;
 import com.soomla.data.JSONConsts;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.World;
-import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.levelup.events.WorldCompletedEvent;
 import com.squareup.otto.Subscribe;
 
@@ -61,7 +61,7 @@ public class WorldCompletionGate extends Gate {
      */
     public WorldCompletionGate(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-        mAssociatedWorldId = jsonObject.getString(BPJSONConsts.BP_ASSOCWORLDID);
+        mAssociatedWorldId = jsonObject.getString(LUJSONConsts.LU_ASSOCWORLDID);
 
         if (!isOpen()) {
             BusProvider.getInstance().register(this);
@@ -76,7 +76,7 @@ public class WorldCompletionGate extends Gate {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
-            jsonObject.put(BPJSONConsts.BP_ASSOCWORLDID, mAssociatedWorldId);
+            jsonObject.put(LUJSONConsts.LU_ASSOCWORLDID, mAssociatedWorldId);
             jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");

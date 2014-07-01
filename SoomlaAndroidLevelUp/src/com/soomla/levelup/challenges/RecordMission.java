@@ -19,7 +19,7 @@ package com.soomla.levelup.challenges;
 
 import com.soomla.SoomlaUtils;
 import com.soomla.data.JSONConsts;
-import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.levelup.events.ScoreRecordChangedEvent;
 import com.soomla.rewards.Reward;
 import com.squareup.otto.Subscribe;
@@ -75,8 +75,8 @@ public class RecordMission extends Mission {
      */
     public RecordMission(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-        mAssociatedScoreId = jsonObject.getString(BPJSONConsts.BP_ASSOCSCOREID);
-        mDesiredRecord = jsonObject.getInt(BPJSONConsts.BP_DESIRED_RECORD);
+        mAssociatedScoreId = jsonObject.getString(LUJSONConsts.LU_ASSOCSCOREID);
+        mDesiredRecord = jsonObject.getInt(LUJSONConsts.LU_DESIRED_RECORD);
     }
 
     /**
@@ -87,8 +87,8 @@ public class RecordMission extends Mission {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
-            jsonObject.put(BPJSONConsts.BP_ASSOCSCOREID, mAssociatedScoreId);
-            jsonObject.put(BPJSONConsts.BP_DESIRED_RECORD, mDesiredRecord);
+            jsonObject.put(LUJSONConsts.LU_ASSOCSCOREID, mAssociatedScoreId);
+            jsonObject.put(LUJSONConsts.LU_DESIRED_RECORD, mDesiredRecord);
             jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");

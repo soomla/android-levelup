@@ -17,6 +17,7 @@
 package com.soomla.levelup.gates;
 
 import com.soomla.SoomlaUtils;
+import com.soomla.data.JSONConsts;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.GateStorage;
 import com.soomla.util.JSONFactory;
@@ -63,6 +64,7 @@ public abstract class Gate {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
             jsonObject.put(BPJSONConsts.BP_GATE_GATEID, mGateId);
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
@@ -72,7 +74,7 @@ public abstract class Gate {
     }
 
     public static Gate fromJSONObject(JSONObject jsonObject) {
-        return sJSONFactory.create(jsonObject, sTypeMap);
+        return sJSONFactory.create(jsonObject, Gate.class.getPackage().getName());
     }
 
     /**
@@ -127,16 +129,6 @@ public abstract class Gate {
     private static final String TAG = "SOOMLA Gate";
 
     private static JSONFactory<Gate> sJSONFactory = new JSONFactory<Gate>();
-    private static Map<String, Class<? extends Gate>> sTypeMap =
-            new HashMap<String, Class<? extends Gate>>(6);
-    static {
-        sTypeMap.put(BalanceGate.TYPE_NAME, BalanceGate.class);
-        sTypeMap.put(GatesListAND.TYPE_NAME, GatesListAND.class);
-        sTypeMap.put(GatesListOR.TYPE_NAME, GatesListOR.class);
-        sTypeMap.put(PurchasableGate.TYPE_NAME, PurchasableGate.class);
-        sTypeMap.put(RecordGate.TYPE_NAME, RecordGate.class);
-        sTypeMap.put(WorldCompletionGate.TYPE_NAME, WorldCompletionGate.class);
-    }
 
     private String mGateId;
 }

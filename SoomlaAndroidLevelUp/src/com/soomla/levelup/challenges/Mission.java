@@ -18,9 +18,9 @@ package com.soomla.levelup.challenges;
 
 import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
+import com.soomla.data.JSONConsts;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.MissionStorage;
-import com.soomla.levelup.events.MissionCompletionRevokedEvent;
 import com.soomla.rewards.Reward;
 import com.soomla.util.JSONFactory;
 
@@ -98,7 +98,7 @@ public abstract class Mission {
     }
 
     public static Mission fromJSONObject(JSONObject jsonObject) {
-        return sJSONFactory.create(jsonObject, sTypeMap);
+        return sJSONFactory.create(jsonObject, Mission.class.getPackage().getName());
     }
 
     /**
@@ -132,6 +132,7 @@ public abstract class Mission {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
             jsonObject.put(BPJSONConsts.BP_MISSION_MISSIONID, mMissionId);
             jsonObject.put(BPJSONConsts.BP_NAME, mName);
             JSONArray rewardsArr = new JSONArray();
@@ -170,7 +171,6 @@ public abstract class Mission {
             giveRewards();
         }
         else {
-            BusProvider.getInstance().post(new MissionCompletionRevokedEvent(this));
             takeRewards();
             // listen again for chance to be completed
             registerEvents();
@@ -237,14 +237,6 @@ public abstract class Mission {
     private static final String TAG = "SOOMLA Mission";
 
     private static JSONFactory<Mission> sJSONFactory = new JSONFactory<Mission>();
-    private static Map<String, Class<? extends Mission>> sTypeMap =
-            new HashMap<String, Class<? extends Mission>>(4);
-    static {
-        sTypeMap.put(ActionMission.TYPE_NAME, ActionMission.class);
-        sTypeMap.put(BalanceMission.TYPE_NAME, BalanceMission.class);
-        sTypeMap.put(Challenge.TYPE_NAME, Challenge.class);
-        sTypeMap.put(RecordMission.TYPE_NAME, RecordMission.class);
-    }
 
     private String mMissionId;
     private String mName;

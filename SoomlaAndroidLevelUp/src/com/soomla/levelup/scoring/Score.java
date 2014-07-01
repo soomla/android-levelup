@@ -16,11 +16,10 @@
 
 package com.soomla.levelup.scoring;
 
-import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
+import com.soomla.data.JSONConsts;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.ScoreStorage;
-import com.soomla.levelup.events.ScoreRecordChangedEvent;
 import com.soomla.util.JSONFactory;
 
 import org.json.JSONException;
@@ -39,8 +38,6 @@ import java.util.Map;
  * Created by refaelos on 06/05/14.
  */
 public class Score {
-
-    public static final String TYPE_NAME = "score";
 
     /**
      * Constructor
@@ -97,7 +94,7 @@ public class Score {
             jsonObject.put(BPJSONConsts.BP_NAME, mName);
             jsonObject.put(BPJSONConsts.BP_SCORE_STARTVAL, mStartValue);
             jsonObject.put(BPJSONConsts.BP_SCORE_HIGHBETTER, mHigherBetter);
-            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
+            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
@@ -107,34 +104,7 @@ public class Score {
 
     public static Score fromJSONObject(JSONObject jsonObject) {
 
-        return sJSONFactory.create(jsonObject, sTypeMap);
-
-//        if(jsonObject == null) {
-//            SoomlaUtils.LogWarning(TAG, "fromJSONObject: jsonObject is null");
-//            return null;
-//        }
-//
-//        Score score = null;
-//
-//        try {
-//            String type = jsonObject.getString(BPJSONConsts.BP_TYPE);
-//            if (type.equals(Score.TYPE_NAME)) {
-//                score = new Score(jsonObject);
-//            }
-//            else if (type.equals(RangeScore.TYPE_NAME)) {
-//                score = new RangeScore(jsonObject);
-//            }
-//            else if (type.equals(VirtualItemScore.TYPE_NAME)) {
-//                score = new VirtualItemScore(jsonObject);
-//            }
-//            else {
-//                SoomlaUtils.LogError(TAG, "unknown score type:" + type);
-//            }
-//        } catch (JSONException e) {
-//            SoomlaUtils.LogError(TAG, "fromJSONObject JSONException:" + e.getMessage());
-//        }
-//
-//        return score;
+        return sJSONFactory.create(jsonObject, Score.class.getPackage().getName());
     }
 
     public boolean isHigherBetter() {
@@ -168,7 +138,6 @@ public class Score {
         double record = ScoreStorage.getRecordScore(this);
         if (hasTempReached(record)) {
             ScoreStorage.setRecordScore(this, mTempScore);
-            BusProvider.getInstance().post(new ScoreRecordChangedEvent(this));
         }
 
         performSaveActions();
@@ -182,6 +151,10 @@ public class Score {
      */
     public void reset() {
         mTempScore = mStartValue;
+        // 0 doesn't work well (confusing) for descending score
+        // if someone set higherBetter(false) and a start value of 100
+        // I think they expect reset to go back to 100, otherwise
+        // 0 is the best and current record and can't be beat
         ScoreStorage.setRecordScore(this, /*0*/mStartValue);
         ScoreStorage.setLatestScore(this, /*0*/mStartValue);
     }
@@ -263,13 +236,6 @@ public class Score {
     private static String TAG = "SOOMLA Score";
 
     private static JSONFactory<Score> sJSONFactory = new JSONFactory<Score>();
-    private static Map<String, Class<? extends Score>> sTypeMap =
-            new HashMap<String, Class<? extends Score>>(4);
-    static {
-        sTypeMap.put(Score.TYPE_NAME, Score.class);
-        sTypeMap.put(RangeScore.TYPE_NAME, RangeScore.class);
-        sTypeMap.put(VirtualItemScore.TYPE_NAME, VirtualItemScore.class);
-    }
 
     protected double mStartValue;
     protected String mName;

@@ -20,7 +20,6 @@ import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.GateStorage;
-import com.soomla.levelup.events.GateCanBeOpenedEvent;
 import com.soomla.store.StoreInventory;
 import com.soomla.store.events.CurrencyBalanceChangedEvent;
 import com.soomla.store.events.GoodBalanceChangedEvent;
@@ -155,7 +154,7 @@ public class BalanceGate extends Gate {
     private void checkItemIdBalance(String itemId, int balance) {
         if (itemId.equals(mAssociatedItemId) && balance >= mDesiredBalance) {
             BusProvider.getInstance().unregister(this);
-            BusProvider.getInstance().post(new GateCanBeOpenedEvent(this));
+            // gate can open now
         }
     }
 

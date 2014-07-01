@@ -16,13 +16,8 @@
 
 package com.soomla.levelup.gates;
 
-import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.BPJSONConsts;
-import com.soomla.levelup.data.GateStorage;
-import com.soomla.levelup.events.GateCanBeOpenedEvent;
-import com.soomla.levelup.events.GateOpenedEvent;
-import com.squareup.otto.Subscribe;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -120,56 +115,11 @@ public class GatesListOR extends GatesList {
     @Override
     public boolean canOpen() {
         for (Gate gate : mGates) {
-            if ((mChildrenCanOpenIsEnough && gate.canOpen()) || gate.isOpen()) {
+            if (gate.isOpen()) {
                 return true;
             }
         }
         return false;
-    }
-
-    /** Events **/
-
-    // If canOpen is defined as true when a sub-gate canOpen
-    // use this subscription
-
-    @Subscribe
-    public void onGateCanOpenEvent(GateCanBeOpenedEvent gateCanBeOpenedEvent) {
-        if(!mChildrenCanOpenIsEnough || !mGates.contains(gateCanBeOpenedEvent.Gate))
-            return; // handled by GateOpenedEvent
-
-        int openCounter = 0;
-
-        for (Gate gate : mGates) {
-            if (gate.canOpen()) {
-                openCounter++;
-            }
-        }
-
-        // post event only on first open sub-gate
-        if (openCounter == 1) {
-            BusProvider.getInstance().post(new GateCanBeOpenedEvent(this));
-        }
-    }
-
-    // If canOpen is defined as true when a sub-gate isOpen
-    // use this subscription
-
-    @Subscribe
-    public void onGateOpenedEvent(GateOpenedEvent gateOpenedEvent) {
-        if(mChildrenCanOpenIsEnough || !mGates.contains(gateOpenedEvent.Gate))
-            return; // handled by GateCanBeOpenedEvent
-
-        int openCounter = 0;
-
-        for (Gate gate : mGates) {
-            if (gate.isOpen()) {
-                openCounter++;
-            }
-        }
-
-        if(openCounter == 1 && !GateStorage.isOpen(this)) {
-            BusProvider.getInstance().post(new GateCanBeOpenedEvent(this));
-        }
     }
 
     /** Private Members */

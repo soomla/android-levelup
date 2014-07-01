@@ -54,7 +54,7 @@ import com.soomla.store.SoomlaStore;
 import com.soomla.store.StoreInventory;
 import com.soomla.store.domain.NonConsumableItem;
 import com.soomla.store.domain.VirtualCategory;
-import com.soomla.store.domain.rewards.VirtualItemReward;
+import com.soomla.rewards.VirtualItemReward;
 import com.soomla.store.domain.virtualCurrencies.VirtualCurrency;
 import com.soomla.store.domain.virtualCurrencies.VirtualCurrencyPack;
 import com.soomla.store.domain.virtualGoods.SingleUseVG;

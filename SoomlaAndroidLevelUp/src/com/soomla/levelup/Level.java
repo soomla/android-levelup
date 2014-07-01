@@ -145,12 +145,10 @@ public class Level extends World {
             return false;
         }
 
-        LevelStorage.incTimesStarted(this);
-
         mStartTime = System.currentTimeMillis();
         mElapsed = 0;
-
         mState = State.Running;
+        LevelStorage.incTimesStarted(this);
 
         return true;
     }

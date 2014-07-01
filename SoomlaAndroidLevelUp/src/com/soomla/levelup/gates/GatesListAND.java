@@ -16,13 +16,8 @@
 
 package com.soomla.levelup.gates;
 
-import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.BPJSONConsts;
-import com.soomla.levelup.data.GateStorage;
-import com.soomla.levelup.events.GateCanBeOpenedEvent;
-import com.soomla.levelup.events.GateOpenedEvent;
-import com.squareup.otto.Subscribe;
 
 import org.json.JSONException;
 import org.json.JSONObject;

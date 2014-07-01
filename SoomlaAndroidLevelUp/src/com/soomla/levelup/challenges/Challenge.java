@@ -16,7 +16,6 @@
 
 package com.soomla.levelup.challenges;
 
-import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.MissionStorage;

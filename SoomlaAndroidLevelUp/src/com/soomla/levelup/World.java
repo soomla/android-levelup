@@ -17,6 +17,7 @@
 package com.soomla.levelup;
 
 import com.soomla.SoomlaUtils;
+import com.soomla.data.JSONConsts;
 import com.soomla.levelup.challenges.Challenge;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.WorldStorage;
@@ -56,8 +57,6 @@ import java.util.UUID;
  * Created by refaelos on 06/05/14.
  */
 public class World {
-
-    public static final String TYPE_NAME = "world";
 
     /**
      * Constructor
@@ -141,31 +140,7 @@ public class World {
 
     public static World fromJSONObject(JSONObject jsonObject) {
 
-        return sJSONFactory.create(jsonObject, sTypeMap);
-
-//        if(jsonObject == null) {
-//            SoomlaUtils.LogWarning(TAG, "fromJSONObject: jsonObject is null");
-//            return null;
-//        }
-//
-//        World world = null;
-//
-//        try {
-//            String type = jsonObject.getString(BPJSONConsts.BP_TYPE);
-//            if (type.equals(World.TYPE_NAME)) {
-//                world = new World(jsonObject);
-//            }
-//            else if (type.equals(Level.TYPE_NAME)) {
-//                world = new Level(jsonObject);
-//            }
-//            else {
-//                SoomlaUtils.LogError(TAG, "unknown world type:" + type);
-//            }
-//        } catch (JSONException e) {
-//            SoomlaUtils.LogError(TAG, "fromJSONObject JSONException:" + e.getMessage());
-//        }
-//
-//        return world;
+        return sJSONFactory.create(jsonObject, World.class.getPackage().getName());
     }
 
 
@@ -177,7 +152,7 @@ public class World {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
+            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
             jsonObject.put(BPJSONConsts.BP_WORLD_WORLDID, mWorldId);
             jsonObject.put(BPJSONConsts.BP_GATES, (mGates==null ? new JSONObject() : mGates.toJSONObject()));
 
@@ -355,13 +330,6 @@ public class World {
     private static String TAG = "SOOMLA World";
 
     private static JSONFactory<World> sJSONFactory = new JSONFactory<World>();
-    private static Map<String, Class<? extends World>> sTypeMap =
-            new HashMap<String, Class<? extends World>>(2);
-
-    static {
-        sTypeMap.put(World.TYPE_NAME, World.class);
-        sTypeMap.put(Level.TYPE_NAME, Level.class);
-    }
 
     private String mWorldId;
     private GatesList mGates;

@@ -20,7 +20,6 @@ import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.GateStorage;
-import com.soomla.levelup.events.GateCanBeOpenedEvent;
 import com.soomla.store.StoreInventory;
 import com.soomla.store.events.CurrencyBalanceChangedEvent;
 import com.soomla.store.events.GoodBalanceChangedEvent;

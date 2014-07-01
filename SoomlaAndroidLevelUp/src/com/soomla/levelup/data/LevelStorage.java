@@ -18,11 +18,10 @@ package com.soomla.levelup.data;
 
 import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
-import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.Level;
+import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.events.LevelEndedEvent;
 import com.soomla.levelup.events.LevelStartedEvent;
-import com.soomla.store.data.StorageManager;
 
 /**
  * A utility class for persisting and querying the state of levels.

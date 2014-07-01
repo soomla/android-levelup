@@ -20,7 +20,6 @@ import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.data.BPJSONConsts;
-import com.soomla.levelup.events.GateCanBeOpenedEvent;
 import com.soomla.levelup.events.ScoreRecordChangedEvent;
 import com.soomla.levelup.scoring.Score;
 import com.squareup.otto.Subscribe;

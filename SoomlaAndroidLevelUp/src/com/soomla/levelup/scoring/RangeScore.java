@@ -18,7 +18,7 @@ package com.soomla.levelup.scoring;
 
 import com.soomla.SoomlaUtils;
 import com.soomla.data.JSONConsts;
-import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.data.LUJSONConsts;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,7 +68,7 @@ public class RangeScore extends Score {
      */
     public RangeScore(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-        mRange = new Range(jsonObject.getJSONObject(BPJSONConsts.BP_SCORE_RANGE));
+        mRange = new Range(jsonObject.getJSONObject(LUJSONConsts.LU_SCORE_RANGE));
     }
 
     /**
@@ -79,7 +79,7 @@ public class RangeScore extends Score {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
-            jsonObject.put(BPJSONConsts.BP_SCORE_RANGE, mRange.toJSONObject());
+            jsonObject.put(LUJSONConsts.LU_SCORE_RANGE, mRange.toJSONObject());
             jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
@@ -153,8 +153,8 @@ public class RangeScore extends Score {
          * @throws JSONException
          */
         public Range(JSONObject jsonObject) throws JSONException {
-            mLow = jsonObject.getDouble(BPJSONConsts.BP_SCORE_RANGE_LOW);
-            mHigh = jsonObject.getDouble(BPJSONConsts.BP_SCORE_RANGE_HIGH);
+            mLow = jsonObject.getDouble(LUJSONConsts.LU_SCORE_RANGE_LOW);
+            mHigh = jsonObject.getDouble(LUJSONConsts.LU_SCORE_RANGE_HIGH);
         }
 
         /**
@@ -165,8 +165,8 @@ public class RangeScore extends Score {
         public JSONObject toJSONObject(){
             JSONObject jsonObject = new JSONObject();
             try {
-                jsonObject.put(BPJSONConsts.BP_SCORE_RANGE_LOW, mLow);
-                jsonObject.put(BPJSONConsts.BP_SCORE_RANGE_HIGH, mHigh);
+                jsonObject.put(LUJSONConsts.LU_SCORE_RANGE_LOW, mLow);
+                jsonObject.put(LUJSONConsts.LU_SCORE_RANGE_HIGH, mHigh);
             } catch (JSONException e) {
                 SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
             }

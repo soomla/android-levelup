@@ -18,7 +18,7 @@ package com.soomla.levelup.scoring;
 
 import com.soomla.SoomlaUtils;
 import com.soomla.data.JSONConsts;
-import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.store.StoreInventory;
 import com.soomla.store.exceptions.VirtualItemNotFoundException;
 
@@ -69,7 +69,7 @@ public class VirtualItemScore extends Score {
      */
     public VirtualItemScore(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-        mAssociatedItemId = jsonObject.getString(BPJSONConsts.BP_ASSOCITEMID);
+        mAssociatedItemId = jsonObject.getString(LUJSONConsts.LU_ASSOCITEMID);
     }
 
     /**
@@ -80,7 +80,7 @@ public class VirtualItemScore extends Score {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
-            jsonObject.put(BPJSONConsts.BP_ASSOCITEMID, mAssociatedItemId);
+            jsonObject.put(LUJSONConsts.LU_ASSOCITEMID, mAssociatedItemId);
             jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");

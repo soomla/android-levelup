@@ -16,15 +16,12 @@
 
 package com.soomla.levelup.data;
 
-import com.soomla.SoomlaApp;
-import com.soomla.SoomlaUtils;
-import com.soomla.data.KeyValDatabase;
+import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.challenges.Mission;
 import com.soomla.levelup.events.MissionCompletedEvent;
-import com.soomla.BusProvider;
-import com.soomla.store.data.StorageManager;
+import com.soomla.levelup.events.MissionCompletionRevokedEvent;
 
 /**
  * A utility class for persisting and querying the state of missions.
@@ -65,6 +62,9 @@ public class MissionStorage {
             }
         } else {
             KeyValueStorage.deleteKeyValue(key);
+            if (notify) {
+                BusProvider.getInstance().post(new MissionCompletionRevokedEvent(mission));
+            }
         }
     }
 

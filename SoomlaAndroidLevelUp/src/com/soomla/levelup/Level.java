@@ -20,11 +20,8 @@ import com.soomla.SoomlaUtils;
 import com.soomla.levelup.challenges.Challenge;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.LevelStorage;
-import com.soomla.levelup.events.LevelEndedEvent;
-import com.soomla.levelup.events.LevelStartedEvent;
 import com.soomla.levelup.gates.GatesList;
 import com.soomla.levelup.scoring.Score;
-import com.soomla.BusProvider;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -155,8 +152,6 @@ public class Level extends World {
 
         mState = State.Running;
 
-        // Notify level has started
-        BusProvider.getInstance().post(new LevelStartedEvent(this));
         return true;
     }
 
@@ -220,9 +215,6 @@ public class Level extends World {
 
         mState = State.Ended;
 
-        // Count number of times this level was played
-        LevelStorage.incTimesPlayed(this);
-
         // Calculate the slowest \ fastest durations of level play
 
         if (duration > getSlowestDuration()) {
@@ -237,8 +229,8 @@ public class Level extends World {
             score.saveAndReset(); // resetting scores
         }
 
-        // Notify level has ended
-        BusProvider.getInstance().post(new LevelEndedEvent(this));
+        // Count number of times this level was played
+        LevelStorage.incTimesPlayed(this);
 
         // reset timers
         mStartTime = 0;

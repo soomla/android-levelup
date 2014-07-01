@@ -16,8 +16,8 @@
 
 package com.soomla.levelup.gates;
 
-import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
+import com.soomla.data.JSONConsts;
 import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.util.JSONFactory;
 
@@ -26,9 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A representation of one or more <code>Gate</code>s which together define
@@ -51,7 +49,6 @@ public abstract class GatesList extends Gate {
         // "fake" gates with 1 sub-gate are auto open
         mAutoOpenBehavior = true;
 
-        registerEvents();
     }
 
     /**
@@ -68,8 +65,6 @@ public abstract class GatesList extends Gate {
 
         // "fake" gates with 1 sub-gate are auto open
         mAutoOpenBehavior = true;
-
-        registerEvents();
     }
 
     /**
@@ -82,8 +77,6 @@ public abstract class GatesList extends Gate {
     public GatesList(String gateId, List<Gate> gates) {
         super(gateId);
         mGates = gates;
-
-        registerEvents();
     }
 
     /**
@@ -112,18 +105,6 @@ public abstract class GatesList extends Gate {
             // "fake" gates with 1 sub-gate are auto open
             mAutoOpenBehavior = true;
         }
-
-        registerEvents();
-    }
-
-    private void registerEvents() {
-        if(!isOpen()) {
-            BusProvider.getInstance().register(this);
-        }
-    }
-
-    protected void unregisterEvents() {
-        BusProvider.getInstance().unregister(this);
     }
 
     /**
@@ -138,6 +119,7 @@ public abstract class GatesList extends Gate {
             for (Gate gate : mGates) {
                 gatesArr.put(gate.toJSONObject());
             }
+            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
             jsonObject.put(BPJSONConsts.BP_GATES, gatesArr);
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
@@ -147,7 +129,7 @@ public abstract class GatesList extends Gate {
     }
 
     public static GatesList fromJSONObject(JSONObject jsonObject) {
-        return sJSONFactory.create(jsonObject, sTypeMap);
+        return sJSONFactory.create(jsonObject, GatesList.class.getPackage().getName());
     }
 
     public void addGate(Gate gate) {
@@ -191,18 +173,9 @@ public abstract class GatesList extends Gate {
     private static final String TAG = "SOOMLA GatesList";
 
     private static JSONFactory<GatesList> sJSONFactory = new JSONFactory<GatesList>();
-    private static Map<String, Class<? extends GatesList>> sTypeMap =
-            new HashMap<String, Class<? extends GatesList>>(2);
-    static {
-        sTypeMap.put(GatesListAND.TYPE_NAME, GatesListAND.class);
-        sTypeMap.put(GatesListOR.TYPE_NAME, GatesListOR.class);
-    }
 
     protected List<Gate> mGates;
 
     // does opening child gates cause us to auto-open (or just canOpen)?
     protected boolean mAutoOpenBehavior = false;
-
-    // children require to say true to canOpen or isOpen for our canOpen?
-    protected boolean mChildrenCanOpenIsEnough = false;
 }

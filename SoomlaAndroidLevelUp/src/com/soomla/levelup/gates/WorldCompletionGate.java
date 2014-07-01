@@ -21,7 +21,6 @@ import com.soomla.SoomlaUtils;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.World;
 import com.soomla.levelup.data.BPJSONConsts;
-import com.soomla.levelup.events.GateCanBeOpenedEvent;
 import com.soomla.levelup.events.WorldCompletedEvent;
 import com.squareup.otto.Subscribe;
 
@@ -116,7 +115,7 @@ public class WorldCompletionGate extends Gate {
     public void onWorldCompleted(WorldCompletedEvent worldCompletedEvent) {
         if (worldCompletedEvent.World.getWorldId().equals(mAssociatedWorldId)) {
             BusProvider.getInstance().unregister(this);
-            BusProvider.getInstance().post(new GateCanBeOpenedEvent(this));
+            // gate can now open
         }
     }
 

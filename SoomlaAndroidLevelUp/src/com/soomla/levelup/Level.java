@@ -17,8 +17,8 @@
 package com.soomla.levelup;
 
 import com.soomla.SoomlaUtils;
+import com.soomla.data.JSONConsts;
 import com.soomla.levelup.challenges.Challenge;
-import com.soomla.levelup.data.BPJSONConsts;
 import com.soomla.levelup.data.LevelStorage;
 import com.soomla.levelup.gates.GatesList;
 import com.soomla.levelup.scoring.Score;
@@ -37,8 +37,6 @@ import java.util.List;
  * Created by refaelos on 07/05/14.
  */
 public class Level extends World {
-
-    public static final String TYPE_NAME = "level";
 
     public enum State {
         Idle,
@@ -93,22 +91,6 @@ public class Level extends World {
         super(jsonObject);
     }
 
-    /**
-     * Converts the current <code>Level</code> to a JSONObject.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>Level</code>.
-     */
-    public JSONObject toJSONObject(){
-        JSONObject jsonObject = super.toJSONObject();
-        try {
-            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
-        } catch (JSONException e) {
-            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
-        }
-
-        return jsonObject;
-    }
-
     public int getTimesStarted() {
         return LevelStorage.getTimesStarted(this);
     }
@@ -145,12 +127,10 @@ public class Level extends World {
             return false;
         }
 
-        LevelStorage.incTimesStarted(this);
-
         mStartTime = System.currentTimeMillis();
         mElapsed = 0;
-
         mState = State.Running;
+        LevelStorage.incTimesStarted(this);
 
         return true;
     }

@@ -18,15 +18,12 @@ package com.soomla.levelup.scoring;
 
 import com.soomla.SoomlaUtils;
 import com.soomla.data.JSONConsts;
-import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.levelup.data.ScoreStorage;
 import com.soomla.util.JSONFactory;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Represents a score in the game. A simple game usually has one generic numeric score
@@ -74,12 +71,12 @@ public class Score {
      * @throws JSONException
      */
     public Score(JSONObject jsonObject) throws JSONException{
-        mScoreId = jsonObject.getString(BPJSONConsts.BP_SCORE_SCOREID);
+        mScoreId = jsonObject.getString(LUJSONConsts.LU_SCORE_SCOREID);
         try{
-            mName = jsonObject.getString(BPJSONConsts.BP_NAME);
+            mName = jsonObject.getString(LUJSONConsts.LU_NAME);
         } catch (JSONException ignored) {}
-        mStartValue = jsonObject.getDouble(BPJSONConsts.BP_SCORE_STARTVAL);
-        mHigherBetter = jsonObject.getBoolean(BPJSONConsts.BP_SCORE_HIGHBETTER);
+        mStartValue = jsonObject.getDouble(LUJSONConsts.LU_SCORE_STARTVAL);
+        mHigherBetter = jsonObject.getBoolean(LUJSONConsts.LU_SCORE_HIGHBETTER);
     }
 
     /**
@@ -90,10 +87,10 @@ public class Score {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put(BPJSONConsts.BP_SCORE_SCOREID, mScoreId);
-            jsonObject.put(BPJSONConsts.BP_NAME, mName);
-            jsonObject.put(BPJSONConsts.BP_SCORE_STARTVAL, mStartValue);
-            jsonObject.put(BPJSONConsts.BP_SCORE_HIGHBETTER, mHigherBetter);
+            jsonObject.put(LUJSONConsts.LU_SCORE_SCOREID, mScoreId);
+            jsonObject.put(LUJSONConsts.LU_NAME, mName);
+            jsonObject.put(LUJSONConsts.LU_SCORE_STARTVAL, mStartValue);
+            jsonObject.put(LUJSONConsts.LU_SCORE_HIGHBETTER, mHigherBetter);
             jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");

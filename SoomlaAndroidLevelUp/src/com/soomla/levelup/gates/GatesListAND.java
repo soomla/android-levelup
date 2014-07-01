@@ -17,7 +17,7 @@
 package com.soomla.levelup.gates;
 
 import com.soomla.SoomlaUtils;
-import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.data.JSONConsts;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +36,6 @@ import java.util.List;
  */
 public class GatesListAND extends GatesList {
 
-    public static final String TYPE_NAME = "listAND";
 
     /**
      * Constructor
@@ -76,22 +75,6 @@ public class GatesListAND extends GatesList {
      */
     public GatesListAND(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-    }
-
-    /**
-     * Converts the current <code>GatesListAND</code> to a <code>JSONObject</code>.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>GatesListAND</code>.
-     */
-    public JSONObject toJSONObject(){
-        JSONObject jsonObject = super.toJSONObject();
-        try {
-            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
-        } catch (JSONException e) {
-            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
-        }
-
-        return jsonObject;
     }
 
     /**

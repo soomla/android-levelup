@@ -18,7 +18,7 @@ package com.soomla.levelup.gates;
 
 import com.soomla.SoomlaUtils;
 import com.soomla.data.JSONConsts;
-import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.util.JSONFactory;
 
 import org.json.JSONArray;
@@ -89,7 +89,7 @@ public abstract class GatesList extends Gate {
     public GatesList(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
         mGates = new ArrayList<Gate>();
-        JSONArray gatesArr = jsonObject.getJSONArray(BPJSONConsts.BP_GATES);
+        JSONArray gatesArr = jsonObject.getJSONArray(LUJSONConsts.LU_GATES);
 
         // Iterate over all gates in the JSON array and for each one create
         // an instance according to the gate type
@@ -119,8 +119,7 @@ public abstract class GatesList extends Gate {
             for (Gate gate : mGates) {
                 gatesArr.put(gate.toJSONObject());
             }
-            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
-            jsonObject.put(BPJSONConsts.BP_GATES, gatesArr);
+            jsonObject.put(LUJSONConsts.LU_GATES, gatesArr);
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

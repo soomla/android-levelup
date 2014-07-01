@@ -17,7 +17,8 @@
 package com.soomla.levelup.challenges;
 
 import com.soomla.SoomlaUtils;
-import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.data.JSONConsts;
+import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.rewards.Reward;
 import com.soomla.store.events.CurrencyBalanceChangedEvent;
 import com.soomla.store.events.GoodBalanceChangedEvent;
@@ -37,7 +38,6 @@ import java.util.List;
  */
 public class BalanceMission extends Mission {
 
-    public static final String TYPE_NAME = "balance";
 
     /**
      * Constructor
@@ -77,8 +77,8 @@ public class BalanceMission extends Mission {
      */
     public BalanceMission(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-        mAssociatedItemId = jsonObject.getString(BPJSONConsts.BP_ASSOCITEMID);
-        mDesiredBalance = jsonObject.getInt(BPJSONConsts.BP_DESIRED_BALANCE);
+        mAssociatedItemId = jsonObject.getString(LUJSONConsts.LU_ASSOCITEMID);
+        mDesiredBalance = jsonObject.getInt(LUJSONConsts.LU_DESIRED_BALANCE);
     }
 
     /**
@@ -89,9 +89,8 @@ public class BalanceMission extends Mission {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
-            jsonObject.put(BPJSONConsts.BP_ASSOCITEMID, mAssociatedItemId);
-            jsonObject.put(BPJSONConsts.BP_DESIRED_BALANCE, mDesiredBalance);
-            jsonObject.put(BPJSONConsts.BP_TYPE, TYPE_NAME);
+            jsonObject.put(LUJSONConsts.LU_ASSOCITEMID, mAssociatedItemId);
+            jsonObject.put(LUJSONConsts.LU_DESIRED_BALANCE, mDesiredBalance);
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

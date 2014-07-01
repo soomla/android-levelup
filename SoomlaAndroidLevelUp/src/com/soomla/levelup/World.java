@@ -19,7 +19,7 @@ package com.soomla.levelup;
 import com.soomla.SoomlaUtils;
 import com.soomla.data.JSONConsts;
 import com.soomla.levelup.challenges.Challenge;
-import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.levelup.data.WorldStorage;
 import com.soomla.levelup.gates.Gate;
 import com.soomla.levelup.gates.GatesList;
@@ -34,7 +34,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -97,10 +96,10 @@ public class World {
      */
     public World(JSONObject jsonObject) throws JSONException {
 
-        mWorldId = jsonObject.getString(BPJSONConsts.BP_WORLD_WORLDID);
+        mWorldId = jsonObject.getString(LUJSONConsts.LU_WORLD_WORLDID);
 
         mInnerWorlds = new HashMap<String, World>();
-        JSONArray worldsArr = jsonObject.getJSONArray(BPJSONConsts.BP_WORLDS);
+        JSONArray worldsArr = jsonObject.getJSONArray(LUJSONConsts.LU_WORLDS);
 
         // Iterate over all inner worlds in the JSON array and for each one create
         // an instance according to the world type
@@ -113,7 +112,7 @@ public class World {
         }
 
         mScores = new HashMap<String, Score>();
-        JSONArray scoresArr = jsonObject.getJSONArray(BPJSONConsts.BP_SCORES);
+        JSONArray scoresArr = jsonObject.getJSONArray(LUJSONConsts.LU_SCORES);
 
         // Iterate over all scores in the JSON array and for each one create
         // an instance according to the score type
@@ -126,7 +125,7 @@ public class World {
         }
 
         mChallenges = new ArrayList<Challenge>();
-        JSONArray challengesArr = jsonObject.getJSONArray(BPJSONConsts.BP_CHALLENGES);
+        JSONArray challengesArr = jsonObject.getJSONArray(LUJSONConsts.LU_CHALLENGES);
 
         // Iterate over all challenges in the JSON array and create an instance for each one
         for (int i=0; i<challengesArr.length(); i++) {
@@ -134,7 +133,7 @@ public class World {
             mChallenges.add(new Challenge(challengesJSON));
         }
 
-        JSONObject gateListJSON = jsonObject.getJSONObject(BPJSONConsts.BP_GATES);
+        JSONObject gateListJSON = jsonObject.getJSONObject(LUJSONConsts.LU_GATES);
         mGates = GatesList.fromJSONObject(gateListJSON);
     }
 
@@ -153,26 +152,26 @@ public class World {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
-            jsonObject.put(BPJSONConsts.BP_WORLD_WORLDID, mWorldId);
-            jsonObject.put(BPJSONConsts.BP_GATES, (mGates==null ? new JSONObject() : mGates.toJSONObject()));
+            jsonObject.put(LUJSONConsts.LU_WORLD_WORLDID, mWorldId);
+            jsonObject.put(LUJSONConsts.LU_GATES, (mGates==null ? new JSONObject() : mGates.toJSONObject()));
 
             JSONArray worldsArr = new JSONArray();
             for (World world : mInnerWorlds.values()) {
                 worldsArr.put(world.toJSONObject());
             }
-            jsonObject.put(BPJSONConsts.BP_WORLDS, worldsArr);
+            jsonObject.put(LUJSONConsts.LU_WORLDS, worldsArr);
 
             JSONArray scoresArr = new JSONArray();
             for (Score score : mScores.values()) {
                 scoresArr.put(score.toJSONObject());
             }
-            jsonObject.put(BPJSONConsts.BP_SCORES, scoresArr);
+            jsonObject.put(LUJSONConsts.LU_SCORES, scoresArr);
 
             JSONArray challengesArr = new JSONArray();
             for (Challenge challenge : mChallenges) {
                 challengesArr.put(challenge.toJSONObject());
             }
-            jsonObject.put(BPJSONConsts.BP_CHALLENGES, challengesArr);
+            jsonObject.put(LUJSONConsts.LU_CHALLENGES, challengesArr);
 
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");

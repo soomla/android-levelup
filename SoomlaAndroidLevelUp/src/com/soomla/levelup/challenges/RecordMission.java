@@ -89,7 +89,6 @@ public class RecordMission extends Mission {
         try {
             jsonObject.put(LUJSONConsts.LU_ASSOCSCOREID, mAssociatedScoreId);
             jsonObject.put(LUJSONConsts.LU_DESIRED_RECORD, mDesiredRecord);
-            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

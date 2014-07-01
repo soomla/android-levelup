@@ -19,7 +19,7 @@ package com.soomla.levelup.challenges;
 import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
 import com.soomla.data.JSONConsts;
-import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.levelup.data.MissionStorage;
 import com.soomla.rewards.Reward;
 import com.soomla.util.JSONFactory;
@@ -76,11 +76,11 @@ public abstract class Mission {
      * @throws JSONException
      */
     public Mission(JSONObject jsonObject) throws JSONException {
-        mMissionId = jsonObject.getString(BPJSONConsts.BP_MISSION_MISSIONID);
-        mName = jsonObject.getString(BPJSONConsts.BP_NAME);
+        mMissionId = jsonObject.getString(LUJSONConsts.LU_MISSION_MISSIONID);
+        mName = jsonObject.getString(LUJSONConsts.LU_NAME);
 
         mRewards = new ArrayList<Reward>();
-        JSONArray rewardsArr = jsonObject.getJSONArray(BPJSONConsts.BP_REWARDS);
+        JSONArray rewardsArr = jsonObject.getJSONArray(JSONConsts.SOOM_REWARDS);
 
         // Iterate over all missions in the JSON array and for each one create
         // an instance according to the mission type
@@ -131,13 +131,13 @@ public abstract class Mission {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
-            jsonObject.put(BPJSONConsts.BP_MISSION_MISSIONID, mMissionId);
-            jsonObject.put(BPJSONConsts.BP_NAME, mName);
+            jsonObject.put(LUJSONConsts.LU_MISSION_MISSIONID, mMissionId);
+            jsonObject.put(LUJSONConsts.LU_NAME, mName);
             JSONArray rewardsArr = new JSONArray();
             for (Reward reward : mRewards) {
                 rewardsArr.put(reward.toJSONObject());
             }
-            jsonObject.put(BPJSONConsts.BP_REWARDS, rewardsArr);
+            jsonObject.put(JSONConsts.SOOM_REWARDS, rewardsArr);
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

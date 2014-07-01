@@ -19,7 +19,7 @@ package com.soomla.levelup.gates;
 import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
 import com.soomla.data.JSONConsts;
-import com.soomla.levelup.data.BPJSONConsts;
+import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.store.SoomlaStore;
 import com.soomla.store.data.StoreInfo;
 import com.soomla.store.domain.PurchasableVirtualItem;
@@ -69,7 +69,7 @@ public class PurchasableGate extends Gate {
      */
     public PurchasableGate(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-        mAssociatedItemId = jsonObject.getString(BPJSONConsts.BP_ASSOCITEMID);
+        mAssociatedItemId = jsonObject.getString(LUJSONConsts.LU_ASSOCITEMID);
 
         if (!isOpen()) {
             BusProvider.getInstance().register(this);
@@ -84,7 +84,7 @@ public class PurchasableGate extends Gate {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = super.toJSONObject();
         try {
-            jsonObject.put(BPJSONConsts.BP_ASSOCITEMID, mAssociatedItemId);
+            jsonObject.put(LUJSONConsts.LU_ASSOCITEMID, mAssociatedItemId);
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

@@ -25,9 +25,6 @@ import com.soomla.util.JSONFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * A gate is an object which defines certain criteria for progressing
  * between the game's <code>World</code>s or <code>Level</code>s.

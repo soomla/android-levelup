@@ -30,7 +30,6 @@ public class BPJSONConsts {
     public static final String BP_DESIRED_RECORD    = "desiredRecord";
     public static final String BP_DESIRED_BALANCE   = "desiredBalance";
     public static final String BP_NAME              = "name";
-    public static final String BP_TYPE              = "jsonType";
 
 
     /** Score **/

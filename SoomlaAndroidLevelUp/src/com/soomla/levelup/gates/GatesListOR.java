@@ -78,22 +78,6 @@ public class GatesListOR extends GatesList {
     }
 
     /**
-     * Converts the current <code>GatesListOR</code> to a <code>JSONObject</code>.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>GatesListOR</code>.
-     */
-    public JSONObject toJSONObject(){
-        JSONObject jsonObject = super.toJSONObject();
-        try {
-            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
-        } catch (JSONException e) {
-            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
-        }
-
-        return jsonObject;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override

@@ -119,7 +119,6 @@ public abstract class GatesList extends Gate {
             for (Gate gate : mGates) {
                 gatesArr.put(gate.toJSONObject());
             }
-            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
             jsonObject.put(BPJSONConsts.BP_GATES, gatesArr);
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");

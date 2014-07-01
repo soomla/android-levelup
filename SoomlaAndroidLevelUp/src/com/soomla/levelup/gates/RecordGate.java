@@ -82,7 +82,6 @@ public class RecordGate extends Gate {
         try {
             jsonObject.put(BPJSONConsts.BP_ASSOCSCOREID, mAssociatedScoreId);
             jsonObject.put(BPJSONConsts.BP_DESIRED_RECORD, mDesiredRecord);
-            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

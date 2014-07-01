@@ -80,7 +80,6 @@ public class RangeScore extends Score {
         JSONObject jsonObject = super.toJSONObject();
         try {
             jsonObject.put(BPJSONConsts.BP_SCORE_RANGE, mRange.toJSONObject());
-            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
@@ -98,6 +97,12 @@ public class RangeScore extends Score {
         if (getTempScore() >= mRange.getHigh()) {
             return;
         }
+
+        // don't overflow on inc
+        if ((getTempScore()+amount) > mRange.getHigh()) {
+            amount = mRange.getHigh() - getTempScore();
+        }
+
         super.inc(amount);
     }
 
@@ -107,10 +112,16 @@ public class RangeScore extends Score {
     @Override
     public void dec(double amount) {
 
-        // Don't increment if we've hit the range's lowest value
-        if (getTempScore() >= mRange.getLow()) {
+        // Don't decrement if we've hit the range's lowest value
+        if (getTempScore() <= mRange.getLow()) {
             return;
         }
+
+        // don't overflow on dec
+        if ((getTempScore()-amount) < mRange.getLow()) {
+            amount =  getTempScore() - mRange.getLow();
+        }
+
         super.dec(amount);
     }
 

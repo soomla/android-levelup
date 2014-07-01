@@ -85,7 +85,6 @@ public class PurchasableGate extends Gate {
         JSONObject jsonObject = super.toJSONObject();
         try {
             jsonObject.put(BPJSONConsts.BP_ASSOCITEMID, mAssociatedItemId);
-            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }

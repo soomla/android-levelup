@@ -55,7 +55,9 @@
           <root url="jar://$MODULE_DIR$/../build/SoomlaAndroidCore.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../../soomla-android-core/src" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">

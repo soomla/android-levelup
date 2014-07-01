@@ -392,7 +392,6 @@ public class LevelUpTest {
         final RangeScore rangeScoreUp = new RangeScore(scoreIdUp, "RangeScore", true, new RangeScore.Range(0, 100));
         final String scoreIdDown = "testRangeScoreOverflow_score_down_id";
         final RangeScore rangeScoreDown = new RangeScore(scoreIdDown, "RangeScore", false, new RangeScore.Range(0, 100));
-        rangeScoreDown.setStartValue(100);
 
         mExpectedScoreEventId = "testRangeScoreOverflow_score_up_id";
         mExpectedRecordValue = 0;

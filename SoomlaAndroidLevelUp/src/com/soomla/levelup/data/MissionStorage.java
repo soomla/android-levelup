@@ -24,6 +24,7 @@ import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.challenges.Mission;
 import com.soomla.levelup.events.MissionCompletedEvent;
 import com.soomla.BusProvider;
+import com.soomla.levelup.events.MissionCompletionRevokedEvent;
 import com.soomla.store.data.StorageManager;
 
 /**
@@ -65,6 +66,9 @@ public class MissionStorage {
             }
         } else {
             KeyValueStorage.deleteKeyValue(key);
+            if (notify) {
+                BusProvider.getInstance().post(new MissionCompletionRevokedEvent(mission));
+            }
         }
     }
 

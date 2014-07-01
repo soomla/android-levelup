@@ -16,9 +16,12 @@
 
 package com.soomla.levelup.data;
 
+import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.Level;
+import com.soomla.levelup.events.LevelEndedEvent;
+import com.soomla.levelup.events.LevelStartedEvent;
 import com.soomla.store.data.StorageManager;
 
 /**
@@ -100,6 +103,9 @@ public class LevelStorage {
         String key = keyTimesStarted(levelId);
         KeyValueStorage.setValue(key, startedStr);
 
+        // Notify level has started
+        BusProvider.getInstance().post(new LevelStartedEvent(level));
+
         return started+1;
     }
 
@@ -144,6 +150,9 @@ public class LevelStorage {
         String playedStr = "" + (played + 1);
         String key = keyTimesPlayed(levelId);
         KeyValueStorage.setValue(key, playedStr);
+
+        // Notify level has ended
+        BusProvider.getInstance().post(new LevelEndedEvent(level));
 
         return played+1;
     }

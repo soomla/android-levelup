@@ -16,8 +16,10 @@
 
 package com.soomla.levelup.data;
 
+import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
+import com.soomla.levelup.events.ScoreRecordChangedEvent;
 import com.soomla.levelup.scoring.Score;
 import com.soomla.store.data.StorageManager;
 
@@ -89,6 +91,8 @@ public class ScoreStorage {
         String val = String.valueOf(record);
 
         KeyValueStorage.setValue(key, val);
+
+        BusProvider.getInstance().post(new ScoreRecordChangedEvent(score));
     }
 
     /**

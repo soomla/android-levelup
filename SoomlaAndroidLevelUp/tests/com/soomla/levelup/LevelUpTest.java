@@ -1027,6 +1027,67 @@ public class LevelUpTest {
         }
     }
 
+    @Test
+    public void testCounts() {
+
+
+        final List<World> worlds = new ArrayList<World>();
+        Level level1 = new Level("level1");
+        Level level2 = new Level("level2");
+        Level level2_1 = new Level("level2_1");
+        level2.addInnerWorld(level2_1);
+
+        World world1 = new World("world1");
+        world1.addInnerWorld(level1);
+        world1.addInnerWorld(level2);
+
+        World world2 = new World("world2");
+
+        World world3 = new World("world3");
+        World world3_1 = new World("world3_1");
+        World world3_2 = new World("world3_2");
+
+        Level level3_1_1 = new Level("level3_1_1");
+        Level level3_1_2 = new Level("level3_1_2");
+        Level level3_1_1_1 = new Level("level3_1_1_1");
+        level3_1_1.addInnerWorld(level3_1_1_1);
+        world3_1.addInnerWorld(level3_1_1);
+        world3_1.addInnerWorld(level3_1_2);
+
+        world3.addInnerWorld(world3_1);
+        world3.addInnerWorld(world3_2);
+
+        worlds.add(world1);
+        worlds.add(world2);
+        worlds.add(world3);
+
+
+        LevelUp.getInstance().initialize(worlds);
+        Assert.assertEquals(LevelUp.getInstance().getLevelCount(), 6);
+        Assert.assertEquals(LevelUp.getInstance().getWorldCount(false), 5);
+        Assert.assertEquals(LevelUp.getInstance().getWorldCount(true), 6 + 5);
+        Assert.assertEquals(LevelUp.getInstance().getLevelCountInWorld(world1), 3);
+        Assert.assertEquals(LevelUp.getInstance().getLevelCountInWorld(world2), 0);
+        Assert.assertEquals(LevelUp.getInstance().getLevelCountInWorld(world3), 3);
+
+        // Test before world completion
+        Assert.assertEquals(LevelUp.getInstance().getCompletedLevelCount(), 0);
+        Assert.assertEquals(LevelUp.getInstance().getCompletedWorldCount(), 0);
+
+        // Test after world completion
+        // TODO: Decouple event expectations from test
+        mExpectedWorldEventId = level1.getWorldId();
+        level1.setCompleted(true);
+        mExpectedWorldEventId = level3_1_1_1.getWorldId();
+        level3_1_1_1.setCompleted(true);
+        mExpectedWorldEventId = world1.getWorldId();
+        world1.setCompleted(true);
+        mExpectedWorldEventId = world3_1.getWorldId();
+        world3_1.setCompleted(true);
+        Assert.assertEquals(LevelUp.getInstance().getCompletedLevelCount(), 2);
+        Assert.assertEquals(LevelUp.getInstance().getCompletedWorldCount(), 2);
+    }
+
     @Subscribe
     public void onEvent(GateOpenedEvent gateOpenedEvent) {
         final String gateId = gateOpenedEvent.Gate.getGateId();

@@ -137,7 +137,7 @@ public class LevelUp {
     }
 
     /**
-     * Couns the number of completed worlds.
+     * Counts the number of completed worlds.
      *
      * @return The number of completed worlds and their inner completed worlds
      */
@@ -239,12 +239,13 @@ public class LevelUp {
 
     private int getRecursiveCount(World world, Predicate predicate) {
         int count = 0;
-        for (World innerWorld : this.mInitialWorlds.values()) {
 
-            // If the predicate is true, increment
-            if (predicate.isAccepted(innerWorld)) {
-                count++;
-            }
+        // If the predicate is true, increment
+        if (predicate.isAccepted(world)) {
+            count++;
+        }
+
+        for (World innerWorld : world.getInnerWorlds().values()) {
 
             // Recursively count for inner world
             count += getRecursiveCount(innerWorld, predicate);

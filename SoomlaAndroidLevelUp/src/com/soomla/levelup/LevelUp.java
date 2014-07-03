@@ -65,6 +65,96 @@ public class LevelUp {
         return fetchWorld(worldId, mInitialWorlds);
     }
 
+    /**
+     * Counts all levels in all worlds and inner worlds.
+     *
+     * @return The number of levels in all worlds and their inner worlds
+     */
+    public int getLevelCount() {
+        int count = 0;
+        for (World initialWorld : this.mInitialWorlds.values()) {
+            count += getLevelCountInWorld(initialWorld);
+        }
+        return count;
+    }
+
+    /**
+     * Counts all levels in the given world and its inner worlds.
+     *
+     * @param world The world to examine
+     * @return The number of levels in the given world and its inner worlds
+     */
+    public int getLevelCountInWorld(World world) {
+        int count = 0;
+        for (World initialWorld : world.getInnerWorlds().values()) {
+            count += getRecursiveCount(initialWorld, new Predicate() {
+                @Override
+                public boolean isAccepted(World innerWorld) {
+                    return innerWorld.getClass() == Level.class;
+                }
+            });
+        }
+        return count;
+    }
+
+    /**
+     * Counts all worlds and their inner worlds with or without their levels.
+     *
+     * @param withLevels Indicates whether to count also levels
+     * @return The number of worlds and their inner worlds, and optionally their inner levels
+     */
+    public int getWorldCount(final boolean withLevels) {
+        int count = 0;
+        for (World initialWorld : this.mInitialWorlds.values()) {
+            count += getRecursiveCount(initialWorld, new Predicate() {
+                @Override
+                public boolean isAccepted(World innerWorld) {
+                    return withLevels ?
+                            (innerWorld.getClass() == World.class || innerWorld.getClass() == Level.class) :
+                            (innerWorld.getClass() == World.class);
+                }
+            });
+        }
+        return count;
+    }
+
+    /**
+     * Counts all completed levels.
+     *
+     * @return The number of completed levels and their inner completed levels
+     */
+    public int getCompletedLevelCount() {
+        int count = 0;
+        for (World initialWorld : this.mInitialWorlds.values()) {
+            count += getRecursiveCount(initialWorld, new Predicate() {
+                @Override
+                public boolean isAccepted(World innerWorld) {
+                    return innerWorld.getClass() == Level.class && innerWorld.isCompleted();
+                }
+            });
+        }
+        return count;
+    }
+
+    /**
+     * Couns the number of completed worlds.
+     *
+     * @return The number of completed worlds and their inner completed worlds
+     */
+    public int getCompletedWorldCount() {
+        int count = 0;
+        for (World initialWorld : this.mInitialWorlds.values()) {
+            count += getRecursiveCount(initialWorld, new Predicate() {
+                @Override
+                public boolean isAccepted(World innerWorld) {
+                    return innerWorld.getClass() == World.class && innerWorld.isCompleted();
+                }
+            });
+        }
+        return count;
+    }
+
+
     /** Singleton **/
 
     public static LevelUp getInstance() {
@@ -138,6 +228,30 @@ public class LevelUp {
 
         return retWorld;
     }
+
+    /**
+     * A helper interface for creating callback methods passed to the
+     * <code>getRecursiveCount</code> method.
+     */
+    private interface Predicate {
+        public boolean isAccepted(World innerWorld);
+    }
+
+    private int getRecursiveCount(World world, Predicate predicate) {
+        int count = 0;
+        for (World innerWorld : this.mInitialWorlds.values()) {
+
+            // If the predicate is true, increment
+            if (predicate.isAccepted(innerWorld)) {
+                count++;
+            }
+
+            // Recursively count for inner world
+            count += getRecursiveCount(innerWorld, predicate);
+        }
+        return count;
+    }
+
 
     /** Private Members **/
 

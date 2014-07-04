@@ -137,6 +137,15 @@ public class World {
         mGates = GatesList.fromJSONObject(gateListJSON);
     }
 
+    public static World fromJSONString(String jsonString) {
+        try {
+            JSONObject rewardObj = new JSONObject(jsonString);
+            return fromJSONObject(rewardObj);
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
     public static World fromJSONObject(JSONObject jsonObject) {
 
         return sJSONFactory.create(jsonObject, World.class.getPackage().getName());

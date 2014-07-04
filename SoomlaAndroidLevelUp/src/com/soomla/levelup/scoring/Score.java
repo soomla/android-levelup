@@ -99,6 +99,15 @@ public class Score {
         return jsonObject;
     }
 
+    public static Score fromJSONString(String jsonString) {
+        try {
+            JSONObject rewardObj = new JSONObject(jsonString);
+            return fromJSONObject(rewardObj);
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
     public static Score fromJSONObject(JSONObject jsonObject) {
 
         return sJSONFactory.create(jsonObject, Score.class.getPackage().getName());

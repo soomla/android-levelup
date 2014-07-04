@@ -95,6 +95,15 @@ public abstract class Mission {
         registerEvents();
     }
 
+    public static Mission fromJSONString(String jsonString) {
+        try {
+            JSONObject rewardObj = new JSONObject(jsonString);
+            return fromJSONObject(rewardObj);
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
     public static Mission fromJSONObject(JSONObject jsonObject) {
         return sJSONFactory.create(jsonObject, Mission.class.getPackage().getName());
     }

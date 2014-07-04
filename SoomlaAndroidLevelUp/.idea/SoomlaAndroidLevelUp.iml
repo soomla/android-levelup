@@ -35,7 +35,9 @@
           <root url="jar://$MODULE_DIR$/tests/robolectric-2.3-jar-with-dependencies.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/tests/robolectric-2.3-sources.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="inheritedJdk" />
@@ -64,6 +66,26 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../build/AndroidStore.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../../android-store/SoomlaAndroidStore/src" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/tests/lib/AndroidStoreAmazon.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/tests/lib/AndroidStoreGooglePlay.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

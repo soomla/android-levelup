@@ -72,8 +72,8 @@ public abstract class Gate {
 
     public static Gate fromJSONString(String jsonString) {
         try {
-            JSONObject rewardObj = new JSONObject(jsonString);
-            return fromJSONObject(rewardObj);
+            JSONObject jsonObject = new JSONObject(jsonString);
+            return fromJSONObject(jsonObject);
         } catch (JSONException e) {
             return null;
         }

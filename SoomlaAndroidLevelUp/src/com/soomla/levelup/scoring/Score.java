@@ -101,8 +101,8 @@ public class Score {
 
     public static Score fromJSONString(String jsonString) {
         try {
-            JSONObject rewardObj = new JSONObject(jsonString);
-            return fromJSONObject(rewardObj);
+            JSONObject jsonObject = new JSONObject(jsonString);
+            return fromJSONObject(jsonObject);
         } catch (JSONException e) {
             return null;
         }

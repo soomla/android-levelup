@@ -134,7 +134,11 @@ public class World {
         }
 
         JSONObject gateListJSON = jsonObject.getJSONObject(LUJSONConsts.LU_GATES);
-        mGates = GatesList.fromJSONObject(gateListJSON);
+        if (gateListJSON.length() == 0) { // this means that there are no gates !
+            mGates = null;
+        } else {
+            mGates = GatesList.fromJSONObject(gateListJSON);
+        }
     }
 
     public static World fromJSONString(String jsonString) {

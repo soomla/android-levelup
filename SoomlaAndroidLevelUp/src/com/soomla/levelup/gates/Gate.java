@@ -70,6 +70,15 @@ public abstract class Gate {
         return jsonObject;
     }
 
+    public static Gate fromJSONString(String jsonString) {
+        try {
+            JSONObject rewardObj = new JSONObject(jsonString);
+            return fromJSONObject(rewardObj);
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
     public static Gate fromJSONObject(JSONObject jsonObject) {
         return sJSONFactory.create(jsonObject, Gate.class.getPackage().getName());
     }

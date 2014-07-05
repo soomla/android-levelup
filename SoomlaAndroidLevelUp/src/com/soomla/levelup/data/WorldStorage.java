@@ -16,10 +16,14 @@
 
 package com.soomla.levelup.data;
 
+import android.text.TextUtils;
+
 import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
+import com.soomla.levelup.Level;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.World;
+import com.soomla.levelup.events.WorldBadgeAssignedEvent;
 import com.soomla.levelup.events.WorldCompletedEvent;
 
 /**
@@ -33,6 +37,10 @@ public class WorldStorage {
 
     private static String keyWorldCompleted(String worldId) {
         return keyWorlds(worldId, "completed");
+    }
+
+    private static String keyBadge(String worldId) {
+        return keyWorlds(worldId, "badge");
     }
 
     public static void setCompleted(World world, boolean completed) {
@@ -61,5 +69,30 @@ public class WorldStorage {
         String val = KeyValueStorage.getValue(key);
 
         return val != null;
+    }
+
+
+    /** World Badge **/
+
+    public static void setBadge(World world, String badgeRewardId){
+
+        String worldId = world.getWorldId();
+        String key = keyBadge(worldId);
+        if (!TextUtils.isEmpty(badgeRewardId)) {
+            KeyValueStorage.setValue(key, badgeRewardId);
+        } else {
+            KeyValueStorage.deleteKeyValue(key);
+        }
+
+        // Notify world was assigned a badge
+        BusProvider.getInstance().post(new WorldBadgeAssignedEvent(world));
+    }
+
+    public static String getAssignedBadge(World world){
+
+        String worldId = world.getWorldId();
+        String key = keyBadge(worldId);
+
+        return KeyValueStorage.getValue(key);
     }
 }

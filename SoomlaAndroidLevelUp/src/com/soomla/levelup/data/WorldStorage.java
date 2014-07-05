@@ -20,10 +20,9 @@ import android.text.TextUtils;
 
 import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
-import com.soomla.levelup.Level;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.World;
-import com.soomla.levelup.events.WorldBadgeAssignedEvent;
+import com.soomla.levelup.events.WorldAssignedRewardEvent;
 import com.soomla.levelup.events.WorldCompletedEvent;
 
 /**
@@ -39,8 +38,8 @@ public class WorldStorage {
         return keyWorlds(worldId, "completed");
     }
 
-    private static String keyBadge(String worldId) {
-        return keyWorlds(worldId, "badge");
+    private static String keyReward(String worldId) {
+        return keyWorlds(worldId, "assignedReward");
     }
 
     public static void setCompleted(World world, boolean completed) {
@@ -72,26 +71,26 @@ public class WorldStorage {
     }
 
 
-    /** World Badge **/
+    /** World Reward **/
 
-    public static void setBadge(World world, String badgeRewardId){
+    public static void setReward(World world, String rewardId){
 
         String worldId = world.getWorldId();
-        String key = keyBadge(worldId);
-        if (!TextUtils.isEmpty(badgeRewardId)) {
-            KeyValueStorage.setValue(key, badgeRewardId);
+        String key = keyReward(worldId);
+        if (!TextUtils.isEmpty(rewardId)) {
+            KeyValueStorage.setValue(key, rewardId);
         } else {
             KeyValueStorage.deleteKeyValue(key);
         }
 
-        // Notify world was assigned a badge
-        BusProvider.getInstance().post(new WorldBadgeAssignedEvent(world));
+        // Notify world was assigned a reward
+        BusProvider.getInstance().post(new WorldAssignedRewardEvent(world));
     }
 
-    public static String getAssignedBadge(World world){
+    public static String getAssignedReward(World world){
 
         String worldId = world.getWorldId();
-        String key = keyBadge(worldId);
+        String key = keyReward(worldId);
 
         return KeyValueStorage.getValue(key);
     }

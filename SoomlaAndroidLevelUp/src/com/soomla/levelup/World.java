@@ -25,7 +25,7 @@ import com.soomla.levelup.gates.Gate;
 import com.soomla.levelup.gates.GatesList;
 import com.soomla.levelup.gates.GatesListAND;
 import com.soomla.levelup.scoring.Score;
-import com.soomla.rewards.BadgeReward;
+import com.soomla.rewards.Reward;
 import com.soomla.util.JSONFactory;
 
 import org.json.JSONArray;
@@ -315,12 +315,12 @@ public class World {
     }
 
 
-    public void assignBadge(BadgeReward badgeReward) {
-        WorldStorage.setBadge(this, badgeReward.getRewardId());
+    public void assignReward(Reward reward) {
+        WorldStorage.setReward(this, reward.getRewardId());
     }
 
-    public String getAssignedBadgeId() {
-        return WorldStorage.getAssignedBadge(this);
+    public String getAssignedRewardId() {
+        return WorldStorage.getAssignedReward(this);
     }
 
     /** Setters and Getters **/

@@ -19,9 +19,9 @@ package com.soomla.levelup.events;
 import com.soomla.levelup.World;
 
 /**
- * This event is fired when a <code>World</code> is being assigned a badge.
+ * This event is fired when a <code>World</code> is being assigned a reward.
  */
-public class WorldBadgeAssignedEvent {
+public class WorldAssignedRewardEvent {
 
     /** read-only Properties **/
 
@@ -30,9 +30,9 @@ public class WorldBadgeAssignedEvent {
     /**
      * Constructor
      *
-     * @param world the World whose badge has changed
+     * @param world the World whose reward has changed
      */
-    public WorldBadgeAssignedEvent(World world) {
+    public WorldAssignedRewardEvent(World world) {
         World = world;
     }
 }

@@ -16,6 +16,8 @@
 
 package com.soomla.levelup.challenges;
 
+import com.soomla.BusProvider;
+import com.soomla.Soomla;
 import com.soomla.SoomlaUtils;
 import com.soomla.data.JSONConsts;
 import com.soomla.levelup.data.LUJSONConsts;
@@ -141,7 +143,9 @@ public class Challenge extends Mission {
      */
     @Subscribe
     public void onMissionCompleted(MissionCompletedEvent missionCompletedEvent) {
+        SoomlaUtils.LogDebug(TAG, "onMissionCompleted:" + missionCompletedEvent.Mission.getMissionId());
         if (mMissions.contains(missionCompletedEvent.Mission)) {
+            SoomlaUtils.LogDebug(TAG, "Challenge contains this mission");
             boolean completed = true;
             for (Mission mission : mMissions) {
                 if (!mission.isCompleted()) {
@@ -151,6 +155,7 @@ public class Challenge extends Mission {
             }
 
             if(completed) {
+                SoomlaUtils.LogDebug(TAG, "Challenge completed:" + getMissionId());
                 setCompleted(true);
             }
         }
@@ -158,10 +163,13 @@ public class Challenge extends Mission {
 
     @Subscribe
     public void onMissionRevoked(MissionCompletionRevokedEvent missionCompletionRevokedEvent) {
+        SoomlaUtils.LogDebug(TAG, "MissionCompletionRevokedEvent:" + missionCompletionRevokedEvent.Mission.getMissionId());
         if (mMissions.contains(missionCompletionRevokedEvent.Mission)) {
+            SoomlaUtils.LogDebug(TAG, "Challenge contains this mission");
             // if the challenge was completed before, but now one of its child missions
             // was uncompleted - the challenge is revoked as well
             if (MissionStorage.isCompleted(this)) {
+                SoomlaUtils.LogDebug(TAG, "Challenge revoked:" + getMissionId());
                 setCompleted(false);
             }
         }

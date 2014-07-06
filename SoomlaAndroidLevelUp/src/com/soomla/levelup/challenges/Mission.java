@@ -197,32 +197,20 @@ public abstract class Mission {
         }
     }
 
-    /**
-     * Checks if the given Object is equal to this mission, by comparing the given object's
-     * <code>missionId</code> with this mission's <code>missionId</code>.
-     *
-     * @param o the object to compare
-     * @return <code>true</code> if the objects are equal, <code>false</code> otherwise
-     */
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Mission) {
-            Mission toCompare = (Mission)o;
-            return this.mMissionId.equals(toCompare.getMissionId());
-        }
-        return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Mission mission = (Mission) o;
+
+        return mMissionId.equals(mission.mMissionId);
     }
 
-    /**
-     * Returns the hashCode of <code>mMissionId</code> if it exists
-     *
-     * @return the hashCode of <code>mMissionId</code>
-     */
     @Override
     public int hashCode() {
-        return this.mMissionId.hashCode();
+        return mMissionId.hashCode();
     }
-
 
     /** Setters and Getters **/
 

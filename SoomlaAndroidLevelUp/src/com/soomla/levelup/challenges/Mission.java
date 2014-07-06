@@ -139,6 +139,7 @@ public abstract class Mission {
     public JSONObject toJSONObject(){
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
             jsonObject.put(LUJSONConsts.LU_MISSION_MISSIONID, mMissionId);
             jsonObject.put(LUJSONConsts.LU_NAME, mName);
             JSONArray rewardsArr = new JSONArray();

@@ -18,6 +18,9 @@ package com.soomla.levelup.challenges;
 
 import com.soomla.rewards.Reward;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
 
 /**
@@ -49,5 +52,14 @@ public class ActionMission extends Mission {
      */
     public ActionMission(String missionId, String name, List<Reward> rewards) {
         super(missionId, name, rewards);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param jsonObject see parent
+     */
+    public ActionMission(JSONObject jsonObject) throws JSONException {
+        super(jsonObject);
     }
 }

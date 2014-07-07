@@ -42,6 +42,7 @@ public class WorldStorage {
         return keyWorlds(worldId, "assignedReward");
     }
 
+
     public static void setCompleted(World world, boolean completed) {
         setCompleted(world, completed, true);
     }

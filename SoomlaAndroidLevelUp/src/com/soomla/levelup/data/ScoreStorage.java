@@ -71,7 +71,7 @@ public class ScoreStorage {
         String key = keyLatestScore(scoreId);
         String val = KeyValueStorage.getValue(key);
 
-        return val == null ? 0 : Double.parseDouble(val);
+        return val == null ? score.getStartValue() : Double.parseDouble(val);
     }
 
 
@@ -105,7 +105,7 @@ public class ScoreStorage {
         String key = keyRecordScore(scoreId);
         String val = KeyValueStorage.getValue(key);
 
-        return val == null ? 0 : Double.parseDouble(val);
+        return val == null ? score.getStartValue() : Double.parseDouble(val);
     }
 
 }

@@ -236,6 +236,9 @@ public class Score {
         this.mTempScore = tempScore;
     }
 
+    public double getStartValue() {
+        return mStartValue;
+    }
 
     /** Private Members **/
 

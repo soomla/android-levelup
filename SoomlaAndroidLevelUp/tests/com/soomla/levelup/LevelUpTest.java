@@ -256,7 +256,7 @@ public class LevelUpTest {
     @Test
     public void testLevel() {
         final List<World> worlds = new ArrayList<World>();
-        Level lvl1 = new Level("lvl1");
+        Level lvl1 = new Level("lvl1", false);
         worlds.add(lvl1);
 
         LevelUp.getInstance().initialize(worlds);
@@ -583,11 +583,11 @@ public class LevelUpTest {
     public void testRecordGateWithRangeScore() {
         final List<World> worlds = new ArrayList<World>();
         final String lvl1Id = "lvl1_recordgate_rangescore";
-        Level lvl1 = new Level(lvl1Id);
+        Level lvl1 = new Level(lvl1Id, false);
         final String lvl2Id = "lvl2_recordgate_rangescore";
-        Level lvl2 = new Level(lvl2Id);
+        Level lvl2 = new Level(lvl2Id, false);
         final String scoreId = "range_score";
-        final RangeScore rangeScore = new RangeScore(scoreId, "RangeScore", new RangeScore.Range(0, 100));
+        final RangeScore rangeScore = new RangeScore(scoreId, new RangeScore.Range(0, 100));
         final String recordGateId = "record_gate";
         final RecordGate recordGate = new RecordGate(recordGateId, scoreId, 100);
         lvl1.addScore(rangeScore);
@@ -651,9 +651,9 @@ public class LevelUpTest {
     public void testBalanceGate() {
         final List<World> worlds = new ArrayList<World>();
         final String lvl1Id = "lvl1_balancegate";
-        Level lvl1 = new Level(lvl1Id);
+        Level lvl1 = new Level(lvl1Id, false);
         final String lvl2Id = "lvl2_balancegate";
-        Level lvl2 = new Level(lvl2Id);
+        Level lvl2 = new Level(lvl2Id, false);
         final String itemId = ITEM_ID_BALANCE_GATE;
         final String balanceGateId = "balance_gate";
 
@@ -714,9 +714,9 @@ public class LevelUpTest {
     public void testWorldCompletionGate() {
         final List<World> worlds = new ArrayList<World>();
         final String lvl1Id = "lvl1_completiongate";
-        Level lvl1 = new Level(lvl1Id);
+        Level lvl1 = new Level(lvl1Id, false);
         final String lvl2Id = "lvl2_completiongate";
-        Level lvl2 = new Level(lvl2Id);
+        Level lvl2 = new Level(lvl2Id, false);
         final String worldGateId = "world_gate";
 
         final WorldCompletionGate lvl1CompletionGate =
@@ -767,8 +767,8 @@ public class LevelUpTest {
     public void testPurchasableGate(boolean vi) {
         final List<World> worlds = new ArrayList<World>();
         final String lvl1Id = "lvl1_purchasablegate";
-        Level lvl1 = new Level(lvl1Id);
-        Level lvl2 = new Level("lvl2_purchasablegate");
+        Level lvl1 = new Level(lvl1Id, false);
+        Level lvl2 = new Level("lvl2_purchasablegate", false);
         final String itemId = vi ? ITEM_ID_PURCHASE_GATE_VI : ITEM_ID_PURCHASE_GATE_MARKET;
         final String purchaseGateId = vi ? "purchase_gate_vi": "purchase_gate_market";
 
@@ -838,7 +838,7 @@ public class LevelUpTest {
 
         final List<World> worlds = new ArrayList<World>();
         final String lvl1Id = "lvl1_gates_list";
-        Level lvl1 = new Level(lvl1Id);
+        Level lvl1 = new Level(lvl1Id, false);
         lvl1.addScore(score1);
         lvl1.addScore(score2);
         worlds.add(lvl1);
@@ -921,7 +921,7 @@ public class LevelUpTest {
 
         final List<World> worlds = new ArrayList<World>();
         final String lvl1Id = "lvl1_gates_list_AO";
-        Level lvl1 = new Level(lvl1Id);
+        Level lvl1 = new Level(lvl1Id, false);
         lvl1.addScore(score1);
         lvl1.addScore(score2);
         worlds.add(lvl1);
@@ -993,11 +993,11 @@ public class LevelUpTest {
     public void testVirtualItemScore() {
         final List<World> worlds = new ArrayList<World>();
         final String lvl1Id = "lvl1_viscore";
-        Level lvl1 = new Level(lvl1Id);
+        Level lvl1 = new Level(lvl1Id, false);
         final String itemId = ITEM_ID_VI_SCORE;
         final String scoreId = "vi_score";
         final VirtualItemScore virtualItemScore = new VirtualItemScore(
-                scoreId, "VI_Score", itemId);
+                scoreId, itemId);
         lvl1.addScore(virtualItemScore);
 
         worlds.add(lvl1);
@@ -1032,9 +1032,9 @@ public class LevelUpTest {
 
 
         final List<World> worlds = new ArrayList<World>();
-        Level level1 = new Level("level1");
-        Level level2 = new Level("level2");
-        Level level2_1 = new Level("level2_1");
+        Level level1 = new Level("level1", false);
+        Level level2 = new Level("level2", false);
+        Level level2_1 = new Level("level2_1", false);
         level2.addInnerWorld(level2_1);
 
         World world1 = new World("world1");
@@ -1047,9 +1047,9 @@ public class LevelUpTest {
         World world3_1 = new World("world3_1");
         World world3_2 = new World("world3_2");
 
-        Level level3_1_1 = new Level("level3_1_1");
-        Level level3_1_2 = new Level("level3_1_2");
-        Level level3_1_1_1 = new Level("level3_1_1_1");
+        Level level3_1_1 = new Level("level3_1_1", false);
+        Level level3_1_2 = new Level("level3_1_2", false);
+        Level level3_1_1_1 = new Level("level3_1_1_1", false);
         level3_1_1.addInnerWorld(level3_1_1_1);
         world3_1.addInnerWorld(level3_1_1);
         world3_1.addInnerWorld(level3_1_2);

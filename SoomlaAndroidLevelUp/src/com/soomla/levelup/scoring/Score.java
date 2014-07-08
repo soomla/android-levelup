@@ -40,11 +40,10 @@ public class Score {
      * Constructor
      *
      * @param scoreId the score's ID
-     * @param name the score's name (something you might want to display on the screen)
      */
-    public Score(String scoreId, String name) {
+    public Score(String scoreId) {
         this.mScoreId = scoreId;
-        this.mName = name;
+        this.mName = "temp_score_name";
         this.mStartValue = 0;
         this.mHigherBetter = true;
     }

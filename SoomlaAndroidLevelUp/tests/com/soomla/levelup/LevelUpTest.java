@@ -478,12 +478,11 @@ public class LevelUpTest {
         }
 
         // set event expectations
+        mExpectedMissionEventId = missionId;
+        mExpectedRewardEventId = rewardId;
         mVirtualItemExpectationQueue.add(new VirtualItemBalanceEventExpectation(ITEM_ID_BALANCE_MISSION, 2, 5));
         // this will happen directly after
         mVirtualItemExpectationQueue.add(new VirtualItemBalanceEventExpectation(ITEM_ID_BALANCE_MISSION_REWARD, 1, 1));
-
-        mExpectedMissionEventId = missionId;
-        mExpectedRewardEventId = rewardId;
 
         try {
             StoreInventory.giveVirtualItem(balanceMissionItemId, 2);

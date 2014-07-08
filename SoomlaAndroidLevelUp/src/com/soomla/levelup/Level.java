@@ -50,9 +50,10 @@ public class Level extends World {
      * Constructor
      *
      * @param worldId see parent
+     * @param singleScore see parent
      */
-    public Level(String worldId) {
-        super(worldId);
+    public Level(String worldId, boolean singleScore) {
+        super(worldId, singleScore);
     }
 
     /**
@@ -105,14 +106,6 @@ public class Level extends World {
 
     public double getFastestDuration() {
         return LevelStorage.getFastestDuration(this);
-    }
-
-    public void decScore(String scoreId, double amount) {
-        mScores.get(scoreId).dec(amount);
-    }
-
-    public void incScore(String scoreId, double amount) {
-        mScores.get(scoreId).inc(amount);
     }
 
     /**

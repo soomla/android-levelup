@@ -37,11 +37,10 @@ public class RangeScore extends Score {
      * Constructor
      *
      * @param scoreId see parent
-     * @param name see parent
      * @param range the range applicable to this score
      */
-    public RangeScore(String scoreId, String name, Range range) {
-        super(scoreId, name);
+    public RangeScore(String scoreId, Range range) {
+        super(scoreId);
         this.mRange = range;
     }
 

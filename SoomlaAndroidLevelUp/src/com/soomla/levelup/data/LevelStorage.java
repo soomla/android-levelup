@@ -68,7 +68,7 @@ public class LevelStorage {
         String key = keySlowestDuration(levelId);
         String val = KeyValueStorage.getValue(key);
 
-        return val == null ? Double.MIN_VALUE : Double.parseDouble(val);
+        return val == null ? 0 : Double.parseDouble(val);
     }
 
     public static void setFastestDuration(Level level, double duration) {
@@ -84,7 +84,7 @@ public class LevelStorage {
         String key = keyFastestDuration(levelId);
         String val = KeyValueStorage.getValue(key);
 
-        return val == null ? Double.MAX_VALUE : Double.parseDouble(val);
+        return val == null ? 0 : Double.parseDouble(val);
     }
 
 

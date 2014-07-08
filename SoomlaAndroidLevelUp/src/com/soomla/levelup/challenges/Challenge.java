@@ -143,12 +143,16 @@ public class Challenge extends Mission {
      */
     @Subscribe
     public void onMissionCompleted(MissionCompletedEvent missionCompletedEvent) {
-        SoomlaUtils.LogDebug(TAG, "onMissionCompleted:" + missionCompletedEvent.Mission.getMissionId());
+        final String completedMissionId = missionCompletedEvent.Mission.getMissionId();
+        SoomlaUtils.LogDebug(TAG, "onMissionCompleted:" + completedMissionId);
         if (mMissions.contains(missionCompletedEvent.Mission)) {
-            SoomlaUtils.LogDebug(TAG, "Challenge contains this mission");
+            SoomlaUtils.LogDebug(TAG, String.format(
+                    "Challenge <%s> contains mission <%s>", getMissionId(), completedMissionId));
             boolean completed = true;
             for (Mission mission : mMissions) {
                 if (!mission.isCompleted()) {
+                    SoomlaUtils.LogDebug(TAG, String.format(
+                            "mission %s not of challenge complete yet", completedMissionId));
                     completed = false;
                     break;
                 }

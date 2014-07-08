@@ -38,11 +38,10 @@ public class VirtualItemScore extends Score {
      * Constructor
      *
      * @param scoreId see parent
-     * @param name see parent
      * @param associatedItemId the ID of the virtual item associated with this score
      */
-    public VirtualItemScore(String scoreId, String name, String associatedItemId) {
-        super(scoreId, name);
+    public VirtualItemScore(String scoreId, String associatedItemId) {
+        super(scoreId);
         this.mAssociatedItemId = associatedItemId;
     }
 

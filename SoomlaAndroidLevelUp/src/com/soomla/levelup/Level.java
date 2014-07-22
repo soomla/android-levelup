@@ -100,12 +100,12 @@ public class Level extends World {
         return LevelStorage.getTimesPlayed(this);
     }
 
-    public double getSlowestDuration() {
-        return LevelStorage.getSlowestDuration(this);
+    public long getSlowestDurationMillis() {
+        return LevelStorage.getSlowestDurationMillis(this);
     }
 
-    public double getFastestDuration() {
-        return LevelStorage.getFastestDuration(this);
+    public long getFastestDurationMillis() {
+        return LevelStorage.getFastestDurationMillis(this);
     }
 
     /**
@@ -161,14 +161,14 @@ public class Level extends World {
         return mState;
     }
 
-    public double getPlayDuration() {
+    public long getPlayDurationMillis() {
 
         long now = System.currentTimeMillis();
         long duration = mElapsed;
         if (mStartTime != 0)
             duration += now - mStartTime;
 
-        return duration / 1000.0;
+        return duration;
     }
 
     /**
@@ -184,18 +184,18 @@ public class Level extends World {
             return;
         }
 
-        double duration = getPlayDuration();
+        long duration = getPlayDurationMillis();
 
         mState = State.Ended;
 
         // Calculate the slowest \ fastest durations of level play
 
-        if (duration > getSlowestDuration()) {
-            LevelStorage.setSlowestDuration(this, duration);
+        if (duration > getSlowestDurationMillis()) {
+            LevelStorage.setSlowestDurationMillis(this, duration);
         }
 
-        if (duration < getFastestDuration()) {
-            LevelStorage.setFastestDuration(this, duration);
+        if (duration < getFastestDurationMillis()) {
+            LevelStorage.setFastestDurationMillis(this, duration);
         }
 
         for(Score score : mScores.values()) {

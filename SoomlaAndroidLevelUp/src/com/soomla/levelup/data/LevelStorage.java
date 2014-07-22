@@ -55,7 +55,7 @@ public class LevelStorage {
 
     /** Level Duration **/
 
-    public static void setSlowestDuration(Level level, double duration) {
+    public static void setSlowestDurationMillis(Level level, long duration) {
         String levelId = level.getWorldId();
         String key = keySlowestDuration(levelId);
         String val = String.valueOf(duration);
@@ -63,15 +63,15 @@ public class LevelStorage {
         KeyValueStorage.setValue(key, val);
     }
 
-    public static double getSlowestDuration(Level level) {
+    public static long getSlowestDurationMillis(Level level) {
         String levelId = level.getWorldId();
         String key = keySlowestDuration(levelId);
         String val = KeyValueStorage.getValue(key);
 
-        return val == null ? 0 : Double.parseDouble(val);
+        return val == null ? 0 : Long.parseLong(val);
     }
 
-    public static void setFastestDuration(Level level, double duration) {
+    public static void setFastestDurationMillis(Level level, long duration) {
         String levelId = level.getWorldId();
         String key = keyFastestDuration(levelId);
         String val = String.valueOf(duration);
@@ -79,12 +79,12 @@ public class LevelStorage {
         KeyValueStorage.setValue(key, val);
     }
 
-    public static double getFastestDuration(Level level) {
+    public static long getFastestDurationMillis(Level level) {
         String levelId = level.getWorldId();
         String key = keyFastestDuration(levelId);
         String val = KeyValueStorage.getValue(key);
 
-        return val == null ? 0 : Double.parseDouble(val);
+        return val == null ? 0 : Long.parseLong(val);
     }
 
 

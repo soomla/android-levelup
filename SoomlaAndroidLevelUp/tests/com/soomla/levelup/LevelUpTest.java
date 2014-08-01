@@ -272,7 +272,7 @@ public class LevelUpTest {
 
         sleep(1000);
         // check level time measure
-        double playDuration = lvl1.getPlayDuration();
+        long playDuration = lvl1.getPlayDurationMillis();
         System.out.println("playDuration = " + playDuration);
         Assert.assertTrue(playDuration >= 1);
         Assert.assertFalse(playDuration > 2);
@@ -280,7 +280,7 @@ public class LevelUpTest {
         lvl1.pause();
         sleep(1000);
         // make sure no changes after pause
-        playDuration = lvl1.getPlayDuration();
+        playDuration = lvl1.getPlayDurationMillis();
         System.out.println("playDuration = " + playDuration);
         Assert.assertTrue(playDuration >= 1);
         Assert.assertFalse(playDuration > 2);
@@ -289,7 +289,7 @@ public class LevelUpTest {
         lvl1.resume();
         sleep(1000);
         // make sure working after resume
-        playDuration = lvl1.getPlayDuration();
+        playDuration = lvl1.getPlayDurationMillis();
         System.out.println("playDuration = " + playDuration);
         Assert.assertTrue(playDuration >= 2);
         Assert.assertFalse(playDuration > 3);
@@ -302,8 +302,8 @@ public class LevelUpTest {
         lvl1.setCompleted(true);
         Assert.assertTrue(lvl1.isCompleted());
 
-        Assert.assertEquals(playDuration, lvl1.getSlowestDuration(), 0.1);
-        Assert.assertEquals(playDuration, lvl1.getFastestDuration(), 0.1);
+        Assert.assertEquals(playDuration, lvl1.getSlowestDurationMillis());
+        Assert.assertEquals(playDuration, lvl1.getFastestDurationMillis());
         Assert.assertEquals(1, lvl1.getTimesPlayed());
         Assert.assertEquals(1, lvl1.getTimesStarted());
     }

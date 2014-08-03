@@ -446,7 +446,7 @@ android-levelup follows strict code documentation conventions. If you would like
 ## SOOMLA, Elsewhere ...
 
 
-+ [Framework Page](http://project.soom.la/)
++ [Framework Website](http://www.soom.la/)
 + [On Facebook](https://www.facebook.com/pages/The-SOOMLA-Project/389643294427376)
 + [On AngelList](https://angel.co/the-soomla-project)
 

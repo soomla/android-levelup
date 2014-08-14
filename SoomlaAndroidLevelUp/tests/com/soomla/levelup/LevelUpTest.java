@@ -804,7 +804,7 @@ public class LevelUpTest {
         mVirtualItemExpectationQueue.add(new VirtualItemBalanceEventExpectation(itemId, -10, 0));
 
         try {
-            StoreInventory.buy(itemId);
+            StoreInventory.buy(itemId, null);
         } catch (InsufficientFundsException e) {
             Assert.fail(e.getMessage());
         } catch (VirtualItemNotFoundException e) {

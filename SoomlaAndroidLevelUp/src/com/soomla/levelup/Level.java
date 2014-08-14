@@ -184,32 +184,33 @@ public class Level extends World {
             return;
         }
 
-        long duration = getPlayDurationMillis();
 
         mState = State.Ended;
 
-        // Calculate the slowest \ fastest durations of level play
+        if (completed) {
+            long duration = getPlayDurationMillis();
 
-        if (duration > getSlowestDurationMillis()) {
-            LevelStorage.setSlowestDurationMillis(this, duration);
-        }
+            // Calculate the slowest \ fastest durations of level play
 
-        if (duration < getFastestDurationMillis()) {
-            LevelStorage.setFastestDurationMillis(this, duration);
-        }
+            if (duration > getSlowestDurationMillis()) {
+                LevelStorage.setSlowestDurationMillis(this, duration);
+            }
 
-        for(Score score : mScores.values()) {
-            score.saveAndReset(); // resetting scores
-        }
+            if (duration < getFastestDurationMillis()) {
+                LevelStorage.setFastestDurationMillis(this, duration);
+            }
 
-        // Count number of times this level was played
-        LevelStorage.incTimesPlayed(this);
+            for(Score score : mScores.values()) {
+                score.saveAndReset(); // resetting scores
+            }
 
-        // reset timers
-        mStartTime = 0;
-        mElapsed = 0;
+            // Count number of times this level was played
+            LevelStorage.incTimesPlayed(this);
 
-        if(completed) {
+            // reset timers
+            mStartTime = 0;
+            mElapsed = 0;
+
             setCompleted(true);
         }
     }

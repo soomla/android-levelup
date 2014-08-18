@@ -17,7 +17,6 @@
 package com.soomla.levelup.gates;
 
 import com.soomla.SoomlaUtils;
-import com.soomla.data.JSONConsts;
 import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.util.JSONFactory;
 
@@ -32,7 +31,7 @@ import java.util.List;
  * A representation of one or more <code>Gate</code>s which together define
  * a composite criteria for progressing between the game's
  * <code>World</code>s or <code>Level</code>s.
- *
+ * <p/>
  * Created by refaelos on 06/05/14.
  */
 public abstract class GatesList extends Gate {
@@ -40,42 +39,35 @@ public abstract class GatesList extends Gate {
     /**
      * Constructor
      *
-     * @param gateId see parent
+     * @param id see parent
      */
-    public GatesList(String gateId) {
-        super(gateId);
+    public GatesList(String id) {
+        super(id);
         mGates = new ArrayList<Gate>();
-
-        // "fake" gates with 1 sub-gate are auto open
-        mAutoOpenBehavior = true;
-
     }
 
     /**
      * Constructor
      * Initializes with only one <code>Gate</code> instance
      *
-     * @param gateId see parent
+     * @param id         see parent
      * @param singleGate the only gate to add to the list
      */
-    public GatesList(String gateId, Gate singleGate) {
-        super(gateId);
+    public GatesList(String id, Gate singleGate) {
+        super(id);
         mGates = new ArrayList<Gate>();
         mGates.add(singleGate);
-
-        // "fake" gates with 1 sub-gate are auto open
-        mAutoOpenBehavior = true;
     }
 
     /**
      * Constructor
      * Initializes with a given list of <code>Gate</code>s
      *
-     * @param gateId see parent
+     * @param id    see parent
      * @param gates a list of <code>Gate</code>s to use
      */
-    public GatesList(String gateId, List<Gate> gates) {
-        super(gateId);
+    public GatesList(String id, List<Gate> gates) {
+        super(id);
         mGates = gates;
     }
 
@@ -100,11 +92,6 @@ public abstract class GatesList extends Gate {
                 mGates.add(gate);
             }
         }
-
-        if (mGates.size() < 2) {
-            // "fake" gates with 1 sub-gate are auto open
-            mAutoOpenBehavior = true;
-        }
     }
 
     /**
@@ -112,7 +99,8 @@ public abstract class GatesList extends Gate {
      *
      * @return A <code>JSONObject</code> representation of the current <code>GatesList</code>.
      */
-    public JSONObject toJSONObject(){
+    @Override
+    public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
             JSONArray gatesArr = new JSONArray();
@@ -131,50 +119,22 @@ public abstract class GatesList extends Gate {
         return sJSONFactory.create(jsonObject, GatesList.class.getPackage().getName());
     }
 
-    public void addGate(Gate gate) {
-        mGates.add(gate);
-    }
-
-    public int size() {
-        return mGates.size();
-    }
 
     /**
-     * Attempts to open all gates included in this gate list
+     * Setters and Getters
      */
-    @Override
-    public boolean tryOpenInner() {
-        if(mAutoOpenBehavior) {
-            for (Gate gate : mGates) {
-                gate.tryOpen();
-            }
-
-            return isOpen();
-        }
-        else {
-            if (canOpen()) {
-                forceOpen(true);
-                return true;
-            }
-
-            return false;
-        }
-    }
-
-    /** Setters and Getters */
 
     public List<Gate> getGates() {
         return mGates;
     }
 
-    /** Private Members */
+    /**
+     * Private Members
+     */
 
     private static final String TAG = "SOOMLA GatesList";
 
     private static JSONFactory<GatesList> sJSONFactory = new JSONFactory<GatesList>();
 
-    protected List<Gate> mGates;
-
-    // does opening child gates cause us to auto-open (or just canOpen)?
-    protected boolean mAutoOpenBehavior = false;
+    protected List<Gate> mGates = new ArrayList<Gate>();
 }

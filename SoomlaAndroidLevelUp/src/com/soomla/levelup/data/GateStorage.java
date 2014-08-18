@@ -16,6 +16,8 @@
 
 package com.soomla.levelup.data;
 
+import android.text.TextUtils;
+
 import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
@@ -26,7 +28,7 @@ import com.soomla.levelup.gates.Gate;
  * A utility class for persisting and querying the state of gates.
  * Use this class to check if a certain gate is open, or to open it.
  * This class uses the <code>KeyValueStorage</code> internally for storage.
- *
+ * <p/>
  * Created by refaelos on 13/05/14.
  */
 public class GateStorage {
@@ -51,8 +53,7 @@ public class GateStorage {
     }
 
     public static void setOpen(Gate gate, boolean open, boolean notify) {
-        String gateId = gate.getGateId();
-        String key = keyGateOpen(gateId);
+        String key = keyGateOpen(gate.getID());
 
         if (open) {
             KeyValueStorage.setValue(key, "yes");
@@ -72,11 +73,8 @@ public class GateStorage {
      * @return <code>true</code> if open, <code>false</code> otherwise
      */
     public static boolean isOpen(Gate gate) {
-        String gateId = gate.getGateId();
-        String key = keyGateOpen(gateId);
-
+        String key = keyGateOpen(gate.getID());
         String val = KeyValueStorage.getValue(key);
-
-        return val != null;
+        return !TextUtils.isEmpty(val);
     }
 }

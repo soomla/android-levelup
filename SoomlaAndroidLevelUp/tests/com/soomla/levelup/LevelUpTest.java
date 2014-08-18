@@ -24,7 +24,7 @@ import com.soomla.Soomla;
 import com.soomla.SoomlaApp;
 import com.soomla.events.RewardGivenEvent;
 import com.soomla.events.RewardTakenEvent;
-import com.soomla.levelup.challenges.ActionMission;
+import com.soomla.levelup.challenges.PurchasingMission;
 import com.soomla.levelup.challenges.BalanceMission;
 import com.soomla.levelup.challenges.Challenge;
 import com.soomla.levelup.challenges.Mission;
@@ -325,7 +325,7 @@ public class LevelUpTest {
         scoreAsc.inc(10);
         Assert.assertEquals(10, scoreAsc.getTempScore(), 0.01);
         mExpectedRecordValue = 10;
-        scoreAsc.saveAndReset();
+        scoreAsc.reset();
         Assert.assertEquals(10, scoreAsc.getLatest(), 0.01);
         Assert.assertEquals(0, scoreAsc.getTempScore(), 0.01);
         scoreAsc.setTempScore(20);
@@ -337,12 +337,12 @@ public class LevelUpTest {
         Assert.assertTrue(scoreAsc.hasTempReached(30));
         Assert.assertFalse(scoreAsc.hasTempReached(31));
         mExpectedRecordValue = 30;
-        scoreAsc.saveAndReset();
+        scoreAsc.reset();
         Assert.assertEquals(30, scoreAsc.getLatest(), 0.01);
         Assert.assertEquals(30, scoreAsc.getRecord(), 0.01);
         scoreAsc.setTempScore(15);
         mExpectedRecordValue = 30;
-        scoreAsc.saveAndReset();
+        scoreAsc.reset();
         Assert.assertEquals(15, scoreAsc.getLatest(), 0.01);
         Assert.assertEquals(30, scoreAsc.getRecord(), 0.01);
         Assert.assertTrue(scoreAsc.hasRecordReached(30));
@@ -369,17 +369,17 @@ public class LevelUpTest {
         scoreDsc.dec(50);
         Assert.assertEquals(50, scoreDsc.getTempScore(), 0.01);
         mExpectedRecordValue = 50;
-        scoreDsc.saveAndReset(); // start value is 100
+        scoreDsc.reset(); // start value is 100
         Assert.assertEquals(50, scoreDsc.getLatest(), 0.01);
         Assert.assertEquals(100, scoreDsc.getTempScore(), 0.01);
         scoreDsc.setTempScore(20);
         mExpectedRecordValue = 20;
-        scoreDsc.saveAndReset();
+        scoreDsc.reset();
         Assert.assertEquals(20, scoreDsc.getLatest(), 0.01);
         Assert.assertEquals(20, scoreDsc.getRecord(), 0.01);
         scoreDsc.setTempScore(30);
         mExpectedRecordValue = 20;
-        scoreDsc.saveAndReset();
+        scoreDsc.reset();
         Assert.assertEquals(30, scoreDsc.getLatest(), 0.01);
         Assert.assertEquals(20, scoreDsc.getRecord(), 0.01);
         Assert.assertTrue(scoreDsc.hasRecordReached(20));
@@ -436,7 +436,7 @@ public class LevelUpTest {
         Assert.assertFalse(badgeReward.isOwned());
 
         score.setTempScore(desiredScore);
-        score.saveAndReset();
+        score.reset();
 
         Assert.assertTrue(recordMission.isCompleted());
         Assert.assertTrue(badgeReward.isOwned());
@@ -497,9 +497,9 @@ public class LevelUpTest {
     @Test
     public void testChallenge() {
         final String missionId1 = "challenge_mission1";
-        final Mission mission1 = new ActionMission(missionId1, "ChallengeMission1");
+        final Mission mission1 = new PurchasingMission(missionId1, "ChallengeMission1");
         final String missionId2 = "challenge_mission2";
-        final Mission mission2 = new ActionMission(missionId2, "ChallengeMission1");
+        final Mission mission2 = new PurchasingMission(missionId2, "ChallengeMission1");
         final List<Mission> missions = new ArrayList<Mission>();
         missions.add(mission1);
         missions.add(mission2);
@@ -627,7 +627,7 @@ public class LevelUpTest {
         Assert.assertFalse(recordGate.isOpen());
         Assert.assertTrue(recordGate.canOpen());
 
-        final boolean opened = recordGate.tryOpen();
+        final boolean opened = recordGate.open();
         Assert.assertTrue(opened);
         Assert.assertTrue(recordGate.isOpen());
         Assert.assertTrue(recordGate.canOpen());
@@ -694,7 +694,7 @@ public class LevelUpTest {
 
         mVirtualItemExpectationQueue.add(new VirtualItemBalanceEventExpectation(itemId, -1, 0));
 
-        final boolean opened = balanceGate.tryOpen();
+        final boolean opened = balanceGate.open();
         Assert.assertTrue(opened);
         Assert.assertTrue(balanceGate.isOpen());
         Assert.assertTrue(balanceGate.canOpen());
@@ -747,7 +747,7 @@ public class LevelUpTest {
         Assert.assertFalse(lvl1CompletionGate.isOpen());
         Assert.assertTrue(lvl1CompletionGate.canOpen());
 
-        final boolean opened = lvl1CompletionGate.tryOpen();
+        final boolean opened = lvl1CompletionGate.open();
         Assert.assertTrue(opened);
         Assert.assertTrue(lvl1CompletionGate.isOpen());
         Assert.assertTrue(lvl1CompletionGate.canOpen());
@@ -804,14 +804,14 @@ public class LevelUpTest {
         mVirtualItemExpectationQueue.add(new VirtualItemBalanceEventExpectation(itemId, -10, 0));
 
         try {
-            StoreInventory.buy(itemId);
+            StoreInventory.buy(itemId, null);
         } catch (InsufficientFundsException e) {
             Assert.fail(e.getMessage());
         } catch (VirtualItemNotFoundException e) {
             Assert.fail(e.getMessage());
         }
 
-        final boolean opened = purchasableGate.tryOpen();
+        final boolean opened = purchasableGate.open();
         Assert.assertTrue(opened);
         Assert.assertTrue(purchasableGate.isOpen());
         Assert.assertTrue(purchasableGate.canOpen());
@@ -862,14 +862,14 @@ public class LevelUpTest {
         mExpectedRecordValue = desiredRecord1;
 
         score1.setTempScore(desiredRecord1);
-        score1.saveAndReset();
+        score1.reset();
 
         Assert.assertTrue(recordGate1.canOpen());
         Assert.assertFalse(recordGate1.isOpen());
 
         mExpectedGatesListEventId = gateListORId;
 
-        Assert.assertTrue(recordGate1.tryOpen());
+        Assert.assertTrue(recordGate1.open());
 
         Assert.assertTrue(gatesListOR.canOpen());
         Assert.assertFalse(gatesListOR.isOpen());
@@ -877,21 +877,21 @@ public class LevelUpTest {
         Assert.assertFalse(gatesListAND.canOpen());
         Assert.assertFalse(gatesListAND.isOpen());
 
-        Assert.assertTrue(gatesListOR.tryOpen());
+        Assert.assertTrue(gatesListOR.open());
 
         mExpectedGateEventId = recordGateId2;
         mExpectedScoreEventId = scoreId2;
         mExpectedRecordValue = desiredRecord2;
 
         score2.setTempScore(desiredRecord2);
-        score2.saveAndReset();
+        score2.reset();
 
         Assert.assertTrue(recordGate2.canOpen());
         Assert.assertFalse(recordGate2.isOpen());
 
         mExpectedGatesListEventId = gateListANDId;
 
-        Assert.assertTrue(recordGate2.tryOpen());
+        Assert.assertTrue(recordGate2.open());
 
         Assert.assertTrue(gatesListOR.canOpen());
         Assert.assertTrue(gatesListOR.isOpen());
@@ -899,7 +899,7 @@ public class LevelUpTest {
         Assert.assertTrue(gatesListAND.canOpen());
         Assert.assertFalse(gatesListAND.isOpen());
 
-        Assert.assertTrue(gatesListAND.tryOpen());
+        Assert.assertTrue(gatesListAND.open());
         Assert.assertTrue(gatesListAND.isOpen());
     }
 
@@ -946,22 +946,22 @@ public class LevelUpTest {
         mExpectedRecordValue = desiredRecord1;
 
         score1.setTempScore(desiredRecord1);
-        score1.saveAndReset();
+        score1.reset();
 
         Assert.assertTrue(recordGate1.canOpen());
         Assert.assertFalse(recordGate1.isOpen());
 
-        Assert.assertTrue(recordGate1.tryOpen());
+        Assert.assertTrue(recordGate1.open());
 
         Assert.assertTrue(gatesListOR.canOpen());
-        // todo: could be confusing, no need to tryOpen it
+        // todo: could be confusing, no need to open it
         Assert.assertTrue(gatesListOR.isOpen());
 
         Assert.assertFalse(gatesListAND.canOpen());
         Assert.assertFalse(gatesListAND.isOpen());
 
-        // todo: could be confusing, no need to tryOpen it
-        Assert.assertTrue(gatesListOR.tryOpen());
+        // todo: could be confusing, no need to open it
+        Assert.assertTrue(gatesListOR.open());
 
         mExpectedGatesListEventId = gateListANDId;
         mExpectedGateEventId = recordGateId2;
@@ -969,22 +969,22 @@ public class LevelUpTest {
         mExpectedRecordValue = desiredRecord2;
 
         score2.setTempScore(desiredRecord2);
-        score2.saveAndReset();
+        score2.reset();
 
         Assert.assertTrue(recordGate2.canOpen());
         Assert.assertFalse(recordGate2.isOpen());
 
-        Assert.assertTrue(recordGate2.tryOpen());
+        Assert.assertTrue(recordGate2.open());
 
         Assert.assertTrue(gatesListOR.canOpen());
         Assert.assertTrue(gatesListOR.isOpen());
 
         Assert.assertTrue(gatesListAND.canOpen());
-        // todo: could be confusing, no need to tryOpen it
+        // todo: could be confusing, no need to open it
         Assert.assertTrue(gatesListAND.isOpen());
 
-        // todo: could be confusing, no need to tryOpen it
-        Assert.assertTrue(gatesListOR.tryOpen());
+        // todo: could be confusing, no need to open it
+        Assert.assertTrue(gatesListOR.open());
         Assert.assertTrue(gatesListAND.isOpen());
     }
 

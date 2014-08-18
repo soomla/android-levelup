@@ -24,14 +24,15 @@ import com.soomla.levelup.challenges.Mission;
  */
 public class MissionCompletedEvent {
 
-    /** read-only Properties **/
+    /**
+     * read-only Properties *
+     */
 
     public final boolean IsChallenge;
     public final Mission Mission;
 
 
     /**
-     *
      * @param mission the mission that was completed
      */
     public MissionCompletedEvent(Mission mission) {

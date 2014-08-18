@@ -27,7 +27,7 @@ import org.json.JSONObject;
  * The score's value can be only inside the range of values.  For example,
  * a shooting score can on a scale of 10 to 100 according to the user's
  * performance in the game.
- *
+ * <p/>
  * Created by refaelos on 07/05/14.
  */
 public class RangeScore extends Score {
@@ -36,30 +36,30 @@ public class RangeScore extends Score {
     /**
      * Constructor
      *
-     * @param scoreId see parent
+     * @param id    see parent
      * @param range the range applicable to this score
      */
-    public RangeScore(String scoreId, Range range) {
-        super(scoreId);
+    public RangeScore(String id, Range range) {
+        super(id);
         this.mRange = range;
     }
 
     /**
      * Constructor
      *
-     * @param scoreId see parent
-     * @param name see parent
+     * @param id           see parent
+     * @param name         see parent
      * @param higherBetter see parent
-     * @param range the range applicable to this score
+     * @param range        the range applicable to this score
      */
-    public RangeScore(String scoreId, String name, boolean higherBetter, Range range) {
-        super(scoreId, name, higherBetter);
+    public RangeScore(String id, String name, boolean higherBetter, Range range) {
+        super(id, name, higherBetter);
         this.mRange = range;
 
         // if the score is descending, the start value should be
         // the high value, otherwise it's very confusing that the initial
         // score is the lowest
-        if(!higherBetter) {
+        if (!higherBetter) {
             setStartValue(range.getHigh());
         }
     }
@@ -78,77 +78,9 @@ public class RangeScore extends Score {
         // if the score is descending, the start value should be
         // the high value, otherwise it's very confusing that the initial
         // score is the lowest
-        if(!isHigherBetter()) {
+        if (!isHigherBetter()) {
             setStartValue(mRange.getHigh());
         }
-    }
-
-    /**
-     * Converts the current <code>RangeScore</code> to a JSONObject.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>RangeScore</code>.
-     */
-    public JSONObject toJSONObject(){
-        JSONObject jsonObject = super.toJSONObject();
-        try {
-            jsonObject.put(LUJSONConsts.LU_SCORE_RANGE, mRange.toJSONObject());
-        } catch (JSONException e) {
-            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
-        }
-
-        return jsonObject;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void inc(double amount) {
-
-        // Don't increment if we've hit the range's highest value
-        if (getTempScore() >= mRange.getHigh()) {
-            return;
-        }
-
-        // don't overflow on inc
-        if ((getTempScore()+amount) > mRange.getHigh()) {
-            amount = mRange.getHigh() - getTempScore();
-        }
-
-        super.inc(amount);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void dec(double amount) {
-
-        // Don't decrement if we've hit the range's lowest value
-        if (getTempScore() <= mRange.getLow()) {
-            return;
-        }
-
-        // don't overflow on dec
-        if ((getTempScore()-amount) < mRange.getLow()) {
-            amount =  getTempScore() - mRange.getLow();
-        }
-
-        super.dec(amount);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setTempScore(double score) {
-        if (score > mRange.getHigh()) {
-            score = mRange.getHigh();
-        }
-        if (score < mRange.getLow()) {
-            score = mRange.getLow();
-        }
-        super.setTempScore(score);
     }
 
     /**
@@ -160,14 +92,14 @@ public class RangeScore extends Score {
         /**
          * Constructor
          *
-         * @param low the lowest value possible in the range
+         * @param low  the lowest value possible in the range
          * @param high the highest value possible in the range
          */
         public Range(double low, double high) {
             mLow = low;
             mHigh = high;
 
-            if(mLow>=mHigh) {
+            if (mLow >= mHigh) {
                 throw new IllegalArgumentException("low isn't lower than high!");
             }
         }
@@ -183,7 +115,7 @@ public class RangeScore extends Score {
             mLow = jsonObject.getDouble(LUJSONConsts.LU_SCORE_RANGE_LOW);
             mHigh = jsonObject.getDouble(LUJSONConsts.LU_SCORE_RANGE_HIGH);
 
-            if(mLow>=mHigh) {
+            if (mLow >= mHigh) {
                 throw new IllegalArgumentException("low isn't lower than high!");
             }
         }
@@ -193,7 +125,7 @@ public class RangeScore extends Score {
          *
          * @return A <code>JSONObject</code> representation of the current <code>Range</code>.
          */
-        public JSONObject toJSONObject(){
+        public JSONObject toJSONObject() {
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put(LUJSONConsts.LU_SCORE_RANGE_LOW, mLow);
@@ -206,7 +138,9 @@ public class RangeScore extends Score {
         }
 
 
-        /** Setters and Getters */
+        /**
+         * Setters and Getters
+         */
 
         public double getLow() {
             return mLow;
@@ -216,7 +150,9 @@ public class RangeScore extends Score {
             return mHigh;
         }
 
-        /** Private Members **/
+        /**
+         * Private Members *
+         */
 
         private static final String TAG = "SOOMLA RangeNumberScore Range";
 
@@ -225,7 +161,9 @@ public class RangeScore extends Score {
     }
 
 
-    /** Private Members **/
+    /**
+     * Private Members *
+     */
 
     private static final String TAG = "SOOMLA RangeScore";
 

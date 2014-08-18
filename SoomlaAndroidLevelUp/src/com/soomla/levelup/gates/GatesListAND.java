@@ -16,9 +16,6 @@
 
 package com.soomla.levelup.gates;
 
-import com.soomla.SoomlaUtils;
-import com.soomla.data.JSONConsts;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,11 +24,11 @@ import java.util.List;
 /**
  * A specific type of <code>GatesList</code> which can be opened
  * only if <b>ALL</b> gates in its list are open.
- *
+ * <p/>
  * Inheritance: GatesListAND >
  * {@link com.soomla.levelup.gates.GatesList} >
  * {@link com.soomla.levelup.gates.Gate}
- *
+ * <p/>
  * Created by refaelos on 07/05/14.
  */
 public class GatesListAND extends GatesList {
@@ -40,30 +37,30 @@ public class GatesListAND extends GatesList {
     /**
      * Constructor
      *
-     * @param gateId see parent
+     * @param id see parent
      */
-    public GatesListAND(String gateId) {
-        super(gateId);
+    public GatesListAND(String id) {
+        super(id);
     }
 
     /**
      * Constructor
      *
-     * @param gateId see parent
+     * @param id         see parent
      * @param singleGate see parent
      */
-    public GatesListAND(String gateId, Gate singleGate) {
-        super(gateId, singleGate);
+    public GatesListAND(String id, Gate singleGate) {
+        super(id, singleGate);
     }
 
     /**
      * Constructor
      *
-     * @param gateId see parent
+     * @param id    see parent
      * @param gates see parent
      */
-    public GatesListAND(String gateId, List<Gate> gates) {
-        super(gateId, gates);
+    public GatesListAND(String id, List<Gate> gates) {
+        super(id, gates);
     }
 
     /**
@@ -77,39 +74,10 @@ public class GatesListAND extends GatesList {
         super(jsonObject);
     }
 
+
     /**
-     * {@inheritDoc}
+     * Private Members
      */
-    @Override
-    public boolean isOpen() {
-        // this flag is required since World/Level
-        // actually creates a fake AND gate (list) even for a single gate
-        // it means that it should answer true when the (only) child subgate is open
-        // without being required to open the (anonymous) AND parent
-        if(mAutoOpenBehavior) {
-            for (Gate gate : mGates) {
-                if (!gate.isOpen()) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        else {
-            return super.isOpen();
-        }
-    }
-
-    @Override
-    public boolean canOpen() {
-        for (Gate gate : mGates) {
-            if (!gate.isOpen()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /** Private Members */
 
     private static final String TAG = "SOOMLA GatesListAND";
 }

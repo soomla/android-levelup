@@ -16,8 +16,7 @@
 
 package com.soomla.levelup.challenges;
 
-
-import com.soomla.levelup.gates.RecordGate;
+import com.soomla.levelup.gates.WorldCompletionGate;
 import com.soomla.rewards.Reward;
 
 import org.json.JSONException;
@@ -27,23 +26,22 @@ import java.util.List;
 
 /**
  * A specific type of <code>Mission</code> that has an associated
- * score and a desired record which opens a <code>RecordGate</code>.
- * The mission is completed once the record gate is opened.
+ * world which opens a <code>WorldCompletionGate</code>.
+ * The mission is completed once the world completion gate is opened.
  * <p/>
- * Created by refaelos on 13/05/14.
+ * Created by gurdotan on 8/17/14.
  */
-public class RecordMission extends Mission {
+public class WorldCompletionMission extends Mission {
 
     /**
      * Constructor
      *
      * @param id                see parent
      * @param name              see parent
-     * @param associatedScoreId the ID of the item who's score is examined
-     * @param desiredRecord     the record which will complete this mission
+     * @param associatedWorldId the ID of the world to be examined
      */
-    public RecordMission(String id, String name, String associatedScoreId, int desiredRecord) {
-        super(id, name, RecordGate.class, new Object[]{associatedScoreId, desiredRecord});
+    public WorldCompletionMission(String id, String name, String associatedWorldId) {
+        super(id, name, WorldCompletionGate.class, new Object[]{associatedWorldId});
     }
 
     /**
@@ -52,17 +50,16 @@ public class RecordMission extends Mission {
      * @param id                see parent
      * @param name              see parent
      * @param rewards           see parent
-     * @param associatedScoreId the ID of the item who's score is examined
-     * @param desiredRecord     the record which will complete this mission
+     * @param associatedWorldId the ID of the world to be examined
      */
-    public RecordMission(String id, String name, List<Reward> rewards, String associatedScoreId, int desiredRecord) {
-        super(id, name, rewards, RecordGate.class, new Object[]{associatedScoreId, desiredRecord});
+    public WorldCompletionMission(String id, String name, List<Reward> rewards, String associatedWorldId) {
+        super(id, name, rewards, WorldCompletionGate.class, new Object[]{associatedWorldId});
     }
 
     /**
      * @{inheritDoc}
      */
-    public RecordMission(JSONObject jsonMission) throws JSONException {
+    public WorldCompletionMission(JSONObject jsonMission) throws JSONException {
         super(jsonMission);
     }
 

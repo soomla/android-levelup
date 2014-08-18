@@ -16,22 +16,13 @@
 
 package com.soomla.levelup.gates;
 
-import com.soomla.BusProvider;
-import com.soomla.SoomlaUtils;
-import com.soomla.data.JSONConsts;
-import com.soomla.levelup.LevelUp;
-import com.soomla.levelup.World;
-import com.soomla.levelup.data.LUJSONConsts;
-import com.soomla.levelup.events.WorldCompletedEvent;
-import com.squareup.otto.Subscribe;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * A specific type of <code>Gate</code> that has an associated
  * world. The gate opens once the world has been completed.
- *
+ * <p/>
  * Created by refaelos on 07/05/14.
  */
 public class WorldCompletionGate extends Gate {
@@ -40,16 +31,12 @@ public class WorldCompletionGate extends Gate {
     /**
      * Constructor
      *
-     * @param gateId see parent
+     * @param gateId            see parent
      * @param associatedWorldId the ID of the world which needs to be completed
      */
     public WorldCompletionGate(String gateId, String associatedWorldId) {
         super(gateId);
         this.mAssociatedWorldId = associatedWorldId;
-
-        if (!isOpen()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -61,65 +48,12 @@ public class WorldCompletionGate extends Gate {
      */
     public WorldCompletionGate(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-        mAssociatedWorldId = jsonObject.getString(LUJSONConsts.LU_ASSOCWORLDID);
-
-        if (!isOpen()) {
-            BusProvider.getInstance().register(this);
-        }
     }
+
 
     /**
-     * Converts the current <code>WorldCompletionGate</code> to a <code>JSONObject</code>.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>WorldCompletionGate</code>.
+     * Private Members
      */
-    public JSONObject toJSONObject(){
-        JSONObject jsonObject = super.toJSONObject();
-        try {
-            jsonObject.put(LUJSONConsts.LU_ASSOCWORLDID, mAssociatedWorldId);
-        } catch (JSONException e) {
-            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
-        }
-
-        return jsonObject;
-    }
-
-    /**
-     * Checks if the gate meets its world completion criteria for opening.
-     *
-     * @return <code>true</code> if the world is completed, <code>false</code> otherwise
-     */
-    @Override
-    public boolean canOpen() {
-        World world = LevelUp.getInstance().getWorld(mAssociatedWorldId);
-        return world != null && world.isCompleted();
-    }
-
-    @Override
-    public boolean tryOpenInner() {
-        if (canOpen()) {
-            forceOpen(true);
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Handles world completion events and notifies if the gate can be opened.
-     *
-     * @param worldCompletedEvent
-     */
-    @Subscribe
-    public void onWorldCompleted(WorldCompletedEvent worldCompletedEvent) {
-        if (worldCompletedEvent.World.getWorldId().equals(mAssociatedWorldId)) {
-            BusProvider.getInstance().unregister(this);
-            // gate can now open
-        }
-    }
-
-
-    /** Private Members */
 
     private static final String TAG = "SOOMLA WorldCompletionGate";
 

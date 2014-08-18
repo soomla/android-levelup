@@ -16,13 +16,8 @@
 
 package com.soomla.levelup.gates;
 
-import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
-import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.data.LUJSONConsts;
-import com.soomla.levelup.events.ScoreRecordChangedEvent;
-import com.soomla.levelup.scoring.Score;
-import com.squareup.otto.Subscribe;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +26,7 @@ import org.json.JSONObject;
  * A specific type of <code>Gate</code> that has an associated
  * score and a desired record. The gate opens
  * once the player achieves the desired record for the given score.
- *
+ * <p/>
  * Created by refaelos on 07/05/14.
  */
 public class RecordGate extends Gate {
@@ -40,18 +35,14 @@ public class RecordGate extends Gate {
     /**
      * Constructor
      *
-     * @param gateId see parent
-     * @param scoreId the ID of the score which is examined by this gate
+     * @param id            see parent
+     * @param scoreId       the ID of the score which is examined by this gate
      * @param desiredRecord the record which will open this gate
      */
-    public RecordGate(String gateId, String scoreId, double desiredRecord) {
-        super(gateId);
+    public RecordGate(String id, String scoreId, double desiredRecord) {
+        super(id);
         this.mAssociatedScoreId = scoreId;
         this.mDesiredRecord = desiredRecord;
-
-        if (!isOpen()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -65,10 +56,6 @@ public class RecordGate extends Gate {
         super(jsonObject);
         mAssociatedScoreId = jsonObject.getString(LUJSONConsts.LU_ASSOCSCOREID);
         mDesiredRecord = jsonObject.getInt(LUJSONConsts.LU_DESIRED_RECORD);
-
-        if (!isOpen()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -76,7 +63,8 @@ public class RecordGate extends Gate {
      *
      * @return A <code>JSONObject</code> representation of the current <code>RecordGate</code>.
      */
-    public JSONObject toJSONObject(){
+    @Override
+    public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
             jsonObject.put(LUJSONConsts.LU_ASSOCSCOREID, mAssociatedScoreId);
@@ -88,51 +76,10 @@ public class RecordGate extends Gate {
         return jsonObject;
     }
 
-    /**
-     * Checks if the gate meets its record criteria for opening.
-     *
-     * @return <code>true</code> if the score's record has reached
-     * the desired value, <code>false</code> otherwise
-     */
-    @Override
-    public boolean canOpen() {
-        Score score = LevelUp.getInstance().getScore(mAssociatedScoreId);
-        if (score == null) {
-            SoomlaUtils.LogError(TAG, "(canPass) couldn't find score with scoreId: " + mAssociatedScoreId);
-            return false;
-        }
-
-//        return score.hasTempReached(mDesiredRecord);
-        return score.hasRecordReached(mDesiredRecord);
-    }
-
-    @Override
-    public boolean tryOpenInner() {
-        if (canOpen()) {
-            forceOpen(true);
-            return true;
-        }
-
-        return false;
-    }
-
 
     /**
-     * Handles changes in score records and notifies if the gate can be opened.
-     *
-     * @param scoreRecordChangedEvent
+     * Private Members
      */
-    @Subscribe
-    public void onScoreRecordChanged(ScoreRecordChangedEvent scoreRecordChangedEvent) {
-        if (scoreRecordChangedEvent.Score.getScoreId().equals(mAssociatedScoreId) &&
-                scoreRecordChangedEvent.Score.hasRecordReached(mDesiredRecord)) {
-            BusProvider.getInstance().unregister(this);
-            // gate can now open
-        }
-    }
-
-
-    /** Private Members */
 
     private static String TAG = "SOOMLA RecordGate";
 

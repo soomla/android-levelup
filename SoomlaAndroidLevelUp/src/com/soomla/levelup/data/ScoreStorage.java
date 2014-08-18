@@ -16,6 +16,8 @@
 
 package com.soomla.levelup.data;
 
+import android.text.TextUtils;
+
 import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
@@ -26,7 +28,7 @@ import com.soomla.levelup.scoring.Score;
  * A utility class for persisting and querying scores and records.
  * Use this class to get or set the values of scores and records.
  * This class uses the <code>KeyValueStorage</code> internally for storage.
- *
+ * <p/>
  * Created by refaelos on 13/05/14.
  */
 public class ScoreStorage {
@@ -49,14 +51,12 @@ public class ScoreStorage {
     /**
      * Saves a new value for the given score
      *
-     * @param score the score to change
+     * @param score  the score to change
      * @param latest the latest value to save
      */
     public static void setLatestScore(Score score, double latest) {
-        String scoreId = score.getScoreId();
-        String key = keyLatestScore(scoreId);
+        String key = keyLatestScore(score.getID());
         String val = String.valueOf(latest);
-
         KeyValueStorage.setValue(key, val);
     }
 
@@ -67,13 +67,10 @@ public class ScoreStorage {
      * @return the last saved value
      */
     public static double getLatestScore(Score score) {
-        String scoreId = score.getScoreId();
-        String key = keyLatestScore(scoreId);
+        String key = keyLatestScore(score.getID());
         String val = KeyValueStorage.getValue(key);
-
-        return val == null ? score.getStartValue() : Double.parseDouble(val);
+        return TextUtils.isEmpty(val) ? score.getStartValue() : Double.parseDouble(val);
     }
-
 
 
     /** Record Score **/
@@ -81,16 +78,13 @@ public class ScoreStorage {
     /**
      * Sets a new record for the given score.
      *
-     * @param score the score who's record to change
+     * @param score  the score who's record to change
      * @param record the new record value
      */
     public static void setRecordScore(Score score, double record) {
-        String scoreId = score.getScoreId();
-        String key = keyRecordScore(scoreId);
+        String key = keyRecordScore(score.getID());
         String val = String.valueOf(record);
-
         KeyValueStorage.setValue(key, val);
-
         BusProvider.getInstance().post(new ScoreRecordChangedEvent(score));
     }
 
@@ -101,11 +95,9 @@ public class ScoreStorage {
      * @return the record of the given score
      */
     public static double getRecordScore(Score score) {
-        String scoreId = score.getScoreId();
-        String key = keyRecordScore(scoreId);
+        String key = keyRecordScore(score.getID());
         String val = KeyValueStorage.getValue(key);
-
-        return val == null ? score.getStartValue() : Double.parseDouble(val);
+        return TextUtils.isEmpty(val) ? score.getStartValue() : Double.parseDouble(val);
     }
 
 }

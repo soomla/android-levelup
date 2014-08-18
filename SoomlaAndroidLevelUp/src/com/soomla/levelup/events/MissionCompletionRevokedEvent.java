@@ -26,13 +26,16 @@ import com.soomla.levelup.challenges.Mission;
  */
 public class MissionCompletionRevokedEvent {
 
-    /** read-only Properties **/
+    /**
+     * read-only Properties *
+     */
 
     public final Mission Mission;
     public final boolean IsChallenge;
 
     /**
      * Constructor
+     *
      * @param mission to be revoked
      */
     public MissionCompletionRevokedEvent(Mission mission) {

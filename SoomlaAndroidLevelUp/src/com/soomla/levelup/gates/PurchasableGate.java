@@ -16,16 +16,13 @@
 
 package com.soomla.levelup.gates;
 
-import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
-import com.soomla.data.JSONConsts;
 import com.soomla.levelup.data.LUJSONConsts;
-import com.soomla.store.SoomlaStore;
-import com.soomla.store.data.StoreInfo;
+import com.soomla.store.StoreInventory;
 import com.soomla.store.domain.PurchasableVirtualItem;
-import com.soomla.store.events.MarketPurchaseEvent;
+import com.soomla.store.events.ItemPurchasedEvent;
+import com.soomla.store.exceptions.InsufficientFundsException;
 import com.soomla.store.exceptions.VirtualItemNotFoundException;
-import com.soomla.store.purchaseTypes.PurchaseWithMarket;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONException;
@@ -36,7 +33,7 @@ import org.json.JSONObject;
  * market item. The gate opens once the item has been purchased.
  * This gate is useful when you want to allow unlocking of certain levels
  * or worlds only if they are purchased.
- *
+ * <p/>
  * Created by refaelos on 07/05/14.
  */
 public class PurchasableGate extends Gate {
@@ -45,19 +42,12 @@ public class PurchasableGate extends Gate {
     /**
      * Constructor
      *
-     * @param gateId see parent
+     * @param id               see parent
      * @param associatedItemId the ID of the item which will open the gate once purchased
      */
-    public PurchasableGate(String gateId, String associatedItemId) {
-        super(gateId);
-
+    public PurchasableGate(String id, String associatedItemId) {
+        super(id);
         this.mAssociatedItemId = associatedItemId;
-
-        // We can't put the registration in the 'open' function b/c we want to make sure this gate
-        // "listens" to MarketPurchaseEvents even if the app was closed and opened again.
-        if (!isOpen()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -70,10 +60,6 @@ public class PurchasableGate extends Gate {
     public PurchasableGate(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
         mAssociatedItemId = jsonObject.getString(LUJSONConsts.LU_ASSOCITEMID);
-
-        if (!isOpen()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -81,7 +67,7 @@ public class PurchasableGate extends Gate {
      *
      * @return A <code>JSONObject</code> representation of the current <code>PurchasableGate</code>.
      */
-    public JSONObject toJSONObject(){
+    public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
             jsonObject.put(LUJSONConsts.LU_ASSOCITEMID, mAssociatedItemId);
@@ -96,43 +82,43 @@ public class PurchasableGate extends Gate {
      * Attempts to open the gate by purchasing the associated item
      */
     @Override
-    public boolean tryOpenInner() {
+    protected boolean openInner() {
         try {
-            PurchasableVirtualItem pvi = (PurchasableVirtualItem) StoreInfo.getVirtualItem(mAssociatedItemId);
-            PurchaseWithMarket ptype = (PurchaseWithMarket) pvi.getPurchaseType();
-            SoomlaStore.getInstance().buyWithMarket(ptype.getMarketItem(), getGateId());
+            StoreInventory.buy(mAssociatedItemId, getID());
             return true;
         } catch (VirtualItemNotFoundException e) {
-            SoomlaUtils.LogError(TAG, "The item needed for purchase doesn't exist. itemId: " +
-                    mAssociatedItemId);
-        } catch (ClassCastException e) {
-            SoomlaUtils.LogError(TAG, "The associated item is not a purchasable item. itemId: " +
-                    mAssociatedItemId);
+            SoomlaUtils.LogError(TAG, "The item needed for purchase doesn't exist. itemId: " + mAssociatedItemId);
+            SoomlaUtils.LogError(TAG, e.getMessage());
+        } catch (InsufficientFundsException e) {
+            SoomlaUtils.LogError(TAG, "There's not enough funds to purchase this item. itemId: " + mAssociatedItemId);
+            SoomlaUtils.LogError(TAG, e.getMessage());
         }
 
         return false;
     }
 
     @Override
-    public boolean canOpen() {
+    protected boolean canOpenInner() {
         return true;
     }
 
     /**
      * Handle market purchases and opens the gate.
      *
-     * @param marketPurchaseEvent
+     * @param itemPurchasedEvent
      */
     @Subscribe
-    public void onMarketPurchaseEvent(MarketPurchaseEvent marketPurchaseEvent) {
-        if (marketPurchaseEvent.getPayload().equals(getGateId())) {
-            BusProvider.getInstance().unregister(this);
+    public void onItemPurchasedEvent(ItemPurchasedEvent itemPurchasedEvent, String payload) {
+        PurchasableVirtualItem pvi = itemPurchasedEvent.getPurchasableVirtualItem();
+        if (pvi.getID() == mAssociatedItemId && payload == mID) {
             forceOpen(true);
         }
     }
 
 
-    /** Private Members */
+    /**
+     * Private Members
+     */
 
     private static String TAG = "SOOMLA PurchasableGate";
 

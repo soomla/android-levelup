@@ -23,7 +23,9 @@ import com.soomla.levelup.World;
  */
 public class WorldAssignedRewardEvent {
 
-    /** read-only Properties **/
+    /**
+     * read-only Properties *
+     */
 
     public final World World;
 

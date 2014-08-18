@@ -48,6 +48,15 @@ public class WorldStorage {
     }
 
     public static void setCompleted(World world, boolean completed, boolean notify) {
+
+        boolean currentStatus = isCompleted(world);
+        if (currentStatus == completed) {
+
+            // we don't need to set the status of a world to the same status over and over again.
+            // couldn't only cause trouble.
+            return;
+        }
+
         String worldId = world.getWorldId();
         String key = keyWorldCompleted(worldId);
 
@@ -63,21 +72,19 @@ public class WorldStorage {
     }
 
     public static boolean isCompleted(World world) {
-        String worldId = world.getWorldId();
-        String key = keyWorldCompleted(worldId);
-
+        String key = keyWorldCompleted(world.getID());
         String val = KeyValueStorage.getValue(key);
-
-        return val != null;
+        return !TextUtils.isEmpty(val);
     }
 
 
-    /** World Reward **/
+    /**
+     * World Reward *
+     */
 
-    public static void setReward(World world, String rewardId){
+    public static void setReward(World world, String rewardId) {
 
-        String worldId = world.getWorldId();
-        String key = keyReward(worldId);
+        String key = keyReward(world.getID());
         if (!TextUtils.isEmpty(rewardId)) {
             KeyValueStorage.setValue(key, rewardId);
         } else {
@@ -88,11 +95,8 @@ public class WorldStorage {
         BusProvider.getInstance().post(new WorldAssignedRewardEvent(world));
     }
 
-    public static String getAssignedReward(World world){
-
-        String worldId = world.getWorldId();
-        String key = keyReward(worldId);
-
+    public static String getAssignedReward(World world) {
+        String key = keyReward(world.getID());
         return KeyValueStorage.getValue(key);
     }
 }

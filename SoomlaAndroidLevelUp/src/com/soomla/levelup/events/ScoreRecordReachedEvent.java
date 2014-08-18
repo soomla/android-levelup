@@ -16,27 +16,24 @@
 
 package com.soomla.levelup.events;
 
-import com.soomla.levelup.gates.Gate;
+import com.soomla.levelup.scoring.Score;
 
 /**
- * This event is fired when a <code>Gate</code> has been opened.
+ * This event is fired when a new record has been reached for a <code>Score</code>.
  */
-public class GateOpenedEvent {
+public class ScoreRecordReachedEvent {
 
     /**
-     * read-only Properties
+     * read-only Properties *
      */
-
-    public final Gate Gate;
+    public final Score Score;
 
     /**
      * Constructor
      *
-     * @param gate the gate that has been opened
+     * @param score the score which has reached a new record
      */
-    public GateOpenedEvent(Gate gate) {
-        Gate = gate;
+    public ScoreRecordReachedEvent(Score score) {
+        Score = score;
     }
-
-
 }

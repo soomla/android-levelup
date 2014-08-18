@@ -16,10 +16,7 @@
 
 package com.soomla.levelup.challenges;
 
-import com.soomla.BusProvider;
-import com.soomla.Soomla;
 import com.soomla.SoomlaUtils;
-import com.soomla.data.JSONConsts;
 import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.levelup.data.MissionStorage;
 import com.soomla.levelup.events.MissionCompletedEvent;
@@ -38,7 +35,7 @@ import java.util.List;
  * A challenge is a specific type of <code>Mission</code> which holds a collection
  * of missions.  The user is required to complete all these missions in order to earn
  * the reward associated with the challenge.
- *
+ * <p/>
  * Created by refaelos on 13/05/14.
  */
 public class Challenge extends Mission {
@@ -47,25 +44,25 @@ public class Challenge extends Mission {
     /**
      * Constructor
      *
-     * @param missionId see parent
-     * @param name see parent
+     * @param id       see parent
+     * @param name     see parent
      * @param missions the list of missions included in this challenge
      */
-    public Challenge(String missionId, String name, List<Mission> missions) {
-        super(missionId, name);
+    public Challenge(String id, String name, List<Mission> missions) {
+        super(id, name);
         mMissions = missions;
     }
 
     /**
      * Constructor
      *
-     * @param missionId see parent
-     * @param name see parent
+     * @param id       see parent
+     * @param name     see parent
      * @param missions the list of missions included in this challenge
-     * @param rewards see parent
+     * @param rewards  see parent
      */
-    public Challenge(String missionId, String name, List<Mission> missions, List<Reward> rewards) {
-        super(missionId, name, rewards);
+    public Challenge(String id, String name, List<Mission> missions, List<Reward> rewards) {
+        super(id, name, rewards);
         mMissions = missions;
     }
 
@@ -79,12 +76,11 @@ public class Challenge extends Mission {
     public Challenge(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
 
-        mMissions = new ArrayList<Mission>();
         JSONArray missionsArr = jsonObject.getJSONArray(LUJSONConsts.LU_MISSIONS);
 
         // Iterate over all missions in the JSON array and for each one create
         // an instance according to the mission type
-        for (int i=0; i<missionsArr.length(); i++) {
+        for (int i = 0; i < missionsArr.length(); i++) {
             JSONObject missionJSON = missionsArr.getJSONObject(i);
             Mission mission = Mission.fromJSONObject(missionJSON);
             if (mission != null) {
@@ -98,7 +94,7 @@ public class Challenge extends Mission {
      *
      * @return A <code>JSONObject</code> representation of the current <code>Challenge</code>.
      */
-    public JSONObject toJSONObject(){
+    public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
             JSONArray missionsArr = new JSONArray();
@@ -122,7 +118,7 @@ public class Challenge extends Mission {
     public boolean isCompleted() {
         // could happen in construction
         // need to return false in order to register for child events
-        if(mMissions == null) {
+        if (mMissions == null || mMissions.isEmpty()) {
             return false;
         }
 
@@ -143,53 +139,57 @@ public class Challenge extends Mission {
      */
     @Subscribe
     public void onMissionCompleted(MissionCompletedEvent missionCompletedEvent) {
-        final String completedMissionId = missionCompletedEvent.Mission.getMissionId();
+        final String completedMissionId = missionCompletedEvent.Mission.getID();
         SoomlaUtils.LogDebug(TAG, "onMissionCompleted:" + completedMissionId);
         if (mMissions.contains(missionCompletedEvent.Mission)) {
             SoomlaUtils.LogDebug(TAG, String.format(
-                    "Challenge <%s> contains mission <%s>", getMissionId(), completedMissionId));
+                    "Mission <%s> is part of challenge <%s> (<%s>)", completedMissionId, getID(), mMissions.size()));
             boolean completed = true;
             for (Mission mission : mMissions) {
                 if (!mission.isCompleted()) {
                     SoomlaUtils.LogDebug(TAG, String.format(
-                            "mission %s not of challenge complete yet", completedMissionId));
+                            "challenge mission not completed?=%s", mission.getID()));
                     completed = false;
                     break;
                 }
             }
 
-            if(completed) {
-                SoomlaUtils.LogDebug(TAG, "Challenge completed:" + getMissionId());
-                setCompleted(true);
+            if (completed) {
+                SoomlaUtils.LogDebug(TAG, "Challenge %s completed!");
+                setCompletedInner(true);
             }
         }
     }
 
     @Subscribe
     public void onMissionRevoked(MissionCompletionRevokedEvent missionCompletionRevokedEvent) {
-        SoomlaUtils.LogDebug(TAG, "MissionCompletionRevokedEvent:" + missionCompletionRevokedEvent.Mission.getMissionId());
+        SoomlaUtils.LogDebug(TAG, "MissionCompletionRevokedEvent:" + missionCompletionRevokedEvent.Mission.getID());
         if (mMissions.contains(missionCompletionRevokedEvent.Mission)) {
             SoomlaUtils.LogDebug(TAG, "Challenge contains this mission");
             // if the challenge was completed before, but now one of its child missions
             // was uncompleted - the challenge is revoked as well
             if (MissionStorage.isCompleted(this)) {
-                SoomlaUtils.LogDebug(TAG, "Challenge revoked:" + getMissionId());
-                setCompleted(false);
+                SoomlaUtils.LogDebug(TAG, "Challenge revoked:" + getID());
+                setCompletedInner(false);
             }
         }
     }
 
-    /**
-     * ignore unregisterEvents() since challenge can be revoked by child missions revoked
-     */
-    @Override
-    protected void unregisterEvents() {
-        SoomlaUtils.LogDebug(TAG, "ignore unregisterEvents() since challenge can be revoked by child missions revoked");
-    }
+// Irrelevant for now
+//
+//    /**
+//     * ignore unregisterEvents() since challenge can be revoked by child missions revoked
+//     */
+//    @Override
+//    protected void unregisterEvents() {
+//        SoomlaUtils.LogDebug(TAG, "ignore unregisterEvents() since challenge can be revoked by child missions revoked");
+//    }
 
-    /** Private Members **/
+    /**
+     * Private Members *
+     */
 
     private static final String TAG = "SOOMLA Challenge";
 
-    private List<Mission> mMissions;
+    private List<Mission> mMissions = new ArrayList<Mission>();
 }

@@ -16,7 +16,6 @@
 
 package com.soomla.levelup.gates;
 
-import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.data.LUJSONConsts;
@@ -31,7 +30,7 @@ import org.json.JSONObject;
  * A specific type of <code>Gate</code> that has an associated
  * score and a desired record. The gate opens
  * once the player achieves the desired record for the given score.
- *
+ * <p/>
  * Created by refaelos on 07/05/14.
  */
 public class RecordGate extends Gate {
@@ -40,18 +39,14 @@ public class RecordGate extends Gate {
     /**
      * Constructor
      *
-     * @param gateId see parent
-     * @param scoreId the ID of the score which is examined by this gate
+     * @param id            see parent
+     * @param scoreId       the ID of the score which is examined by this gate
      * @param desiredRecord the record which will open this gate
      */
-    public RecordGate(String gateId, String scoreId, double desiredRecord) {
-        super(gateId);
+    public RecordGate(String id, String scoreId, double desiredRecord) {
+        super(id);
         this.mAssociatedScoreId = scoreId;
         this.mDesiredRecord = desiredRecord;
-
-        if (!isOpen()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -65,10 +60,6 @@ public class RecordGate extends Gate {
         super(jsonObject);
         mAssociatedScoreId = jsonObject.getString(LUJSONConsts.LU_ASSOCSCOREID);
         mDesiredRecord = jsonObject.getInt(LUJSONConsts.LU_DESIRED_RECORD);
-
-        if (!isOpen()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -76,7 +67,7 @@ public class RecordGate extends Gate {
      *
      * @return A <code>JSONObject</code> representation of the current <code>RecordGate</code>.
      */
-    public JSONObject toJSONObject(){
+    public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
             jsonObject.put(LUJSONConsts.LU_ASSOCSCOREID, mAssociatedScoreId);
@@ -95,27 +86,28 @@ public class RecordGate extends Gate {
      * the desired value, <code>false</code> otherwise
      */
     @Override
-    public boolean canOpen() {
+    protected boolean canOpenInner() {
         Score score = LevelUp.getInstance().getScore(mAssociatedScoreId);
         if (score == null) {
-            SoomlaUtils.LogError(TAG, "(canPass) couldn't find score with scoreId: " + mAssociatedScoreId);
+            SoomlaUtils.LogError(TAG, "(canOpenInner) couldn't find score with scoreId: " + mAssociatedScoreId);
             return false;
         }
 
-//        return score.hasTempReached(mDesiredRecord);
         return score.hasRecordReached(mDesiredRecord);
     }
 
     @Override
-    public boolean tryOpenInner() {
+    protected boolean openInner() {
         if (canOpen()) {
+
+            // There's nothing to do here... If the DesiredRecord was reached then the gate is just open.
+
             forceOpen(true);
             return true;
         }
 
         return false;
     }
-
 
     /**
      * Handles changes in score records and notifies if the gate can be opened.
@@ -124,15 +116,20 @@ public class RecordGate extends Gate {
      */
     @Subscribe
     public void onScoreRecordChanged(ScoreRecordChangedEvent scoreRecordChangedEvent) {
-        if (scoreRecordChangedEvent.Score.getScoreId().equals(mAssociatedScoreId) &&
-                scoreRecordChangedEvent.Score.hasRecordReached(mDesiredRecord)) {
-            BusProvider.getInstance().unregister(this);
-            // gate can now open
+        Score score = scoreRecordChangedEvent.Score;
+        if (score.getID() == mAssociatedScoreId && score.hasRecordReached(mDesiredRecord)) {
+
+            // We were thinking what will happen if the score's record will be broken over and over again.
+            // It might have made this function being called over and over again.
+            // It won't be called b/c ForceOpen(true) calls 'unregisterEvents' inside.
+            forceOpen(true);
         }
     }
 
 
-    /** Private Members */
+    /**
+     * Private Members
+     */
 
     private static String TAG = "SOOMLA RecordGate";
 

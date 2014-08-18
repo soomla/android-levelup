@@ -18,7 +18,6 @@ package com.soomla.levelup.gates;
 
 import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
-import com.soomla.data.JSONConsts;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.World;
 import com.soomla.levelup.data.LUJSONConsts;
@@ -31,7 +30,7 @@ import org.json.JSONObject;
 /**
  * A specific type of <code>Gate</code> that has an associated
  * world. The gate opens once the world has been completed.
- *
+ * <p/>
  * Created by refaelos on 07/05/14.
  */
 public class WorldCompletionGate extends Gate {
@@ -40,7 +39,7 @@ public class WorldCompletionGate extends Gate {
     /**
      * Constructor
      *
-     * @param gateId see parent
+     * @param gateId            see parent
      * @param associatedWorldId the ID of the world which needs to be completed
      */
     public WorldCompletionGate(String gateId, String associatedWorldId) {
@@ -73,7 +72,7 @@ public class WorldCompletionGate extends Gate {
      *
      * @return A <code>JSONObject</code> representation of the current <code>WorldCompletionGate</code>.
      */
-    public JSONObject toJSONObject(){
+    public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
             jsonObject.put(LUJSONConsts.LU_ASSOCWORLDID, mAssociatedWorldId);
@@ -96,7 +95,7 @@ public class WorldCompletionGate extends Gate {
     }
 
     @Override
-    public boolean tryOpenInner() {
+    public boolean openInner() {
         if (canOpen()) {
             forceOpen(true);
             return true;
@@ -119,7 +118,9 @@ public class WorldCompletionGate extends Gate {
     }
 
 
-    /** Private Members */
+    /**
+     * Private Members
+     */
 
     private static final String TAG = "SOOMLA WorldCompletionGate";
 

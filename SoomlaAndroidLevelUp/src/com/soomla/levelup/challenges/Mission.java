@@ -17,17 +17,24 @@
 package com.soomla.levelup.challenges;
 
 import com.soomla.BusProvider;
+import com.soomla.Schedule;
+import com.soomla.SoomlaEntity;
 import com.soomla.SoomlaUtils;
 import com.soomla.data.JSONConsts;
 import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.levelup.data.MissionStorage;
+import com.soomla.levelup.events.GateOpenedEvent;
+import com.soomla.levelup.gates.Gate;
 import com.soomla.rewards.Reward;
 import com.soomla.util.JSONFactory;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,36 +44,82 @@ import java.util.List;
  * You can create missions and use them as single, independent, entities OR you can create a
  * <code>Challenge</code> to handle several missions and monitor their completion.
  */
-public abstract class Mission {
+public abstract class Mission extends SoomlaEntity<Mission> {
 
     /**
      * Constructor.
      *
      * @param missionId the mission's ID
-     * @param name the mission's name (something you might want to display on the screen).
+     * @param name      the mission's name (something you might want to display on the screen).
      */
     public Mission(String missionId, String name) {
-        mName = name;
-        mMissionId = missionId;
-        mRewards = new ArrayList<Reward>();
-
-        registerEvents();
+        this(missionId, name, null, null);
     }
 
     /**
      * Constructor.
      *
-     * @param missionId the mission's ID
-     * @param name the mission's name (something you might want to display on the screen).
+     * @param id      the mission's ID
+     * @param name    the mission's name (something you might want to display on the screen).
      * @param rewards the rewards that you want to give your users on mission completion.
      */
-    public Mission(String missionId, String name, List<Reward> rewards) {
-        mMissionId = missionId;
-        mName = name;
-        mRewards = rewards;
+    public Mission(String id, String name, List<Reward> rewards) {
+        this(id, name, rewards, null, null);
+    }
 
+    protected Mission(String id, String name, Class gateClass, Object[] gateInitParams) {
+        this(id, name, new ArrayList<Reward>(), gateClass, gateInitParams);
+    }
+
+    protected Mission(String id, String name, List<Reward> rewards, Class gateClass, Object[] gateInitParams) {
+        super(name, "", id);
+        this.mRewards = rewards;
+        if (gateClass != null) {
+
+            //
+            // Find the proper constructor by matching argument
+            // classes to the provided initialization parameters
+            //
+            try {
+                Constructor matchedConstructor = null;
+                Constructor[] allConstructors = gateClass.getDeclaredConstructors();
+                for (Constructor ctor : allConstructors) {
+                    Class<?>[] pType = ctor.getParameterTypes();
+
+                    boolean match = true;
+
+                    for (int i = 0; i < pType.length; i++) {
+                        if (!pType[i].equals(gateInitParams[i].getClass())) {
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (match) {
+                        matchedConstructor = ctor;
+                        break;
+                    }
+                }
+
+                if (matchedConstructor == null) {
+                    throw new ClassNotFoundException();
+                }
+
+                this.mGate = (Gate) matchedConstructor.newInstance(gateInitParams);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        this.mSchedule = Schedule.AnyTimeOnce();
         registerEvents();
     }
+
 
     /**
      * Constructor.
@@ -76,15 +129,11 @@ public abstract class Mission {
      * @throws JSONException
      */
     public Mission(JSONObject jsonObject) throws JSONException {
-        mMissionId = jsonObject.getString(LUJSONConsts.LU_MISSION_MISSIONID);
-        mName = jsonObject.getString(LUJSONConsts.LU_NAME);
+        super(jsonObject);
 
-        mRewards = new ArrayList<Reward>();
+        this.mRewards = new ArrayList<Reward>();
         JSONArray rewardsArr = jsonObject.getJSONArray(JSONConsts.SOOM_REWARDS);
-
-        // Iterate over all missions in the JSON array and for each one create
-        // an instance according to the mission type
-        for (int i=0; i<rewardsArr.length(); i++) {
+        for (int i = 0; i < rewardsArr.length(); i++) {
             JSONObject rewardJSON = rewardsArr.getJSONObject(i);
             Reward reward = Reward.fromJSONObject(rewardJSON);
             if (reward != null) {
@@ -92,9 +141,20 @@ public abstract class Mission {
             }
         }
 
+        this.mGate = Gate.fromJSONObject(jsonObject.getJSONObject(LUJSONConsts.LU_GATE));
+        if (jsonObject.has(JSONConsts.SOOM_SCHEDULE)) {
+            this.mSchedule = new Schedule(jsonObject.getJSONObject(JSONConsts.SOOM_SCHEDULE));
+        }
+
         registerEvents();
     }
 
+    /**
+     * For JNI purposes
+     *
+     * @param jsonString
+     * @return a mission from a JSON string
+     */
     public static Mission fromJSONString(String jsonString) {
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
@@ -108,27 +168,31 @@ public abstract class Mission {
         return sJSONFactory.create(jsonObject, Mission.class.getPackage().getName());
     }
 
+    @Subscribe
+    public void onGateOpened(GateOpenedEvent gateOpenedEvent) {
+        if (mGate == gateOpenedEvent.Gate) {
+            mGate.forceOpen(false);
+            setCompletedInner(true);
+        }
+    }
+
+    // Abstract????
+    public boolean isAvailable() {
+        return mGate.canOpen() && mSchedule.approve(MissionStorage.getTimesCompleted(this));
+    }
+
+
     /**
      * subscribe self to events in order to track
      * mission completion. Should be called on construction
-     *
+     * <p/>
      * NOTE: override this and <code>unregisterEvents</code> to empty
      * if you need to use a <code>Mission</code> without events
      */
     protected void registerEvents() {
-        if (!isCompleted()) {
+        if (!isCompleted() && mGate != null) {
             BusProvider.getInstance().register(this);
         }
-    }
-
-    /**
-     * unsubscribe self to events.
-     * Should be called on setComplete(true)
-     *
-     * NOTE: see <code>registerEvents</code>
-     */
-    protected void unregisterEvents() {
-        BusProvider.getInstance().unregister(this);
     }
 
     /**
@@ -136,17 +200,20 @@ public abstract class Mission {
      *
      * @return A <code>JSONObject</code> representation of the current <code>Mission</code>.
      */
-    public JSONObject toJSONObject(){
-        JSONObject jsonObject = new JSONObject();
+    @Override
+    public JSONObject toJSONObject() {
+        JSONObject jsonObject = super.toJSONObject();
+
         try {
-            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
-            jsonObject.put(LUJSONConsts.LU_MISSION_MISSIONID, mMissionId);
-            jsonObject.put(LUJSONConsts.LU_NAME, mName);
             JSONArray rewardsArr = new JSONArray();
             for (Reward reward : mRewards) {
                 rewardsArr.put(reward.toJSONObject());
             }
             jsonObject.put(JSONConsts.SOOM_REWARDS, rewardsArr);
+
+            jsonObject.put(LUJSONConsts.LU_GATE, mGate.toJSONObject());
+            jsonObject.put(JSONConsts.SOOM_SCHEDULE, mSchedule.toJSONObject());
+
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
@@ -160,8 +227,27 @@ public abstract class Mission {
      * @return the completion status of the current mission.
      */
     public boolean isCompleted() {
+
+        // check if completed in Mission Storage
+        // this checks if the mission was ever completed... no matter how many times.
         return MissionStorage.isCompleted(this);
     }
+
+
+    public boolean complete() {
+        if (!mSchedule.approve(MissionStorage.getTimesCompleted(this))) {
+            SoomlaUtils.LogDebug(TAG, "mission cannot be completed b/c Schedule doesn't approve.");
+            return false;
+        }
+        SoomlaUtils.LogDebug(TAG, "trying opening gate to complete mission: " + getID());
+        return mGate.open();
+    }
+
+    // this function ignores Schedule, it's not supposed to be used in standard scenarios.
+    public void forceComplete() {
+        mGate.forceOpen(true);
+    }
+
 
     /**
      * Forces the completion status of the mission.
@@ -170,17 +256,12 @@ public abstract class Mission {
      *
      * @param completed the completion status you want to set to the mission.
      */
-    public void setCompleted(boolean completed) {
+    public void setCompletedInner(boolean completed) {
         MissionStorage.setCompleted(this, completed);
         if (completed) {
-            // events not interesting until revoked
-            unregisterEvents();
             giveRewards();
-        }
-        else {
+        } else {
             takeRewards();
-            // listen again for chance to be completed
-            registerEvents();
         }
     }
 
@@ -192,48 +273,35 @@ public abstract class Mission {
 
     protected void giveRewards() {
         // The mission is completed, giving the rewards.
-        for(Reward reward : mRewards) {
+        for (Reward reward : mRewards) {
             reward.give();
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Mission mission = (Mission) o;
-
-        return mMissionId.equals(mission.mMissionId);
+    public String getAutoGateId() {
+        return "gate_" + getID();
     }
 
-    @Override
-    public int hashCode() {
-        return mMissionId.hashCode();
-    }
 
-    /** Setters and Getters **/
-
-    public String getMissionId() {
-        return mMissionId;
-    }
-
-    public String getName() {
-        return mName;
-    }
+    /**
+     * Setters and Getters *
+     */
 
     public List<Reward> getRewards() {
         return mRewards;
     }
 
 
-    /** Private Members **/
+    /**
+     * Private Members *
+     */
 
     private static final String TAG = "SOOMLA Mission";
 
     private static JSONFactory<Mission> sJSONFactory = new JSONFactory<Mission>();
 
-    private String mMissionId;
-    private String mName;
     private List<Reward> mRewards;
+    private Schedule mSchedule;
+    protected Gate mGate;
+
 }

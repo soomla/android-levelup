@@ -16,9 +16,8 @@
 
 package com.soomla.levelup.gates;
 
-import com.soomla.SoomlaUtils;
-import com.soomla.data.JSONConsts;
-import com.soomla.levelup.data.LUJSONConsts;
+import com.soomla.BusProvider;
+import com.soomla.SoomlaEntity;
 import com.soomla.levelup.data.GateStorage;
 import com.soomla.util.JSONFactory;
 
@@ -28,18 +27,29 @@ import org.json.JSONObject;
 /**
  * A gate is an object which defines certain criteria for progressing
  * between the game's <code>World</code>s or <code>Level</code>s.
- *
+ * <p/>
  * Created by refaelos on 06/05/14.
  */
-public abstract class Gate {
+public abstract class Gate extends SoomlaEntity<Gate> {
 
     /**
      * Constructor
      *
-     * @param gateId the gate's ID
+     * @param id the gate's ID
      */
-    public Gate(String gateId) {
-        this.mGateId = gateId;
+    public Gate(String id) {
+        this(id, "");
+    }
+
+    /**
+     * Constructor
+     *
+     * @param id   the gate's ID
+     * @param name the gate's name
+     */
+    public Gate(String id, String name) {
+        super(id, name, "");
+        registerEvents();
     }
 
     /**
@@ -50,7 +60,7 @@ public abstract class Gate {
      * @throws JSONException
      */
     public Gate(JSONObject jsonObject) throws JSONException {
-        mGateId = jsonObject.getString(LUJSONConsts.LU_GATE_GATEID);
+        super(jsonObject);
     }
 
     /**
@@ -58,18 +68,18 @@ public abstract class Gate {
      *
      * @return A <code>JSONObject</code> representation of the current <code>Gate</code>.
      */
-    public JSONObject toJSONObject(){
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
-            jsonObject.put(LUJSONConsts.LU_GATE_GATEID, mGateId);
-        } catch (JSONException e) {
-            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
-        }
-
+    @Override
+    public JSONObject toJSONObject() {
+        JSONObject jsonObject = super.toJSONObject();
         return jsonObject;
     }
 
+    /**
+     * For JNI purposes
+     *
+     * @param jsonString
+     * @return a mission from a JSON string
+     */
     public static Gate fromJSONString(String jsonString) {
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
@@ -88,22 +98,33 @@ public abstract class Gate {
      *
      * @return if the opened successfully
      */
-    public boolean tryOpen() {
+    public boolean open() {
         if (GateStorage.isOpen(this)) {
             return true;
         }
 
-        return tryOpenInner();
+        return openInner();
     }
-
-    protected abstract boolean tryOpenInner();
 
     /**
      * Sets the gate to be opened
+     *
      * @param open
      */
     public void forceOpen(boolean open) {
+        boolean isOpen = isOpen();
+        if (isOpen == open) {
+            // if it's already open why open it again?
+            return;
+        }
+
         GateStorage.setOpen(this, open);
+        if (open) {
+            unregisterEvents();
+        } else {
+            // we can do this here ONLY becasue we check 'isOpen == open' a few lines above.
+            registerEvents();
+        }
     }
 
     /**
@@ -121,20 +142,42 @@ public abstract class Gate {
      *
      * @return true if criteria met for opening it
      */
-    public abstract boolean canOpen();
+    public boolean canOpen() {
+
+        // check in gate storage if the gate is open
+        if (GateStorage.isOpen(this)) {
+            return true;
+        }
+
+        return canOpenInner();
+    }
+
+    ;
+
+
+    protected void registerEvents() {
+        if (!isOpen()) {
+            BusProvider.getInstance().register(this);
+        }
+    }
+
+    protected void unregisterEvents() {
+        BusProvider.getInstance().unregister(this);
+    }
+
+    protected abstract boolean openInner();
+
+    protected abstract boolean canOpenInner();
+
 
     /** Setters and Getters */
 
-    public String getGateId() {
-        return mGateId;
-    }
 
-
-    /** Private Members */
+    /**
+     * Private Members
+     */
 
     private static final String TAG = "SOOMLA Gate";
 
     private static JSONFactory<Gate> sJSONFactory = new JSONFactory<Gate>();
-
-    private String mGateId;
 }

@@ -22,44 +22,41 @@ package com.soomla.levelup.data;
  */
 public class LUJSONConsts {
 
-    /** Global **/
-
+    /**
+     * LevelUp *
+     */
+    public static final String LU_MAIN_WORLD = "mainWorld";
     public static final String LU_ASSOCITEMID = "associatedItemId";
-    public static final String LU_ASSOCSCOREID = "associatedScoreId";
-    public static final String LU_ASSOCWORLDID = "associatedWorldId";
-    public static final String LU_DESIRED_RECORD = "desiredRecord";
     public static final String LU_DESIRED_BALANCE = "desiredBalance";
-    public static final String LU_NAME = "name";
 
-
-    /** Score **/
-
+    /**
+     * Score *
+     */
     public static final String LU_SCORES = "scores";
-    public static final String LU_SCORE_SCOREID = "scoreId";
     public static final String LU_SCORE_STARTVAL = "startValue";
     public static final String LU_SCORE_HIGHBETTER = "higherBetter";
-
     public static final String LU_SCORE_RANGE = "range";
     public static final String LU_SCORE_RANGE_LOW = "low";
     public static final String LU_SCORE_RANGE_HIGH = "high";
 
-
-    /** Gate **/
-
+    /**
+     * Gate *
+     */
+    public static final String LU_GATE = "gate";
     public static final String LU_GATES = "gates";
-    public static final String LU_GATE_GATEID = "gateId";
+    public static final String LU_ASSOCSCOREID = "associatedScoreId";
+    public static final String LU_DESIRED_RECORD = "desiredRecord";
 
-
-    /** Challenge **/
-
+    /**
+     * Challenge *
+     */
     public static final String LU_CHALLENGES = "challenges";
     public static final String LU_MISSIONS = "missions";
-    public static final String LU_MISSION_MISSIONID = "missionId";
 
-
-    /** World **/
-
+    /**
+     * World *
+     */
     public static final String LU_WORLDS = "worlds";
-    public static final String LU_WORLD_WORLDID = "worldId";
+
 }
 

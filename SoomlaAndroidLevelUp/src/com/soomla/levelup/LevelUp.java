@@ -155,7 +155,9 @@ public class LevelUp {
     }
 
 
-    /** Singleton **/
+    /**
+     * Singleton *
+     */
 
     public static LevelUp getInstance() {
         if (sInstance == null) {
@@ -164,7 +166,9 @@ public class LevelUp {
         return sInstance;
     }
 
-    private LevelUp() {}
+    private LevelUp() {
+    }
+
     private static LevelUp sInstance;
 
     /**
@@ -254,8 +258,10 @@ public class LevelUp {
     }
 
 
-    /** Private Members **/
+    /**
+     * Private Members *
+     */
 
     private static final String TAG = "SOOMLA LevelUp";
-    private HashMap<String, World>   mInitialWorlds;
+    private HashMap<String, World> mInitialWorlds;
 }

@@ -17,11 +17,7 @@
 package com.soomla.levelup.gates;
 
 import com.soomla.SoomlaUtils;
-import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.data.LUJSONConsts;
-import com.soomla.levelup.events.ScoreRecordChangedEvent;
-import com.soomla.levelup.scoring.Score;
-import com.squareup.otto.Subscribe;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,6 +63,7 @@ public class RecordGate extends Gate {
      *
      * @return A <code>JSONObject</code> representation of the current <code>RecordGate</code>.
      */
+    @Override
     public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -77,53 +74,6 @@ public class RecordGate extends Gate {
         }
 
         return jsonObject;
-    }
-
-    /**
-     * Checks if the gate meets its record criteria for opening.
-     *
-     * @return <code>true</code> if the score's record has reached
-     * the desired value, <code>false</code> otherwise
-     */
-    @Override
-    protected boolean canOpenInner() {
-        Score score = LevelUp.getInstance().getScore(mAssociatedScoreId);
-        if (score == null) {
-            SoomlaUtils.LogError(TAG, "(canOpenInner) couldn't find score with scoreId: " + mAssociatedScoreId);
-            return false;
-        }
-
-        return score.hasRecordReached(mDesiredRecord);
-    }
-
-    @Override
-    protected boolean openInner() {
-        if (canOpen()) {
-
-            // There's nothing to do here... If the DesiredRecord was reached then the gate is just open.
-
-            forceOpen(true);
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Handles changes in score records and notifies if the gate can be opened.
-     *
-     * @param scoreRecordChangedEvent
-     */
-    @Subscribe
-    public void onScoreRecordChanged(ScoreRecordChangedEvent scoreRecordChangedEvent) {
-        Score score = scoreRecordChangedEvent.Score;
-        if (score.getID() == mAssociatedScoreId && score.hasRecordReached(mDesiredRecord)) {
-
-            // We were thinking what will happen if the score's record will be broken over and over again.
-            // It might have made this function being called over and over again.
-            // It won't be called b/c ForceOpen(true) calls 'unregisterEvents' inside.
-            forceOpen(true);
-        }
     }
 
 

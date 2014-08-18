@@ -16,14 +16,6 @@
 
 package com.soomla.levelup.gates;
 
-import com.soomla.BusProvider;
-import com.soomla.SoomlaUtils;
-import com.soomla.levelup.LevelUp;
-import com.soomla.levelup.World;
-import com.soomla.levelup.data.LUJSONConsts;
-import com.soomla.levelup.events.WorldCompletedEvent;
-import com.squareup.otto.Subscribe;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,10 +37,6 @@ public class WorldCompletionGate extends Gate {
     public WorldCompletionGate(String gateId, String associatedWorldId) {
         super(gateId);
         this.mAssociatedWorldId = associatedWorldId;
-
-        if (!isOpen()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -60,61 +48,6 @@ public class WorldCompletionGate extends Gate {
      */
     public WorldCompletionGate(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-        mAssociatedWorldId = jsonObject.getString(LUJSONConsts.LU_ASSOCWORLDID);
-
-        if (!isOpen()) {
-            BusProvider.getInstance().register(this);
-        }
-    }
-
-    /**
-     * Converts the current <code>WorldCompletionGate</code> to a <code>JSONObject</code>.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>WorldCompletionGate</code>.
-     */
-    public JSONObject toJSONObject() {
-        JSONObject jsonObject = super.toJSONObject();
-        try {
-            jsonObject.put(LUJSONConsts.LU_ASSOCWORLDID, mAssociatedWorldId);
-        } catch (JSONException e) {
-            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
-        }
-
-        return jsonObject;
-    }
-
-    /**
-     * Checks if the gate meets its world completion criteria for opening.
-     *
-     * @return <code>true</code> if the world is completed, <code>false</code> otherwise
-     */
-    @Override
-    public boolean canOpen() {
-        World world = LevelUp.getInstance().getWorld(mAssociatedWorldId);
-        return world != null && world.isCompleted();
-    }
-
-    @Override
-    public boolean openInner() {
-        if (canOpen()) {
-            forceOpen(true);
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Handles world completion events and notifies if the gate can be opened.
-     *
-     * @param worldCompletedEvent
-     */
-    @Subscribe
-    public void onWorldCompleted(WorldCompletedEvent worldCompletedEvent) {
-        if (worldCompletedEvent.World.getWorldId().equals(mAssociatedWorldId)) {
-            BusProvider.getInstance().unregister(this);
-            // gate can now open
-        }
     }
 
 

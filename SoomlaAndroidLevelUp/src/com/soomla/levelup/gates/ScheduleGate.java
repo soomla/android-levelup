@@ -19,7 +19,6 @@ package com.soomla.levelup.gates;
 import com.soomla.Schedule;
 import com.soomla.SoomlaUtils;
 import com.soomla.data.JSONConsts;
-import com.soomla.levelup.data.GateStorage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -62,6 +61,7 @@ public class ScheduleGate extends Gate {
      *
      * @return A <code>JSONObject</code> representation of the current <code>ScheduleGate</code>.
      */
+    @Override
     public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -71,26 +71,6 @@ public class ScheduleGate extends Gate {
         }
 
         return jsonObject;
-    }
-
-    @Override
-    protected boolean canOpenInner() {
-        // gates don't have activation times. they can only be activated once.
-        // We kind of ignoring the activation limit of Schedule here.
-        return mSchedule.approve(GateStorage.isOpen(this) ? 1 : 0);
-    }
-
-    @Override
-    protected boolean openInner() {
-        if (canOpen()) {
-
-            // There's nothing to do here... If the DesiredRecord was reached then the gate is just open.
-
-            forceOpen(true);
-            return true;
-        }
-
-        return false;
     }
 
 

@@ -18,11 +18,6 @@ package com.soomla.levelup.gates;
 
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.LUJSONConsts;
-import com.soomla.store.StoreInventory;
-import com.soomla.store.events.CurrencyBalanceChangedEvent;
-import com.soomla.store.events.GoodBalanceChangedEvent;
-import com.soomla.store.exceptions.VirtualItemNotFoundException;
-import com.squareup.otto.Subscribe;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,6 +63,7 @@ public class BalanceGate extends Gate {
      *
      * @return A <code>JSONObject</code> representation of the current <code>RecordGate</code>.
      */
+    @Override
     public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -78,60 +74,6 @@ public class BalanceGate extends Gate {
         }
 
         return jsonObject;
-    }
-
-    /**
-     * Checks if the gate meets its item balance criteria for opening.
-     *
-     * @return <code>true</code> if the item's balance has
-     * reached the desired balance, <code>false</code> otherwise
-     */
-    @Override
-    protected boolean canOpenInner() {
-        try {
-            return (StoreInventory.getVirtualItemBalance(mAssociatedItemId) >= mDesiredBalance);
-        } catch (VirtualItemNotFoundException e) {
-            SoomlaUtils.LogError(TAG, "(canOpenInner) Couldn't find itemId. itemId: " + mAssociatedItemId);
-            SoomlaUtils.LogError(TAG, e.getMessage());
-            return false;
-        }
-    }
-
-    @Override
-    protected boolean openInner() {
-        if (canOpen()) {
-
-            // There's nothing to do here... If the DesiredBalance was reached then the gate is just open.
-            forceOpen(true);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Handles changes in the associated item's balance (if it's a currency)
-     *
-     * @param currencyBalanceChangedEvent
-     */
-    @Subscribe
-    public void onCurrencyBalanceChanged(CurrencyBalanceChangedEvent currencyBalanceChangedEvent) {
-        checkItemIdBalance(currencyBalanceChangedEvent.getCurrency().getItemId(), currencyBalanceChangedEvent.getBalance());
-    }
-
-    /**
-     * Handles changes in the associated item's balance (if it's a virtual good)
-     *
-     * @param goodBalanceChangedEvent
-     */
-    @Subscribe
-    public void onGoodBalanceChanged(GoodBalanceChangedEvent goodBalanceChangedEvent) {
-        checkItemIdBalance(goodBalanceChangedEvent.getGood().getItemId(), goodBalanceChangedEvent.getBalance());
-    }
-
-    private void checkItemIdBalance(String itemId, int balance) {
-        if (itemId.equals(mAssociatedItemId) && balance >= mDesiredBalance) {
-            forceOpen(true);
-        }
     }
 
 

@@ -18,12 +18,6 @@ package com.soomla.levelup.gates;
 
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.LUJSONConsts;
-import com.soomla.store.StoreInventory;
-import com.soomla.store.domain.PurchasableVirtualItem;
-import com.soomla.store.events.ItemPurchasedEvent;
-import com.soomla.store.exceptions.InsufficientFundsException;
-import com.soomla.store.exceptions.VirtualItemNotFoundException;
-import com.squareup.otto.Subscribe;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,6 +61,7 @@ public class PurchasableGate extends Gate {
      *
      * @return A <code>JSONObject</code> representation of the current <code>PurchasableGate</code>.
      */
+    @Override
     public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -76,43 +71,6 @@ public class PurchasableGate extends Gate {
         }
 
         return jsonObject;
-    }
-
-    /**
-     * Attempts to open the gate by purchasing the associated item
-     */
-    @Override
-    protected boolean openInner() {
-        try {
-            StoreInventory.buy(mAssociatedItemId, getID());
-            return true;
-        } catch (VirtualItemNotFoundException e) {
-            SoomlaUtils.LogError(TAG, "The item needed for purchase doesn't exist. itemId: " + mAssociatedItemId);
-            SoomlaUtils.LogError(TAG, e.getMessage());
-        } catch (InsufficientFundsException e) {
-            SoomlaUtils.LogError(TAG, "There's not enough funds to purchase this item. itemId: " + mAssociatedItemId);
-            SoomlaUtils.LogError(TAG, e.getMessage());
-        }
-
-        return false;
-    }
-
-    @Override
-    protected boolean canOpenInner() {
-        return true;
-    }
-
-    /**
-     * Handle market purchases and opens the gate.
-     *
-     * @param itemPurchasedEvent
-     */
-    @Subscribe
-    public void onItemPurchasedEvent(ItemPurchasedEvent itemPurchasedEvent, String payload) {
-        PurchasableVirtualItem pvi = itemPurchasedEvent.getPurchasableVirtualItem();
-        if (pvi.getID() == mAssociatedItemId && payload == mID) {
-            forceOpen(true);
-        }
     }
 
 

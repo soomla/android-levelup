@@ -18,8 +18,6 @@ package com.soomla.levelup.scoring;
 
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.LUJSONConsts;
-import com.soomla.store.StoreInventory;
-import com.soomla.store.exceptions.VirtualItemNotFoundException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,6 +73,7 @@ public class VirtualItemScore extends Score {
      *
      * @return A <code>JSONObject</code> representation of the current <code>VirtualItemScore</code>.
      */
+    @Override
     public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -93,21 +92,6 @@ public class VirtualItemScore extends Score {
 
     public String getAssociatedItemId() {
         return mAssociatedItemId;
-    }
-
-    /**
-     *
-     */
-    @Override
-    protected void performSaveActions() {
-        super.performSaveActions();
-        try {
-            final int amount = (int) getTempScore();
-            StoreInventory.giveVirtualItem(mAssociatedItemId, amount);
-        } catch (VirtualItemNotFoundException e) {
-            SoomlaUtils.LogError(TAG, "Couldn't find item associated with a given " +
-                    "VirtualItemScore. itemId: " + mAssociatedItemId);
-        }
     }
 
     /**

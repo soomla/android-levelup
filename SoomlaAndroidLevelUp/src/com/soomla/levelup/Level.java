@@ -16,10 +16,8 @@
 
 package com.soomla.levelup;
 
-import com.soomla.SoomlaUtils;
-import com.soomla.levelup.challenges.Challenge;
-import com.soomla.levelup.data.LevelStorage;
-import com.soomla.levelup.gates.GatesList;
+import com.soomla.levelup.challenges.Mission;
+import com.soomla.levelup.gates.Gate;
 import com.soomla.levelup.scoring.Score;
 
 import org.json.JSONException;
@@ -48,36 +46,23 @@ public class Level extends World {
     /**
      * Constructor
      *
-     * @param id          see parent
-     * @param singleScore see parent
+     * @param id the world's ID
      */
-    public Level(String id, boolean singleScore) {
-        super(id, singleScore);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param id         see parent
-     * @param gates      see parent
-     * @param scores     see parent
-     * @param challenges see parent
-     */
-    public Level(String id, GatesList gates, HashMap<String, Score> scores, List<Challenge> challenges) {
-        super(id, gates, new HashMap<String, World>(), scores, challenges);
+    public Level(String id) {
+        super(id);
     }
 
     /**
      * Constructor
      *
      * @param worldId     see parent
-     * @param gates       see parent
+     * @param gate        see parent
      * @param innerWorlds see parent
      * @param scores      see parent
-     * @param challenges  see parent
+     * @param missions    see parent
      */
-    public Level(String worldId, GatesList gates, HashMap<String, World> innerWorlds, HashMap<String, Score> scores, List<Challenge> challenges) {
-        super(worldId, gates, innerWorlds, scores, challenges);
+    public Level(String worldId, Gate gate, HashMap<String, World> innerWorlds, HashMap<String, Score> scores, List<Mission> missions) {
+        super(worldId, gate, innerWorlds, scores, missions);
     }
 
     /**
@@ -89,136 +74,6 @@ public class Level extends World {
      */
     public Level(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-    }
-
-    public int getTimesStarted() {
-        return LevelStorage.getTimesStarted(this);
-    }
-
-    public int getTimesPlayed() {
-        return LevelStorage.getTimesPlayed(this);
-    }
-
-    public long getSlowestDurationMillis() {
-        return LevelStorage.getSlowestDurationMillis(this);
-    }
-
-    public long getFastestDurationMillis() {
-        return LevelStorage.getFastestDurationMillis(this);
-    }
-
-    /**
-     * Starts the level.
-     * Call this method when game play in a certain level is initiated
-     *
-     * @return
-     */
-    public boolean start() {
-        SoomlaUtils.LogDebug(TAG, "Starting level with worldId: " + getWorldId());
-
-        if (!canStart()) {
-            return false;
-        }
-
-        mStartTime = System.currentTimeMillis();
-        mElapsed = 0;
-        mState = State.Running;
-        LevelStorage.incTimesStarted(this);
-
-        return true;
-    }
-
-    /**
-     * pauses a running level.
-     * important if you're keeping track of level time
-     */
-    public void pause() {
-        if (mState != State.Running) {
-            return;
-        }
-
-        long now = System.currentTimeMillis();
-        mElapsed += now - mStartTime;
-        mStartTime = 0;
-
-        mState = State.Paused;
-    }
-
-    /**
-     * resumes a running level.
-     * important if you're keeping track of level time
-     */
-    public void resume() {
-        if (mState != State.Paused) {
-            return;
-        }
-
-        mStartTime = System.currentTimeMillis();
-        mState = State.Running;
-    }
-
-    public State getState() {
-        return mState;
-    }
-
-    public long getPlayDurationMillis() {
-
-        long now = System.currentTimeMillis();
-        long duration = mElapsed;
-        if (mStartTime != 0)
-            duration += now - mStartTime;
-
-        return duration;
-    }
-
-    /**
-     * Ends the level.  Performs calculations of level play duration
-     * and updates player's scores.
-     * Call this method when game play in a certain level has reached an end.
-     */
-    public void end(boolean completed) {
-
-        // check end() called without matching start()
-        if (mStartTime == 0) {
-            SoomlaUtils.LogError(TAG, "end() called without prior start()! ignoring.");
-            return;
-        }
-
-
-        mState = State.Ended;
-
-        if (completed) {
-            long duration = getPlayDurationMillis();
-
-            // Calculate the slowest \ fastest durations of level play
-
-            if (duration > getSlowestDurationMillis()) {
-                LevelStorage.setSlowestDurationMillis(this, duration);
-            }
-
-            if (duration < getFastestDurationMillis()) {
-                LevelStorage.setFastestDurationMillis(this, duration);
-            }
-
-            for (Score score : mScores.values()) {
-                score.reset(); // resetting scores
-            }
-
-            // Count number of times this level was played
-            LevelStorage.incTimesPlayed(this);
-
-            // reset timers
-            mStartTime = 0;
-            mElapsed = 0;
-
-            setCompleted(true);
-        }
-    }
-
-    @Override
-    public void setCompleted(boolean mCompleted) {
-        mState = State.Completed;
-        super.setCompleted(mCompleted);
     }
 
     /**

@@ -74,15 +74,6 @@ public class GatesListOR extends GatesList {
         super(jsonObject);
     }
 
-    @Override
-    protected boolean canOpenInner() {
-        for (Gate gate : mGates) {
-            if (gate.isOpen()) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
      * Private Members

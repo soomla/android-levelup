@@ -16,9 +16,7 @@
 
 package com.soomla.levelup.gates;
 
-import com.soomla.BusProvider;
 import com.soomla.SoomlaEntity;
-import com.soomla.levelup.data.GateStorage;
 import com.soomla.util.JSONFactory;
 
 import org.json.JSONException;
@@ -49,7 +47,6 @@ public abstract class Gate extends SoomlaEntity<Gate> {
      */
     public Gate(String id, String name) {
         super(id, name, "");
-        registerEvents();
     }
 
     /**
@@ -92,82 +89,6 @@ public abstract class Gate extends SoomlaEntity<Gate> {
     public static Gate fromJSONObject(JSONObject jsonObject) {
         return sJSONFactory.create(jsonObject, Gate.class.getPackage().getName());
     }
-
-    /**
-     * Attempts to open this gate
-     *
-     * @return if the opened successfully
-     */
-    public boolean open() {
-        if (GateStorage.isOpen(this)) {
-            return true;
-        }
-
-        return openInner();
-    }
-
-    /**
-     * Sets the gate to be opened
-     *
-     * @param open
-     */
-    public void forceOpen(boolean open) {
-        boolean isOpen = isOpen();
-        if (isOpen == open) {
-            // if it's already open why open it again?
-            return;
-        }
-
-        GateStorage.setOpen(this, open);
-        if (open) {
-            unregisterEvents();
-        } else {
-            // we can do this here ONLY becasue we check 'isOpen == open' a few lines above.
-            registerEvents();
-        }
-    }
-
-    /**
-     * Checks whether this gate is open
-     *
-     * @return <code>true</code> if open,<code>false</code> otherwise
-     */
-    public boolean isOpen() {
-        return GateStorage.isOpen(this);
-    }
-
-
-    /**
-     * Checks if the gate meets its criteria for opening.
-     *
-     * @return true if criteria met for opening it
-     */
-    public boolean canOpen() {
-
-        // check in gate storage if the gate is open
-        if (GateStorage.isOpen(this)) {
-            return true;
-        }
-
-        return canOpenInner();
-    }
-
-    ;
-
-
-    protected void registerEvents() {
-        if (!isOpen()) {
-            BusProvider.getInstance().register(this);
-        }
-    }
-
-    protected void unregisterEvents() {
-        BusProvider.getInstance().unregister(this);
-    }
-
-    protected abstract boolean openInner();
-
-    protected abstract boolean canOpenInner();
 
 
     /** Setters and Getters */

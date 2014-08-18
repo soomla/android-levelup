@@ -16,18 +16,14 @@
 
 package com.soomla.levelup.challenges;
 
-import com.soomla.BusProvider;
 import com.soomla.Schedule;
 import com.soomla.SoomlaEntity;
 import com.soomla.SoomlaUtils;
 import com.soomla.data.JSONConsts;
 import com.soomla.levelup.data.LUJSONConsts;
-import com.soomla.levelup.data.MissionStorage;
-import com.soomla.levelup.events.GateOpenedEvent;
 import com.soomla.levelup.gates.Gate;
 import com.soomla.rewards.Reward;
 import com.soomla.util.JSONFactory;
-import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -117,7 +113,6 @@ public abstract class Mission extends SoomlaEntity<Mission> {
         }
 
         this.mSchedule = Schedule.AnyTimeOnce();
-        registerEvents();
     }
 
 
@@ -145,8 +140,6 @@ public abstract class Mission extends SoomlaEntity<Mission> {
         if (jsonObject.has(JSONConsts.SOOM_SCHEDULE)) {
             this.mSchedule = new Schedule(jsonObject.getJSONObject(JSONConsts.SOOM_SCHEDULE));
         }
-
-        registerEvents();
     }
 
     /**
@@ -166,33 +159,6 @@ public abstract class Mission extends SoomlaEntity<Mission> {
 
     public static Mission fromJSONObject(JSONObject jsonObject) {
         return sJSONFactory.create(jsonObject, Mission.class.getPackage().getName());
-    }
-
-    @Subscribe
-    public void onGateOpened(GateOpenedEvent gateOpenedEvent) {
-        if (mGate == gateOpenedEvent.Gate) {
-            mGate.forceOpen(false);
-            setCompletedInner(true);
-        }
-    }
-
-    // Abstract????
-    public boolean isAvailable() {
-        return mGate.canOpen() && mSchedule.approve(MissionStorage.getTimesCompleted(this));
-    }
-
-
-    /**
-     * subscribe self to events in order to track
-     * mission completion. Should be called on construction
-     * <p/>
-     * NOTE: override this and <code>unregisterEvents</code> to empty
-     * if you need to use a <code>Mission</code> without events
-     */
-    protected void registerEvents() {
-        if (!isCompleted() && mGate != null) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -219,67 +185,6 @@ public abstract class Mission extends SoomlaEntity<Mission> {
         }
 
         return jsonObject;
-    }
-
-    /**
-     * Check whether the current mission is completed or not.
-     *
-     * @return the completion status of the current mission.
-     */
-    public boolean isCompleted() {
-
-        // check if completed in Mission Storage
-        // this checks if the mission was ever completed... no matter how many times.
-        return MissionStorage.isCompleted(this);
-    }
-
-
-    public boolean complete() {
-        if (!mSchedule.approve(MissionStorage.getTimesCompleted(this))) {
-            SoomlaUtils.LogDebug(TAG, "mission cannot be completed b/c Schedule doesn't approve.");
-            return false;
-        }
-        SoomlaUtils.LogDebug(TAG, "trying opening gate to complete mission: " + getID());
-        return mGate.open();
-    }
-
-    // this function ignores Schedule, it's not supposed to be used in standard scenarios.
-    public void forceComplete() {
-        mGate.forceOpen(true);
-    }
-
-
-    /**
-     * Forces the completion status of the mission.
-     * The completion status will be saved to the database.
-     * In case of a successful completion, the associated rewards will be given.
-     *
-     * @param completed the completion status you want to set to the mission.
-     */
-    public void setCompletedInner(boolean completed) {
-        MissionStorage.setCompleted(this, completed);
-        if (completed) {
-            giveRewards();
-        } else {
-            takeRewards();
-        }
-    }
-
-    protected void takeRewards() {
-        for (Reward reward : mRewards) {
-            reward.take();
-        }
-    }
-
-    protected void giveRewards() {
-        // The mission is completed, giving the rewards.
-        for (Reward reward : mRewards) {
-            reward.give();
-        }
-    }
-
-    public String getAutoGateId() {
-        return "gate_" + getID();
     }
 
 

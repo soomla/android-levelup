@@ -25,7 +25,6 @@ public class LUJSONConsts {
     /**
      * LevelUp *
      */
-    public static final String LU_MAIN_WORLD = "mainWorld";
     public static final String LU_ASSOCITEMID = "associatedItemId";
     public static final String LU_DESIRED_BALANCE = "desiredBalance";
 
@@ -50,7 +49,6 @@ public class LUJSONConsts {
     /**
      * Challenge *
      */
-    public static final String LU_CHALLENGES = "challenges";
     public static final String LU_MISSIONS = "missions";
 
     /**

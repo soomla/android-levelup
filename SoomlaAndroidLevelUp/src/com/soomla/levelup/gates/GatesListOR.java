@@ -16,9 +16,6 @@
 
 package com.soomla.levelup.gates;
 
-import com.soomla.SoomlaUtils;
-import com.soomla.data.JSONConsts;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,11 +24,11 @@ import java.util.List;
 /**
  * A specific type of <code>GatesList</code> which can be opened
  * if <b>AT LEAST ONE</b> gate in its list is open.
- *
+ * <p/>
  * Inheritance: GatesListOR >
  * {@link com.soomla.levelup.gates.GatesList} >
  * {@link com.soomla.levelup.gates.Gate}
- *
+ * <p/>
  * Created by refaelos on 07/05/14.
  */
 public class GatesListOR extends GatesList {
@@ -40,30 +37,30 @@ public class GatesListOR extends GatesList {
     /**
      * Constructor
      *
-     * @param gateId see parent
+     * @param id see parent
      */
-    public GatesListOR(String gateId) {
-        super(gateId);
+    public GatesListOR(String id) {
+        super(id);
     }
 
     /**
      * Constructor
      *
-     * @param gateId see parent
+     * @param id         see parent
      * @param singleGate see parent
      */
-    public GatesListOR(String gateId, Gate singleGate) {
-        super(gateId, singleGate);
+    public GatesListOR(String id, Gate singleGate) {
+        super(id, singleGate);
     }
 
     /**
      * Constructor
      *
-     * @param gateId see parent
+     * @param id    see parent
      * @param gates see parent
      */
-    public GatesListOR(String gateId, List<Gate> gates) {
-        super(gateId, gates);
+    public GatesListOR(String id, List<Gate> gates) {
+        super(id, gates);
     }
 
     /**
@@ -77,26 +74,8 @@ public class GatesListOR extends GatesList {
         super(jsonObject);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public boolean isOpen() {
-        if(mAutoOpenBehavior) {
-            for (Gate gate : mGates) {
-                if (gate.isOpen()) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        else {
-            return super.isOpen();
-        }
-    }
-
-    @Override
-    public boolean canOpen() {
+    protected boolean canOpenInner() {
         for (Gate gate : mGates) {
             if (gate.isOpen()) {
                 return true;
@@ -105,7 +84,9 @@ public class GatesListOR extends GatesList {
         return false;
     }
 
-    /** Private Members */
+    /**
+     * Private Members
+     */
 
     private static final String TAG = "SOOMLA GatesListOR";
 }

@@ -28,7 +28,7 @@ import org.json.JSONObject;
  * A specific type of <code>Score</code> that has an associated
  * virtual item. The score is related to the specific item ID.  For example:
  * a game that has an "energy" virtual item can have energy points.
- *
+ * <p/>
  * Created by refaelos on 06/05/14.
  */
 public class VirtualItemScore extends Score {
@@ -37,24 +37,24 @@ public class VirtualItemScore extends Score {
     /**
      * Constructor
      *
-     * @param scoreId see parent
+     * @param id               see parent
      * @param associatedItemId the ID of the virtual item associated with this score
      */
-    public VirtualItemScore(String scoreId, String associatedItemId) {
-        super(scoreId);
+    public VirtualItemScore(String id, String associatedItemId) {
+        super(id);
         this.mAssociatedItemId = associatedItemId;
     }
 
     /**
      * Constructor
      *
-     * @param scoreId see parent
-     * @param name see parent
-     * @param higherBetter see parent
+     * @param id               see parent
+     * @param name             see parent
+     * @param higherBetter     see parent
      * @param associatedItemId the ID of the virtual item associated with this score
      */
-    public VirtualItemScore(String scoreId, String name, boolean higherBetter, String associatedItemId) {
-        super(scoreId, name, higherBetter);
+    public VirtualItemScore(String id, String name, boolean higherBetter, String associatedItemId) {
+        super(id, name, higherBetter);
         this.mAssociatedItemId = associatedItemId;
     }
 
@@ -75,7 +75,7 @@ public class VirtualItemScore extends Score {
      *
      * @return A <code>JSONObject</code> representation of the current <code>VirtualItemScore</code>.
      */
-    public JSONObject toJSONObject(){
+    public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
             jsonObject.put(LUJSONConsts.LU_ASSOCITEMID, mAssociatedItemId);
@@ -87,7 +87,9 @@ public class VirtualItemScore extends Score {
     }
 
 
-    /** Setters and Getters */
+    /**
+     * Setters and Getters
+     */
 
     public String getAssociatedItemId() {
         return mAssociatedItemId;
@@ -108,7 +110,9 @@ public class VirtualItemScore extends Score {
         }
     }
 
-    /** Private Members **/
+    /**
+     * Private Members *
+     */
 
     private static final String TAG = "SOOMLA VirtualItemScore";
 

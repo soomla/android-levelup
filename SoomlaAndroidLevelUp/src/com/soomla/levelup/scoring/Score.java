@@ -16,10 +16,12 @@
 
 package com.soomla.levelup.scoring;
 
+import com.soomla.BusProvider;
+import com.soomla.SoomlaEntity;
 import com.soomla.SoomlaUtils;
-import com.soomla.data.JSONConsts;
 import com.soomla.levelup.data.LUJSONConsts;
 import com.soomla.levelup.data.ScoreStorage;
+import com.soomla.levelup.events.ScoreRecordReachedEvent;
 import com.soomla.util.JSONFactory;
 
 import org.json.JSONException;
@@ -31,35 +33,30 @@ import org.json.JSONObject;
  * <code>Score</code>s for different aspects such as time, speed, points etc.
  * A score can be ascending in nature such as regular points (higher is better) or can
  * be descending such as time-to-complete level (lower is better).
- *
+ * <p/>
  * Created by refaelos on 06/05/14.
  */
-public class Score {
+public class Score extends SoomlaEntity<Score> {
 
     /**
      * Constructor
      *
-     * @param scoreId the score's ID
+     * @param id the score's ID
      */
-    public Score(String scoreId) {
-        this.mScoreId = scoreId;
-        this.mName = "temp_score_name";
-        this.mStartValue = 0;
-        this.mHigherBetter = true;
+    public Score(String id) {
+        this(id, "", true);
     }
 
     /**
      * Constructor
      *
-     * @param scoreId the score's ID
-     * @param name the score's name (something you might want to display on the screen)
+     * @param id           the score's ID
+     * @param name         the score's name (something you might want to display on the screen)
      * @param higherBetter an indicator for an ascending or descending score scale
      */
-    public Score(String scoreId, String name, boolean higherBetter) {
-        this.mScoreId = scoreId;
-        this.mName = name;
-        this.mStartValue = 0;
-        this.mHigherBetter = higherBetter;
+    public Score(String id, String name, boolean higherBetter) {
+        super(name, "", id);
+        mHigherBetter = higherBetter;
     }
 
     /**
@@ -69,11 +66,8 @@ public class Score {
      * @param jsonObject A JSONObject representation of the wanted <code>Score</code>.
      * @throws JSONException
      */
-    public Score(JSONObject jsonObject) throws JSONException{
-        mScoreId = jsonObject.getString(LUJSONConsts.LU_SCORE_SCOREID);
-        try{
-            mName = jsonObject.getString(LUJSONConsts.LU_NAME);
-        } catch (JSONException ignored) {}
+    public Score(JSONObject jsonObject) throws JSONException {
+        super(jsonObject);
         mStartValue = jsonObject.getDouble(LUJSONConsts.LU_SCORE_STARTVAL);
         mHigherBetter = jsonObject.getBoolean(LUJSONConsts.LU_SCORE_HIGHBETTER);
     }
@@ -83,14 +77,12 @@ public class Score {
      *
      * @return A <code>JSONObject</code> representation of the current <code>Score</code>.
      */
-    public JSONObject toJSONObject(){
+    @Override
+    public JSONObject toJSONObject() {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put(LUJSONConsts.LU_SCORE_SCOREID, mScoreId);
-            jsonObject.put(LUJSONConsts.LU_NAME, mName);
             jsonObject.put(LUJSONConsts.LU_SCORE_STARTVAL, mStartValue);
             jsonObject.put(LUJSONConsts.LU_SCORE_HIGHBETTER, mHigherBetter);
-            jsonObject.put(JSONConsts.SOOM_CLASSNAME, getClass().getSimpleName());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
@@ -98,6 +90,12 @@ public class Score {
         return jsonObject;
     }
 
+    /**
+     * For JNI purposes
+     *
+     * @param jsonString
+     * @return a score from a JSON string
+     */
     public static Score fromJSONString(String jsonString) {
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
@@ -108,7 +106,6 @@ public class Score {
     }
 
     public static Score fromJSONObject(JSONObject jsonObject) {
-
         return sJSONFactory.create(jsonObject, Score.class.getPackage().getName());
     }
 
@@ -135,33 +132,23 @@ public class Score {
     }
 
     /**
-     * Saves the current score (and record if reached) and resets
-     * the score to its initial value.  Use this method for example
+     * Resets the score to its initial value. Use this method for example
      * when a user restarts a level with a fresh score of 0.
      */
-    public void saveAndReset() {
-        double record = ScoreStorage.getRecordScore(this);
-        if (hasTempReached(record)) {
-            ScoreStorage.setRecordScore(this, mTempScore);
+    public void reset(boolean save) {
+        if (save) {
+            double record = ScoreStorage.getRecordScore(this);
+            if (hasTempReached(record)) {
+                ScoreStorage.setRecordScore(this, mTempScore);
+                mScoreRecordReachedSent = false;
+            }
+
+            performSaveActions();
+
+            ScoreStorage.setLatestScore(this, mTempScore);
         }
 
-        performSaveActions();
-
-        ScoreStorage.setLatestScore(this, mTempScore);
         setTempScore(mStartValue);
-    }
-
-    /**
-     * Resets the current score's value to mStartValue
-     */
-    public void reset() {
-        mTempScore = mStartValue;
-        // 0 doesn't work well (confusing) for descending score
-        // if someone set higherBetter(false) and a start value of 100
-        // I think they expect reset to go back to 100, otherwise
-        // 0 is the best and current record and can't be beat
-        ScoreStorage.setRecordScore(this, /*0*/mStartValue);
-        ScoreStorage.setLatestScore(this, /*0*/mStartValue);
     }
 
     /**
@@ -192,7 +179,8 @@ public class Score {
      * associated with reaching/saving it.
      * Override this method to add specific score behavior
      */
-    protected void performSaveActions() {}
+    protected void performSaveActions() {
+    }
 
     private boolean hasScoreReached(double score1, double score2) {
         return this.isHigherBetter() ?
@@ -201,11 +189,9 @@ public class Score {
     }
 
 
-    /** Setters and Getters */
-
-    public String getScoreId() {
-        return mScoreId;
-    }
+    /**
+     * Setters and Getters
+     */
 
     public double getTempScore() {
         return mTempScore;
@@ -219,10 +205,6 @@ public class Score {
         return ScoreStorage.getLatestScore(this);
     }
 
-    public String getName() {
-        return mName;
-    }
-
     public void setHigherBetter(boolean mHigherBetter) {
         this.mHigherBetter = mHigherBetter;
     }
@@ -232,6 +214,18 @@ public class Score {
     }
 
     public void setTempScore(double tempScore) {
+        setTempScore(tempScore, false);
+    }
+
+    public void setTempScore(double tempScore, boolean onlyIfBetter) {
+        if (onlyIfBetter && !hasScoreReached(tempScore, mTempScore)) {
+            return;
+        }
+        if (!mScoreRecordReachedSent && hasScoreReached(tempScore, tempScore)) {
+            BusProvider.getInstance().post(new ScoreRecordReachedEvent(this));
+            mScoreRecordReachedSent = true;
+        }
+
         this.mTempScore = tempScore;
     }
 
@@ -239,15 +233,16 @@ public class Score {
         return mStartValue;
     }
 
-    /** Private Members **/
+    /**
+     * Private Members *
+     */
 
     private static String TAG = "SOOMLA Score";
 
     private static JSONFactory<Score> sJSONFactory = new JSONFactory<Score>();
 
-    protected double mStartValue;
-    protected String mName;
-    private String mScoreId;
+    protected double mStartValue = 0;
     private boolean mHigherBetter;
     private double mTempScore;
+    private boolean mScoreRecordReachedSent;
 }

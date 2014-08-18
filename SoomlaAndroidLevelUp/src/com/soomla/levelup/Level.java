@@ -17,7 +17,6 @@
 package com.soomla.levelup;
 
 import com.soomla.SoomlaUtils;
-import com.soomla.data.JSONConsts;
 import com.soomla.levelup.challenges.Challenge;
 import com.soomla.levelup.data.LevelStorage;
 import com.soomla.levelup.gates.GatesList;
@@ -33,7 +32,7 @@ import java.util.List;
  * A level is specific type of <code>World</code> which can be started
  * and ended. During the level's game play, certain parameters are tracked and
  * saved such as level duration, score and number of times the level is played.
- *
+ * <p/>
  * Created by refaelos on 07/05/14.
  */
 public class Level extends World {
@@ -49,33 +48,33 @@ public class Level extends World {
     /**
      * Constructor
      *
-     * @param worldId see parent
+     * @param id          see parent
      * @param singleScore see parent
      */
-    public Level(String worldId, boolean singleScore) {
-        super(worldId, singleScore);
+    public Level(String id, boolean singleScore) {
+        super(id, singleScore);
     }
 
     /**
      * Constructor
      *
-     * @param worldId see parent
-     * @param gates see parent
-     * @param scores see parent
+     * @param id         see parent
+     * @param gates      see parent
+     * @param scores     see parent
      * @param challenges see parent
      */
-    public Level(String worldId, GatesList gates, HashMap<String, Score> scores, List<Challenge> challenges) {
-        super(worldId, gates, new HashMap<String, World>(), scores, challenges);
+    public Level(String id, GatesList gates, HashMap<String, Score> scores, List<Challenge> challenges) {
+        super(id, gates, new HashMap<String, World>(), scores, challenges);
     }
 
     /**
      * Constructor
      *
-     * @param worldId see parent
-     * @param gates see parent
+     * @param worldId     see parent
+     * @param gates       see parent
      * @param innerWorlds see parent
-     * @param scores see parent
-     * @param challenges see parent
+     * @param scores      see parent
+     * @param challenges  see parent
      */
     public Level(String worldId, GatesList gates, HashMap<String, World> innerWorlds, HashMap<String, Score> scores, List<Challenge> challenges) {
         super(worldId, gates, innerWorlds, scores, challenges);
@@ -111,6 +110,7 @@ public class Level extends World {
     /**
      * Starts the level.
      * Call this method when game play in a certain level is initiated
+     *
      * @return
      */
     public boolean start() {
@@ -179,7 +179,7 @@ public class Level extends World {
     public void end(boolean completed) {
 
         // check end() called without matching start()
-        if(mStartTime == 0) {
+        if (mStartTime == 0) {
             SoomlaUtils.LogError(TAG, "end() called without prior start()! ignoring.");
             return;
         }
@@ -200,8 +200,8 @@ public class Level extends World {
                 LevelStorage.setFastestDurationMillis(this, duration);
             }
 
-            for(Score score : mScores.values()) {
-                score.saveAndReset(); // resetting scores
+            for (Score score : mScores.values()) {
+                score.reset(); // resetting scores
             }
 
             // Count number of times this level was played
@@ -221,7 +221,9 @@ public class Level extends World {
         super.setCompleted(mCompleted);
     }
 
-    /** Private Members **/
+    /**
+     * Private Members *
+     */
 
     private static String TAG = "SOOMLA Level";
 

@@ -54,12 +54,7 @@ public class MissionStorage {
     }
 
     public static void setCompleted(Mission mission, boolean completed, boolean notify) {
-        setTimesCompleted(mission, completed, notify);
-    }
-
-    // TODO: Move into `setCompleted` once it is refactored in Unity.
-    public static void setTimesCompleted(Mission mission, boolean up, boolean notify) {
-        int total = getTimesCompleted(mission) + (up ? 1 : -1);
+        int total = getTimesCompleted(mission) + (completed ? 1 : -1);
         if (total < 0) {
             total = 0;
         }
@@ -68,7 +63,7 @@ public class MissionStorage {
         KeyValueStorage.setValue(key, String.valueOf(total));
 
         if (notify) {
-            if (up) {
+            if (completed) {
                 BusProvider.getInstance().post(new MissionCompletedEvent(mission));
             } else {
                 BusProvider.getInstance().post(new MissionCompletionRevokedEvent(mission));

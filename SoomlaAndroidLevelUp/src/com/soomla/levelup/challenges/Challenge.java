@@ -18,11 +18,7 @@ package com.soomla.levelup.challenges;
 
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.LUJSONConsts;
-import com.soomla.levelup.data.MissionStorage;
-import com.soomla.levelup.events.MissionCompletedEvent;
-import com.soomla.levelup.events.MissionCompletionRevokedEvent;
 import com.soomla.rewards.Reward;
-import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -94,6 +90,7 @@ public class Challenge extends Mission {
      *
      * @return A <code>JSONObject</code> representation of the current <code>Challenge</code>.
      */
+    @Override
     public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -109,81 +106,6 @@ public class Challenge extends Mission {
         return jsonObject;
     }
 
-    /**
-     * Checks whether the challenge is completed, i.e. all its missions are completed.
-     *
-     * @return <code>true</code> if the challenge is completed, <code>false</code> otherwise
-     */
-    @Override
-    public boolean isCompleted() {
-        // could happen in construction
-        // need to return false in order to register for child events
-        if (mMissions == null || mMissions.isEmpty()) {
-            return false;
-        }
-
-        for (Mission mission : mMissions) {
-            if (!mission.isCompleted()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Handles mission completion events. Checks if all missions included
-     * in the challenge are completed, and if so, sets the challenge as completed.
-     *
-     * @param missionCompletedEvent
-     */
-    @Subscribe
-    public void onMissionCompleted(MissionCompletedEvent missionCompletedEvent) {
-        final String completedMissionId = missionCompletedEvent.Mission.getID();
-        SoomlaUtils.LogDebug(TAG, "onMissionCompleted:" + completedMissionId);
-        if (mMissions.contains(missionCompletedEvent.Mission)) {
-            SoomlaUtils.LogDebug(TAG, String.format(
-                    "Mission <%s> is part of challenge <%s> (<%s>)", completedMissionId, getID(), mMissions.size()));
-            boolean completed = true;
-            for (Mission mission : mMissions) {
-                if (!mission.isCompleted()) {
-                    SoomlaUtils.LogDebug(TAG, String.format(
-                            "challenge mission not completed?=%s", mission.getID()));
-                    completed = false;
-                    break;
-                }
-            }
-
-            if (completed) {
-                SoomlaUtils.LogDebug(TAG, "Challenge %s completed!");
-                setCompletedInner(true);
-            }
-        }
-    }
-
-    @Subscribe
-    public void onMissionRevoked(MissionCompletionRevokedEvent missionCompletionRevokedEvent) {
-        SoomlaUtils.LogDebug(TAG, "MissionCompletionRevokedEvent:" + missionCompletionRevokedEvent.Mission.getID());
-        if (mMissions.contains(missionCompletionRevokedEvent.Mission)) {
-            SoomlaUtils.LogDebug(TAG, "Challenge contains this mission");
-            // if the challenge was completed before, but now one of its child missions
-            // was uncompleted - the challenge is revoked as well
-            if (MissionStorage.isCompleted(this)) {
-                SoomlaUtils.LogDebug(TAG, "Challenge revoked:" + getID());
-                setCompletedInner(false);
-            }
-        }
-    }
-
-// Irrelevant for now
-//
-//    /**
-//     * ignore unregisterEvents() since challenge can be revoked by child missions revoked
-//     */
-//    @Override
-//    protected void unregisterEvents() {
-//        SoomlaUtils.LogDebug(TAG, "ignore unregisterEvents() since challenge can be revoked by child missions revoked");
-//    }
 
     /**
      * Private Members *

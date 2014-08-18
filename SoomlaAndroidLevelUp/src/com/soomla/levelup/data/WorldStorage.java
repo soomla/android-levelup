@@ -57,7 +57,7 @@ public class WorldStorage {
             return;
         }
 
-        String worldId = world.getWorldId();
+        String worldId = world.getID();
         String key = keyWorldCompleted(worldId);
 
         if (completed) {

@@ -18,9 +18,7 @@ package com.soomla.levelup.gates;
 
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.LUJSONConsts;
-import com.soomla.levelup.events.GateOpenedEvent;
 import com.soomla.util.JSONFactory;
-import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -101,6 +99,7 @@ public abstract class GatesList extends Gate {
      *
      * @return A <code>JSONObject</code> representation of the current <code>GatesList</code>.
      */
+    @Override
     public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
@@ -120,41 +119,6 @@ public abstract class GatesList extends Gate {
         return sJSONFactory.create(jsonObject, GatesList.class.getPackage().getName());
     }
 
-    public void addGate(Gate gate) {
-        mGates.add(gate);
-    }
-
-    public void removeGate(Gate gate) {
-        mGates.remove(gate);
-    }
-
-    public int size() {
-        return mGates.size();
-    }
-
-    @Subscribe
-    public void onGateOpened(GateOpenedEvent gateOpenedEvent) {
-        if (mGates.contains(gateOpenedEvent.Gate)) {
-            if (canOpen()) {
-                forceOpen(true);
-            }
-        }
-    }
-
-
-    /**
-     * Attempts to open all gates included in this gate list
-     */
-    @Override
-    public boolean openInner() {
-        if (canOpen()) {
-
-            // There's nothing to do here... If CanOpen returns true it means that the gates list meets the condition for being opened.
-            forceOpen(true);
-            return true;
-        }
-        return false;
-    }
 
     /**
      * Setters and Getters

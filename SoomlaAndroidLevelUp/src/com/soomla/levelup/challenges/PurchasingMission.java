@@ -16,6 +16,7 @@
 
 package com.soomla.levelup.challenges;
 
+import com.soomla.levelup.gates.PurchasableGate;
 import com.soomla.rewards.Reward;
 
 import org.json.JSONException;
@@ -27,39 +28,40 @@ import java.util.List;
  * A specific type of <code>Mission</code> which has no specific implementation
  * and allows the developer to define custom criteria for mission completion.
  * Override the {@link Mission#isCompleted()} in order to the define the custom criteria.
- *
+ * <p/>
  * Created by refaelos on 13/05/14.
  */
-public class ActionMission extends Mission {
-
+public class PurchasingMission extends Mission {
 
     /**
      * Constructor
      *
-     * @param missionId see parent
-     * @param name see parent
+     * @param id               see parent
+     * @param name             see parent
+     * @param associatedItemId the ID of the item who's balance is examined
      */
-    public ActionMission(String missionId, String name) {
-        super(missionId, name);
+    public PurchasingMission(String id, String name, String associatedItemId) {
+        super(id, name, PurchasableGate.class, new Object[]{associatedItemId});
     }
 
     /**
      * Constructor
      *
-     * @param missionId see parent
-     * @param name see parent
-     * @param rewards see parent
+     * @param id               see parent
+     * @param name             see parent
+     * @param rewards          see parent
+     * @param associatedItemId the ID of the item who's balance is examined
      */
-    public ActionMission(String missionId, String name, List<Reward> rewards) {
-        super(missionId, name, rewards);
+    public PurchasingMission(String id, String name, List<Reward> rewards, String associatedItemId) {
+        super(id, name, rewards, PurchasableGate.class, new Object[]{associatedItemId});
     }
 
     /**
-     * Constructor
-     *
-     * @param jsonObject see parent
+     * @{inheritDoc}
      */
-    public ActionMission(JSONObject jsonObject) throws JSONException {
-        super(jsonObject);
+    public PurchasingMission(JSONObject jsonMission) throws JSONException {
+        super(jsonMission);
     }
+
+
 }

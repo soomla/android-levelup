@@ -16,6 +16,8 @@
 
 package com.soomla.levelup.data;
 
+import android.text.TextUtils;
+
 import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.Level;
@@ -27,7 +29,7 @@ import com.soomla.levelup.events.LevelStartedEvent;
  * A utility class for persisting and querying the state of levels.
  * Use this class to check if a certain gate is open, or to open it.
  * This class uses the <code>KeyValueStorage</code> internally for storage.
- *
+ * <p/>
  * Created by refaelos on 13/05/14.
  */
 public class LevelStorage {
@@ -53,83 +55,72 @@ public class LevelStorage {
     }
 
 
-    /** Level Duration **/
+    /**
+     * Level Duration *
+     */
 
     public static void setSlowestDurationMillis(Level level, long duration) {
-        String levelId = level.getWorldId();
-        String key = keySlowestDuration(levelId);
+        String key = keySlowestDuration(level.getID());
         String val = String.valueOf(duration);
-
         KeyValueStorage.setValue(key, val);
     }
 
     public static long getSlowestDurationMillis(Level level) {
-        String levelId = level.getWorldId();
-        String key = keySlowestDuration(levelId);
+        String key = keySlowestDuration(level.getID());
         String val = KeyValueStorage.getValue(key);
-
-        return val == null ? 0 : Long.parseLong(val);
+        return TextUtils.isEmpty(val) ? 0 : Long.parseLong(val);
     }
 
     public static void setFastestDurationMillis(Level level, long duration) {
-        String levelId = level.getWorldId();
-        String key = keyFastestDuration(levelId);
+        String key = keyFastestDuration(level.getID());
         String val = String.valueOf(duration);
-
         KeyValueStorage.setValue(key, val);
     }
 
     public static long getFastestDurationMillis(Level level) {
-        String levelId = level.getWorldId();
-        String key = keyFastestDuration(levelId);
+        String key = keyFastestDuration(level.getID());
         String val = KeyValueStorage.getValue(key);
-
-        return val == null ? 0 : Long.parseLong(val);
+        return TextUtils.isEmpty(val) ? 0 : Long.parseLong(val);
     }
 
 
+    /**
+     * Level Times Started *
+     */
 
-    /** Level Times Started **/
-
-    public static int incTimesStarted(Level level){
-
+    public static int incTimesStarted(Level level) {
         int started = getTimesStarted(level);
         if (started < 0) { /* can't be negative */
             started = 0;
         }
-        String levelId = level.getWorldId();
         String startedStr = "" + (started + 1);
-        String key = keyTimesStarted(levelId);
+        String key = keyTimesStarted(level.getID());
         KeyValueStorage.setValue(key, startedStr);
 
         // Notify level has started
         BusProvider.getInstance().post(new LevelStartedEvent(level));
 
-        return started+1;
+        return started + 1;
     }
 
-    public static int decTimesStarted(Level level){
-
+    public static int decTimesStarted(Level level) {
         int started = getTimesStarted(level);
         if (started <= 0) { /* can't be negative or zero */
             return 0;
         }
-        String levelId = level.getWorldId();
         String startedStr = "" + (started - 1);
-        String key = keyTimesStarted(levelId);
+        String key = keyTimesStarted(level.getID());
         KeyValueStorage.setValue(key, startedStr);
 
-        return started-1;
+        return started - 1;
     }
 
-    public static int getTimesStarted(Level level){
-
-        String levelId = level.getWorldId();
-        String key = keyTimesStarted(levelId);
+    public static int getTimesStarted(Level level) {
+        String key = keyTimesStarted(level.getID());
         String val = KeyValueStorage.getValue(key);
 
         int started = 0;
-        if (val != null) {
+        if (!TextUtils.isEmpty(val)) {
             started = Integer.parseInt(val);
         }
 
@@ -137,47 +128,43 @@ public class LevelStorage {
     }
 
 
-    /** Level Times Played **/
+    /**
+     * Level Times Played *
+     */
 
-    public static int incTimesPlayed(Level level){
-
+    public static int incTimesPlayed(Level level) {
         int played = getTimesPlayed(level);
         if (played < 0) { /* can't be negative */
             played = 0;
         }
-        String levelId = level.getWorldId();
         String playedStr = "" + (played + 1);
-        String key = keyTimesPlayed(levelId);
+        String key = keyTimesPlayed(level.getID());
         KeyValueStorage.setValue(key, playedStr);
 
         // Notify level has ended
         BusProvider.getInstance().post(new LevelEndedEvent(level));
 
-        return played+1;
+        return played + 1;
     }
 
-    public static int decTimesPlayed(Level level){
-
+    public static int decTimesPlayed(Level level) {
         int played = getTimesPlayed(level);
         if (played <= 0) { /* can't be negative or zero */
             return 0;
         }
-        String levelId = level.getWorldId();
         String playedStr = "" + (played - 1);
-        String key = keyTimesPlayed(levelId);
+        String key = keyTimesPlayed(level.getID());
         KeyValueStorage.setValue(key, playedStr);
 
-        return played-1;
+        return played - 1;
     }
 
-    public static int getTimesPlayed(Level level){
-
-        String levelId = level.getWorldId();
-        String key = keyTimesPlayed(levelId);
+    public static int getTimesPlayed(Level level) {
+        String key = keyTimesPlayed(level.getID());
         String val = KeyValueStorage.getValue(key);
 
         int played = 0;
-        if (val != null) {
+        if (!TextUtils.isEmpty(val)) {
             played = Integer.parseInt(val);
         }
 

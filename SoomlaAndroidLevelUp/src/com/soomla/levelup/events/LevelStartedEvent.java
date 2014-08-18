@@ -24,7 +24,9 @@ import com.soomla.levelup.Level;
  */
 public class LevelStartedEvent {
 
-    /** read-only Properties **/
+    /**
+     * read-only Properties *
+     */
 
     public final Level Level;
 

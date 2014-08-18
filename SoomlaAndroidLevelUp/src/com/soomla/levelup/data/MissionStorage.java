@@ -16,6 +16,8 @@
 
 package com.soomla.levelup.data;
 
+import android.text.TextUtils;
+
 import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
@@ -28,7 +30,7 @@ import com.soomla.levelup.events.MissionCompletionRevokedEvent;
  * Use this class to check if a certain mission is complete, or to
  * set its completion state.
  * This class uses the <code>KeyValueStorage</code> internally for storage.
- *
+ * <p/>
  * Created by refaelos on 13/05/14.
  */
 public class MissionStorage {
@@ -37,14 +39,14 @@ public class MissionStorage {
         return LevelUp.DB_KEY_PREFIX + "missions." + missionId + "." + postfix;
     }
 
-    private static String keyMissionCompleted(String missionId) {
-        return keyMissions(missionId, "completed");
+    private static String keyMissionTimesCompleted(String missionId) {
+        return keyMissions(missionId, "timesCompleted");
     }
 
     /**
      * Sets the completion status of the given mission.
      *
-     * @param mission the mission to complete
+     * @param mission   the mission to complete
      * @param completed the completed status
      */
     public static void setCompleted(Mission mission, boolean completed) {
@@ -52,17 +54,18 @@ public class MissionStorage {
     }
 
     public static void setCompleted(Mission mission, boolean completed, boolean notify) {
-        String missionId = mission.getMissionId();
-        String key = keyMissionCompleted(missionId);
+        int total = getTimesCompleted(mission) + (completed ? 1 : -1);
+        if (total < 0) {
+            total = 0;
+        }
 
-        if (completed) {
-            KeyValueStorage.setValue(key, "yes");
-            if (notify) {
+        String key = keyMissionTimesCompleted(mission.getID());
+        KeyValueStorage.setValue(key, String.valueOf(total));
+
+        if (notify) {
+            if (completed) {
                 BusProvider.getInstance().post(new MissionCompletedEvent(mission));
-            }
-        } else {
-            KeyValueStorage.deleteKeyValue(key);
-            if (notify) {
+            } else {
                 BusProvider.getInstance().post(new MissionCompletionRevokedEvent(mission));
             }
         }
@@ -76,11 +79,22 @@ public class MissionStorage {
      * <code>false</code> otherwise
      */
     public static boolean isCompleted(Mission mission) {
-        String missionId = mission.getMissionId();
-        String key = keyMissionCompleted(missionId);
-
-        String val = KeyValueStorage.getValue(key);
-
-        return val != null;
+        return getTimesCompleted(mission) > 0;
     }
+
+    /**
+     * Fetches the number of times the mission has been completed.
+     *
+     * @param mission the mission to check
+     * @return the number of times the mission has been completed, 0 by default.
+     */
+    public static int getTimesCompleted(Mission mission) {
+        String key = keyMissionTimesCompleted(mission.getID());
+        String val = KeyValueStorage.getValue(key);
+        if (TextUtils.isEmpty(val)) {
+            return 0;
+        }
+        return Integer.parseInt(val);
+    }
+
 }

@@ -19,17 +19,19 @@ package com.soomla.levelup.events;
 import com.soomla.levelup.scoring.Score;
 
 /**
- * This event is fired when a new record has been reached for a <code>Score</code>.
+ * This event is fired when a score's record is changed.
  */
 public class ScoreRecordChangedEvent {
 
-    /** read-only Properties **/
+    /**
+     * read-only Properties *
+     */
     public final Score Score;
 
     /**
      * Constructor
      *
-     * @param score the score which has reached a new record
+     * @param score the score which has been changed
      */
     public ScoreRecordChangedEvent(Score score) {
         Score = score;

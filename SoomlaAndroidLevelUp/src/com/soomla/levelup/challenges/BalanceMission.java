@@ -16,13 +16,8 @@
 
 package com.soomla.levelup.challenges;
 
-import com.soomla.SoomlaUtils;
-import com.soomla.data.JSONConsts;
-import com.soomla.levelup.data.LUJSONConsts;
+import com.soomla.levelup.gates.BalanceGate;
 import com.soomla.rewards.Reward;
-import com.soomla.store.events.CurrencyBalanceChangedEvent;
-import com.soomla.store.events.GoodBalanceChangedEvent;
-import com.squareup.otto.Subscribe;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,116 +26,43 @@ import java.util.List;
 
 /**
  * A specific type of <code>Mission</code> that has an associated
- * virtual item and a desired balance. The mission is completed
- * once the item's balance reaches the desired balance.
- *
+ * virtual item and a desired balance which opens a <code>BalanceGate</code>.
+ * The mission is completed once the balance gate is opened.
+ * <p/>
  * Created by refaelos on 13/05/14.
  */
 public class BalanceMission extends Mission {
 
-
     /**
      * Constructor
      *
-     * @param name see parent
-     * @param missionId see parent
+     * @param id               see parent
+     * @param name             see parent
      * @param associatedItemId the ID of the item who's balance is examined
-     * @param desiredBalance the balance which will complete this mission
+     * @param desiredBalance   the balance which will complete this mission
      */
-    public BalanceMission(String name, String missionId, String associatedItemId, int desiredBalance) {
-        super(missionId, name);
-        mAssociatedItemId = associatedItemId;
-        mDesiredBalance = desiredBalance;
+    public BalanceMission(String id, String name, String associatedItemId, int desiredBalance) {
+        super(id, name, BalanceGate.class, new Object[]{associatedItemId, desiredBalance});
     }
 
     /**
      * Constructor
      *
-     * @param missionId see parent
-     * @param name see parent
-     * @param rewards see parent
+     * @param id               see parent
+     * @param name             see parent
+     * @param rewards          see parent
      * @param associatedItemId the ID of the item who's balance is examined
-     * @param desiredBalance the balance which will complete this mission
+     * @param desiredBalance   the balance which will complete this mission
      */
-    public BalanceMission(String missionId, String name, List<Reward> rewards, String associatedItemId, int desiredBalance) {
-        super(missionId, name, rewards);
-        mAssociatedItemId = associatedItemId;
-        mDesiredBalance = desiredBalance;
+    public BalanceMission(String id, String name, List<Reward> rewards, String associatedItemId, int desiredBalance) {
+        super(id, name, rewards, BalanceGate.class, new Object[]{associatedItemId, desiredBalance});
     }
 
     /**
-     * Constructor
-     * Generates an instance of <code>BalanceMission</code> from the given <code>JSONObject</code>.
-     *
-     * @param jsonObject see parent
-     * @throws JSONException
+     * @{inheritDoc}
      */
-    public BalanceMission(JSONObject jsonObject) throws JSONException {
-        super(jsonObject);
-        mAssociatedItemId = jsonObject.getString(LUJSONConsts.LU_ASSOCITEMID);
-        mDesiredBalance = jsonObject.getInt(LUJSONConsts.LU_DESIRED_BALANCE);
+    public BalanceMission(JSONObject jsonMission) throws JSONException {
+        super(jsonMission);
     }
-
-    /**
-     * Converts the current <code>BalanceMission</code> to a JSONObject.
-     *
-     * @return A <code>JSONObject</code> representation of the current <code>BalanceMission</code>.
-     */
-    public JSONObject toJSONObject(){
-        JSONObject jsonObject = super.toJSONObject();
-        try {
-            jsonObject.put(LUJSONConsts.LU_ASSOCITEMID, mAssociatedItemId);
-            jsonObject.put(LUJSONConsts.LU_DESIRED_BALANCE, mDesiredBalance);
-        } catch (JSONException e) {
-            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
-        }
-
-        return jsonObject;
-    }
-
-    /**
-     * Handles changes in the associated item's balance (if it's a currency)
-     *
-     * @param currencyBalanceChangedEvent
-     */
-    @Subscribe
-    public void onCurrencyBalanceChanged(CurrencyBalanceChangedEvent currencyBalanceChangedEvent) {
-        checkItemIdBalance(currencyBalanceChangedEvent.getCurrency().getItemId(), currencyBalanceChangedEvent.getBalance());
-    }
-
-    /**
-     * Handles changes in the associated item's balance (if it's a virtual good)
-     *
-     * @param goodBalanceChangedEvent
-     */
-    @Subscribe
-    public void onGoodBalanceChanged(GoodBalanceChangedEvent goodBalanceChangedEvent) {
-        checkItemIdBalance(goodBalanceChangedEvent.getGood().getItemId(), goodBalanceChangedEvent.getBalance());
-    }
-
-    private void checkItemIdBalance(String itemId, int balance) {
-        if (itemId.equals(mAssociatedItemId) && balance >= mDesiredBalance) {
-            setCompleted(true);
-        }
-    }
-
-
-    /** Setters and Getters */
-
-    public String getAssociatedItemId() {
-        return mAssociatedItemId;
-    }
-
-    public int getDesiredBalance() {
-        return mDesiredBalance;
-    }
-
-
-    /** Private Members **/
-
-    private static final String TAG = "SOOMLA BalanceMission";
-
-    private String mAssociatedItemId;
-    private int mDesiredBalance;
 
 }

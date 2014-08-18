@@ -16,15 +16,8 @@
 
 package com.soomla.levelup.gates;
 
-import com.soomla.BusProvider;
 import com.soomla.SoomlaUtils;
-import com.soomla.levelup.data.GateStorage;
 import com.soomla.levelup.data.LUJSONConsts;
-import com.soomla.store.StoreInventory;
-import com.soomla.store.events.CurrencyBalanceChangedEvent;
-import com.soomla.store.events.GoodBalanceChangedEvent;
-import com.soomla.store.exceptions.VirtualItemNotFoundException;
-import com.squareup.otto.Subscribe;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,7 +26,7 @@ import org.json.JSONObject;
  * A specific type of <code>Gate</code> that has an associated
  * virtual item and a desired balance. The gate opens once
  * the item's balance reaches the desired balance.
- *
+ * <p/>
  * Created by refaelos on 07/05/14.
  */
 public class BalanceGate extends Gate {
@@ -42,18 +35,14 @@ public class BalanceGate extends Gate {
     /**
      * Constructor
      *
-     * @param gateId see parent
+     * @param id               see parent
      * @param associatedItemId the ID of the item who's balance is examined
-     * @param desiredBalance the balance which will open this gate
+     * @param desiredBalance   the balance which will open this gate
      */
-    public BalanceGate(String gateId, String associatedItemId, int desiredBalance) {
-        super(gateId);
+    public BalanceGate(String id, String associatedItemId, int desiredBalance) {
+        super(id);
         this.mDesiredBalance = desiredBalance;
         this.mAssociatedItemId = associatedItemId;
-
-        if (!isOpen()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -67,10 +56,6 @@ public class BalanceGate extends Gate {
         super(jsonObject);
         mAssociatedItemId = jsonObject.getString(LUJSONConsts.LU_ASSOCITEMID);
         mDesiredBalance = jsonObject.getInt(LUJSONConsts.LU_DESIRED_BALANCE);
-
-        if (!isOpen()) {
-            BusProvider.getInstance().register(this);
-        }
     }
 
     /**
@@ -78,7 +63,8 @@ public class BalanceGate extends Gate {
      *
      * @return A <code>JSONObject</code> representation of the current <code>RecordGate</code>.
      */
-    public JSONObject toJSONObject(){
+    @Override
+    public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
             jsonObject.put(LUJSONConsts.LU_ASSOCITEMID, mAssociatedItemId);
@@ -90,74 +76,10 @@ public class BalanceGate extends Gate {
         return jsonObject;
     }
 
-    /**
-     * Checks if the gate meets its item balance criteria for opening.
-     *
-     * @return <code>true</code> if the item's balance has
-     * reached the desired balance, <code>false</code> otherwise
-     */
-    @Override
-    public boolean canOpen() {
-        if (GateStorage.isOpen(this)) {
-            return true;
-        }
-        try {
-            if (StoreInventory.getVirtualItemBalance(mAssociatedItemId) < mDesiredBalance) {
-                return false;
-            }
-        } catch (VirtualItemNotFoundException e) {
-            SoomlaUtils.LogError(TAG, "(canPass) Couldn't find itemId. itemId: " + mAssociatedItemId);
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean tryOpenInner() {
-        if (canOpen()) {
-            try {
-                StoreInventory.takeVirtualItem(mAssociatedItemId, mDesiredBalance);
-            } catch (VirtualItemNotFoundException e) {
-                SoomlaUtils.LogError(TAG, "(open) Couldn't find itemId. itemId: " + mAssociatedItemId);
-                return false;
-            }
-
-            forceOpen(true);
-            return true;
-        }
-
-        return false;
-    }
 
     /**
-     * Handles changes in the associated item's balance (if it's a currency)
-     *
-     * @param currencyBalanceChangedEvent
+     * private members *
      */
-    @Subscribe
-    public void onCurrencyBalanceChanged(CurrencyBalanceChangedEvent currencyBalanceChangedEvent) {
-        checkItemIdBalance(currencyBalanceChangedEvent.getCurrency().getItemId(), currencyBalanceChangedEvent.getBalance());
-    }
-
-    /**
-     * Handles changes in the associated item's balance (if it's a virtual good)
-     *
-     * @param goodBalanceChangedEvent
-     */
-    @Subscribe
-    public void onGoodBalanceChanged(GoodBalanceChangedEvent goodBalanceChangedEvent) {
-        checkItemIdBalance(goodBalanceChangedEvent.getGood().getItemId(), goodBalanceChangedEvent.getBalance());
-    }
-
-    private void checkItemIdBalance(String itemId, int balance) {
-        if (itemId.equals(mAssociatedItemId) && balance >= mDesiredBalance) {
-            BusProvider.getInstance().unregister(this);
-            // gate can open now
-        }
-    }
-
-
-    /** private members **/
 
     private static String TAG = "SOOMLA BalanceGate";
 

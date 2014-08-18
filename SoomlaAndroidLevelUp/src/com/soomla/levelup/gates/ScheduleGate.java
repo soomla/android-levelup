@@ -16,56 +16,56 @@
 
 package com.soomla.levelup.gates;
 
+import com.soomla.Schedule;
 import com.soomla.SoomlaUtils;
-import com.soomla.levelup.data.LUJSONConsts;
+import com.soomla.data.JSONConsts;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * A specific type of <code>Gate</code> that has an associated
- * market item. The gate opens once the item has been purchased.
- * This gate is useful when you want to allow unlocking of certain levels
- * or worlds only if they are purchased.
+ * A specific type of <code>Gate</code> that has an associated schedule.
+ * The gate opens when the schedule approves this gate.
  * <p/>
- * Created by refaelos on 07/05/14.
+ * Created by gurdotan on 8/18/14.
  */
-public class PurchasableGate extends Gate {
+public class ScheduleGate extends Gate {
 
 
     /**
      * Constructor
      *
-     * @param id               see parent
-     * @param associatedItemId the ID of the item which will open the gate once purchased
+     * @param id       see parent
+     * @param schedule the schedule which will open this gate
      */
-    public PurchasableGate(String id, String associatedItemId) {
+    public ScheduleGate(String id, Schedule schedule) {
         super(id);
-        this.mAssociatedItemId = associatedItemId;
+        mSchedule = schedule;
     }
 
     /**
      * Constructor
-     * Generates an instance of <code>PurchasableGate</code> from the given <code>JSONObject</code>.
+     * Generates an instance of <code>ScheduleGate</code> from the given <code>JSONObject</code>.
      *
      * @param jsonObject see parent
      * @throws JSONException
      */
-    public PurchasableGate(JSONObject jsonObject) throws JSONException {
+    public ScheduleGate(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-        mAssociatedItemId = jsonObject.getString(LUJSONConsts.LU_ASSOCITEMID);
+        mSchedule = new Schedule(jsonObject.getJSONObject(JSONConsts.SOOM_SCHEDULE));
     }
 
+
     /**
-     * Converts the current <code>PurchasableGate</code> to a <code>JSONObject</code>.
+     * Converts the current <code>ScheduleGate</code> to a <code>JSONObject</code>.
      *
-     * @return A <code>JSONObject</code> representation of the current <code>PurchasableGate</code>.
+     * @return A <code>JSONObject</code> representation of the current <code>ScheduleGate</code>.
      */
     @Override
     public JSONObject toJSONObject() {
         JSONObject jsonObject = super.toJSONObject();
         try {
-            jsonObject.put(LUJSONConsts.LU_ASSOCITEMID, mAssociatedItemId);
+            jsonObject.put(JSONConsts.SOOM_SCHEDULE, mSchedule.toJSONObject());
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
@@ -75,10 +75,20 @@ public class PurchasableGate extends Gate {
 
 
     /**
+     * Setters and Getters
+     */
+
+    public Schedule getSchedule() {
+        return mSchedule;
+    }
+
+
+    /**
      * Private Members
      */
 
-    private static String TAG = "SOOMLA PurchasableGate";
+    private static String TAG = "SOOMLA ScheduleGate";
 
-    private String mAssociatedItemId;
+    private Schedule mSchedule;
+
 }

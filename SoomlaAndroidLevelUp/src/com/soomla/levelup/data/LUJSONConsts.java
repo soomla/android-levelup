@@ -55,6 +55,7 @@ public class LUJSONConsts {
      * World *
      */
     public static final String LU_WORLDS = "worlds";
+    public static final String LU_ASSOCWORLDID = "associatedWorldId";
 
 }
 

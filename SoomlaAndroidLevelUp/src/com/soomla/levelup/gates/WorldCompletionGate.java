@@ -16,6 +16,9 @@
 
 package com.soomla.levelup.gates;
 
+import com.soomla.SoomlaUtils;
+import com.soomla.levelup.data.LUJSONConsts;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -49,6 +52,24 @@ public class WorldCompletionGate extends Gate {
     public WorldCompletionGate(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
     }
+
+    /**
+     * Converts the current <code>WorldCompletionGate</code> to a <code>JSONObject</code>.
+     *
+     * @return A <code>JSONObject</code> representation of the current <code>WorldCompletionGate</code>.
+     */
+    @Override
+    public JSONObject toJSONObject() {
+        JSONObject jsonObject = super.toJSONObject();
+        try {
+            jsonObject.put(LUJSONConsts.LU_ASSOCWORLDID, mAssociatedWorldId);
+        } catch (JSONException e) {
+            SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
+        }
+
+        return jsonObject;
+    }
+
 
 
     /**

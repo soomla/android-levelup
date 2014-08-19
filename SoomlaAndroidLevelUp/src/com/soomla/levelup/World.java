@@ -91,7 +91,6 @@ public class World extends SoomlaEntity<World> {
     public World(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
 
-        mInnerWorldsMap = new HashMap<String, World>();
         JSONArray worldsArr = jsonObject.getJSONArray(LUJSONConsts.LU_WORLDS);
 
         // Iterate over all inner worlds in the JSON array and for each one create
@@ -104,7 +103,6 @@ public class World extends SoomlaEntity<World> {
             }
         }
 
-        mScores = new HashMap<String, Score>();
         JSONArray scoresArr = jsonObject.getJSONArray(LUJSONConsts.LU_SCORES);
 
         // Iterate over all scores in the JSON array and for each one create
@@ -117,7 +115,6 @@ public class World extends SoomlaEntity<World> {
             }
         }
 
-        mMissions = new ArrayList<Mission>();
         JSONArray missionsArr = jsonObject.getJSONArray(LUJSONConsts.LU_MISSIONS);
 
         // Iterate over all missions in the JSON array and create an instance for each one

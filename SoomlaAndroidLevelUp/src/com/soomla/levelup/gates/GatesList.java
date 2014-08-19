@@ -43,7 +43,6 @@ public abstract class GatesList extends Gate {
      */
     public GatesList(String id) {
         super(id);
-        mGates = new ArrayList<Gate>();
     }
 
     /**
@@ -55,7 +54,6 @@ public abstract class GatesList extends Gate {
      */
     public GatesList(String id, Gate singleGate) {
         super(id);
-        mGates = new ArrayList<Gate>();
         mGates.add(singleGate);
     }
 
@@ -80,7 +78,6 @@ public abstract class GatesList extends Gate {
      */
     public GatesList(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
-        mGates = new ArrayList<Gate>();
         JSONArray gatesArr = jsonObject.getJSONArray(LUJSONConsts.LU_GATES);
 
         // Iterate over all gates in the JSON array and for each one create

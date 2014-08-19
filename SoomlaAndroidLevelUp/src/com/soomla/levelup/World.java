@@ -32,7 +32,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -105,7 +104,7 @@ public class World extends SoomlaEntity<World> {
             }
         }
 
-        mScores = new LinkedHashMap<String, Score>();
+        mScores = new HashMap<String, Score>();
         JSONArray scoresArr = jsonObject.getJSONArray(LUJSONConsts.LU_SCORES);
 
         // Iterate over all scores in the JSON array and for each one create
@@ -128,9 +127,7 @@ public class World extends SoomlaEntity<World> {
         }
 
         JSONObject gateJSON = jsonObject.getJSONObject(LUJSONConsts.LU_GATE);
-        if (gateJSON != null) { // this means that there are no gates !
-            mGate = null;
-        } else {
+        if (gateJSON != null) {
             mGate = Gate.fromJSONObject(gateJSON);
         }
     }
@@ -232,6 +229,6 @@ public class World extends SoomlaEntity<World> {
 
     private Gate mGate;
     private HashMap<String, World> mInnerWorldsMap = new HashMap<String, World>();
-    protected HashMap<String, Score> mScores = new LinkedHashMap<String, Score>();
+    protected HashMap<String, Score> mScores = new HashMap<String, Score>();
     private List<Mission> mMissions = new ArrayList<Mission>();
 }

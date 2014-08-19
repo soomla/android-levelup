@@ -118,13 +118,7 @@ public class LevelStorage {
     public static int getTimesStarted(Level level) {
         String key = keyTimesStarted(level.getID());
         String val = KeyValueStorage.getValue(key);
-
-        int started = 0;
-        if (!TextUtils.isEmpty(val)) {
-            started = Integer.parseInt(val);
-        }
-
-        return started;
+        return TextUtils.isEmpty(val) ? 0 : Integer.parseInt(val);
     }
 
 
@@ -162,13 +156,7 @@ public class LevelStorage {
     public static int getTimesPlayed(Level level) {
         String key = keyTimesPlayed(level.getID());
         String val = KeyValueStorage.getValue(key);
-
-        int played = 0;
-        if (!TextUtils.isEmpty(val)) {
-            played = Integer.parseInt(val);
-        }
-
-        return played;
+        return TextUtils.isEmpty(val) ? 0 : Integer.parseInt(val);
     }
 
 }

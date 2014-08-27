@@ -16,24 +16,22 @@
 
 package com.soomla.levelup.events;
 
-import com.soomla.levelup.scoring.Score;
-
 /**
- * This event is fired when a new record has been reached for a <code>Score</code>.
+ * This event is fired when a new record has been reached for a <code>ScoreId</code>.
  */
 public class ScoreRecordReachedEvent {
 
     /**
      * read-only Properties *
      */
-    public final Score Score;
+    public final String ScoreId;
 
     /**
      * Constructor
      *
-     * @param score the score which has reached a new record
+     * @param scoreId the id of the score which has reached a new record
      */
-    public ScoreRecordReachedEvent(Score score) {
-        Score = score;
+    public ScoreRecordReachedEvent(String scoreId) {
+        ScoreId = scoreId;
     }
 }

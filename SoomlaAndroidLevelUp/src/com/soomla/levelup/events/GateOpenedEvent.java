@@ -16,8 +16,6 @@
 
 package com.soomla.levelup.events;
 
-import com.soomla.levelup.gates.Gate;
-
 /**
  * This event is fired when a <code>Gate</code> has been opened.
  */
@@ -27,15 +25,15 @@ public class GateOpenedEvent {
      * read-only Properties
      */
 
-    public final Gate Gate;
+    public final String GateId;
 
     /**
      * Constructor
      *
-     * @param gate the gate that has been opened
+     * @param gateId the if of the gate that has been opened
      */
-    public GateOpenedEvent(Gate gate) {
-        Gate = gate;
+    public GateOpenedEvent(String gateId) {
+        GateId = gateId;
     }
 
 

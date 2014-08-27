@@ -16,9 +16,6 @@
 
 package com.soomla.levelup.events;
 
-import com.soomla.levelup.challenges.Challenge;
-import com.soomla.levelup.challenges.Mission;
-
 /**
  * This event is fired when <code>Mission</code> completion has been revoked.
  * For example, you can decide to revoke a mission if the condition for completing
@@ -30,16 +27,14 @@ public class MissionCompletionRevokedEvent {
      * read-only Properties *
      */
 
-    public final Mission Mission;
-    public final boolean IsChallenge;
+    public final String MissionId;
 
     /**
      * Constructor
      *
-     * @param mission to be revoked
+     * @param missionId to be revoked
      */
-    public MissionCompletionRevokedEvent(Mission mission) {
-        Mission = mission;
-        IsChallenge = mission instanceof Challenge;
+    public MissionCompletionRevokedEvent(String missionId) {
+        MissionId = missionId;
     }
 }

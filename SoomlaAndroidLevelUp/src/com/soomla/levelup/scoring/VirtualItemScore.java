@@ -23,7 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * A specific type of <code>Score</code> that has an associated
+ * A specific type of <code>ScoreId</code> that has an associated
  * virtual item. The score is related to the specific item ID.  For example:
  * a game that has an "energy" virtual item can have energy points.
  * <p/>

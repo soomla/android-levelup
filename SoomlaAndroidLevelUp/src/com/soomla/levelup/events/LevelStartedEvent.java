@@ -16,8 +16,6 @@
 
 package com.soomla.levelup.events;
 
-import com.soomla.levelup.Level;
-
 /**
  * This event is fired when a level has started, i.e. when
  * <code>start()</code> is called on an instance of {@link com.soomla.levelup.Level}
@@ -28,14 +26,14 @@ public class LevelStartedEvent {
      * read-only Properties *
      */
 
-    public final Level Level;
+    public final String LevelId;
 
     /**
      * Constructor
      *
-     * @param level the level which just started
+     * @param levelId the id of the level which just started
      */
-    public LevelStartedEvent(Level level) {
-        Level = level;
+    public LevelStartedEvent(String levelId) {
+        LevelId = levelId;
     }
 }

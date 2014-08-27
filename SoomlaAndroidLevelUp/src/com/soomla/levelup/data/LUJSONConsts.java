@@ -29,7 +29,7 @@ public class LUJSONConsts {
     public static final String LU_DESIRED_BALANCE = "desiredBalance";
 
     /**
-     * Score *
+     * ScoreId *
      */
     public static final String LU_SCORES = "scores";
     public static final String LU_SCORE_STARTVAL = "startValue";

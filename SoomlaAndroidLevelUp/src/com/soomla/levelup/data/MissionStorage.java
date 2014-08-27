@@ -21,7 +21,6 @@ import android.text.TextUtils;
 import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
-import com.soomla.levelup.challenges.Mission;
 import com.soomla.levelup.events.MissionCompletedEvent;
 import com.soomla.levelup.events.MissionCompletionRevokedEvent;
 
@@ -46,27 +45,27 @@ public class MissionStorage {
     /**
      * Sets the completion status of the given mission.
      *
-     * @param mission   the mission to complete
+     * @param missionId the id of the mission to complete
      * @param completed the completed status
      */
-    public static void setCompleted(Mission mission, boolean completed) {
-        setCompleted(mission, completed, true);
+    public static void setCompleted(String missionId, boolean completed) {
+        setCompleted(missionId, completed, true);
     }
 
-    public static void setCompleted(Mission mission, boolean completed, boolean notify) {
-        int total = getTimesCompleted(mission) + (completed ? 1 : -1);
+    public static void setCompleted(String missionId, boolean completed, boolean notify) {
+        int total = getTimesCompleted(missionId) + (completed ? 1 : -1);
         if (total < 0) {
             total = 0;
         }
 
-        String key = keyMissionTimesCompleted(mission.getID());
+        String key = keyMissionTimesCompleted(missionId);
         KeyValueStorage.setValue(key, String.valueOf(total));
 
         if (notify) {
             if (completed) {
-                BusProvider.getInstance().post(new MissionCompletedEvent(mission));
+                BusProvider.getInstance().post(new MissionCompletedEvent(missionId));
             } else {
-                BusProvider.getInstance().post(new MissionCompletionRevokedEvent(mission));
+                BusProvider.getInstance().post(new MissionCompletionRevokedEvent(missionId));
             }
         }
     }
@@ -74,22 +73,22 @@ public class MissionStorage {
     /**
      * Checks whether the given mission is complete.
      *
-     * @param mission the mission to check
+     * @param missionId the id of the mission to check
      * @return <code>true</code> if the mission's status is complete,
      * <code>false</code> otherwise
      */
-    public static boolean isCompleted(Mission mission) {
-        return getTimesCompleted(mission) > 0;
+    public static boolean isCompleted(String missionId) {
+        return getTimesCompleted(missionId) > 0;
     }
 
     /**
      * Fetches the number of times the mission has been completed.
      *
-     * @param mission the mission to check
+     * @param missionId the id of the mission to check
      * @return the number of times the mission has been completed, 0 by default.
      */
-    public static int getTimesCompleted(Mission mission) {
-        String key = keyMissionTimesCompleted(mission.getID());
+    public static int getTimesCompleted(String missionId) {
+        String key = keyMissionTimesCompleted(missionId);
         String val = KeyValueStorage.getValue(key);
         if (TextUtils.isEmpty(val)) {
             return 0;

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.soomla.levelup.challenges;
+package com.soomla.levelup.challenges.store;
 
-import com.soomla.levelup.gates.BalanceGate;
+import com.soomla.levelup.challenges.Mission;
+import com.soomla.levelup.gates.store.PurchasableGate;
 import com.soomla.rewards.Reward;
 
 import org.json.JSONException;
@@ -25,13 +26,13 @@ import org.json.JSONObject;
 import java.util.List;
 
 /**
- * A specific type of <code>Mission</code> that has an associated
- * virtual item and a desired balance which opens a <code>BalanceGate</code>.
- * The mission is completed once the balance gate is opened.
+ * A specific type of <code>Mission</code> which has no specific implementation
+ * and allows the developer to define custom criteria for mission completion.
+ * Override the {@link com.soomla.levelup.challenges.Mission#isCompleted()} in order to the define the custom criteria.
  * <p/>
  * Created by refaelos on 13/05/14.
  */
-public class BalanceMission extends Mission {
+public class PurchasingMission extends Mission {
 
     /**
      * Constructor
@@ -39,10 +40,9 @@ public class BalanceMission extends Mission {
      * @param id               see parent
      * @param name             see parent
      * @param associatedItemId the ID of the item who's balance is examined
-     * @param desiredBalance   the balance which will complete this mission
      */
-    public BalanceMission(String id, String name, String associatedItemId, int desiredBalance) {
-        super(id, name, BalanceGate.class, new Object[]{associatedItemId, desiredBalance});
+    public PurchasingMission(String id, String name, String associatedItemId) {
+        super(id, name, PurchasableGate.class, new Object[]{associatedItemId});
     }
 
     /**
@@ -52,17 +52,17 @@ public class BalanceMission extends Mission {
      * @param name             see parent
      * @param rewards          see parent
      * @param associatedItemId the ID of the item who's balance is examined
-     * @param desiredBalance   the balance which will complete this mission
      */
-    public BalanceMission(String id, String name, List<Reward> rewards, String associatedItemId, int desiredBalance) {
-        super(id, name, rewards, BalanceGate.class, new Object[]{associatedItemId, desiredBalance});
+    public PurchasingMission(String id, String name, List<Reward> rewards, String associatedItemId) {
+        super(id, name, rewards, PurchasableGate.class, new Object[]{associatedItemId});
     }
 
     /**
      * @{inheritDoc}
      */
-    public BalanceMission(JSONObject jsonMission) throws JSONException {
+    public PurchasingMission(JSONObject jsonMission) throws JSONException {
         super(jsonMission);
     }
+
 
 }

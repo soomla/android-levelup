@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.soomla.levelup.gates;
+package com.soomla.levelup.gates.store;
 
 import com.soomla.SoomlaUtils;
 import com.soomla.levelup.data.LUJSONConsts;
+import com.soomla.levelup.gates.Gate;
 
 import org.json.JSONException;
 import org.json.JSONObject;

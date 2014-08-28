@@ -46,6 +46,8 @@ public class LUJSONConsts {
     public static final String LU_ASSOCSCOREID = "associatedScoreId";
     public static final String LU_DESIRED_RECORD = "desiredRecord";
 
+    public static final String LU_SOCIAL_PROVIDER = "provider";
+
     /**
      * Challenge *
      */

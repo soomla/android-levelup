@@ -27,7 +27,7 @@ import org.json.JSONObject;
 /**
  * Represents a score in the game. A simple game usually has one generic numeric score
  * which grows as the user progresses in the game. A game can also have multiple
- * <code>Score</code>s for different aspects such as time, speed, points etc.
+ * <code>ScoreId</code>s for different aspects such as time, speed, points etc.
  * A score can be ascending in nature such as regular points (higher is better) or can
  * be descending such as time-to-complete level (lower is better).
  * <p/>
@@ -58,9 +58,9 @@ public class Score extends SoomlaEntity<Score> {
 
     /**
      * Constructor.
-     * Generates an instance of <code>Score</code> from the given <code>JSONObject</code>.
+     * Generates an instance of <code>ScoreId</code> from the given <code>JSONObject</code>.
      *
-     * @param jsonObject A JSONObject representation of the wanted <code>Score</code>.
+     * @param jsonObject A JSONObject representation of the wanted <code>ScoreId</code>.
      * @throws JSONException
      */
     public Score(JSONObject jsonObject) throws JSONException {
@@ -70,9 +70,9 @@ public class Score extends SoomlaEntity<Score> {
     }
 
     /**
-     * Converts the current <code>Score</code> to a JSONObject.
+     * Converts the current <code>ScoreId</code> to a JSONObject.
      *
-     * @return A <code>JSONObject</code> representation of the current <code>Score</code>.
+     * @return A <code>JSONObject</code> representation of the current <code>ScoreId</code>.
      */
     @Override
     public JSONObject toJSONObject() {

@@ -20,7 +20,6 @@ import android.text.TextUtils;
 
 import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
-import com.soomla.levelup.Level;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.events.LevelEndedEvent;
 import com.soomla.levelup.events.LevelStartedEvent;
@@ -59,26 +58,26 @@ public class LevelStorage {
      * Level Duration *
      */
 
-    public static void setSlowestDurationMillis(Level level, long duration) {
-        String key = keySlowestDuration(level.getID());
+    public static void setSlowestDurationMillis(String levelId, long duration) {
+        String key = keySlowestDuration(levelId);
         String val = String.valueOf(duration);
         KeyValueStorage.setValue(key, val);
     }
 
-    public static long getSlowestDurationMillis(Level level) {
-        String key = keySlowestDuration(level.getID());
+    public static long getSlowestDurationMillis(String levelId) {
+        String key = keySlowestDuration(levelId);
         String val = KeyValueStorage.getValue(key);
         return TextUtils.isEmpty(val) ? 0 : Long.parseLong(val);
     }
 
-    public static void setFastestDurationMillis(Level level, long duration) {
-        String key = keyFastestDuration(level.getID());
+    public static void setFastestDurationMillis(String levelId, long duration) {
+        String key = keyFastestDuration(levelId);
         String val = String.valueOf(duration);
         KeyValueStorage.setValue(key, val);
     }
 
-    public static long getFastestDurationMillis(Level level) {
-        String key = keyFastestDuration(level.getID());
+    public static long getFastestDurationMillis(String levelId) {
+        String key = keyFastestDuration(levelId);
         String val = KeyValueStorage.getValue(key);
         return TextUtils.isEmpty(val) ? 0 : Long.parseLong(val);
     }
@@ -88,35 +87,35 @@ public class LevelStorage {
      * Level Times Started *
      */
 
-    public static int incTimesStarted(Level level) {
-        int started = getTimesStarted(level);
+    public static int incTimesStarted(String levelId) {
+        int started = getTimesStarted(levelId);
         if (started < 0) { /* can't be negative */
             started = 0;
         }
         String startedStr = "" + (started + 1);
-        String key = keyTimesStarted(level.getID());
+        String key = keyTimesStarted(levelId);
         KeyValueStorage.setValue(key, startedStr);
 
         // Notify level has started
-        BusProvider.getInstance().post(new LevelStartedEvent(level));
+        BusProvider.getInstance().post(new LevelStartedEvent(levelId));
 
         return started + 1;
     }
 
-    public static int decTimesStarted(Level level) {
-        int started = getTimesStarted(level);
+    public static int decTimesStarted(String levelId) {
+        int started = getTimesStarted(levelId);
         if (started <= 0) { /* can't be negative or zero */
             return 0;
         }
         String startedStr = "" + (started - 1);
-        String key = keyTimesStarted(level.getID());
+        String key = keyTimesStarted(levelId);
         KeyValueStorage.setValue(key, startedStr);
 
         return started - 1;
     }
 
-    public static int getTimesStarted(Level level) {
-        String key = keyTimesStarted(level.getID());
+    public static int getTimesStarted(String levelId) {
+        String key = keyTimesStarted(levelId);
         String val = KeyValueStorage.getValue(key);
         return TextUtils.isEmpty(val) ? 0 : Integer.parseInt(val);
     }
@@ -126,35 +125,35 @@ public class LevelStorage {
      * Level Times Played *
      */
 
-    public static int incTimesPlayed(Level level) {
-        int played = getTimesPlayed(level);
+    public static int incTimesPlayed(String levelId) {
+        int played = getTimesPlayed(levelId);
         if (played < 0) { /* can't be negative */
             played = 0;
         }
         String playedStr = "" + (played + 1);
-        String key = keyTimesPlayed(level.getID());
+        String key = keyTimesPlayed(levelId);
         KeyValueStorage.setValue(key, playedStr);
 
         // Notify level has ended
-        BusProvider.getInstance().post(new LevelEndedEvent(level));
+        BusProvider.getInstance().post(new LevelEndedEvent(levelId));
 
         return played + 1;
     }
 
-    public static int decTimesPlayed(Level level) {
-        int played = getTimesPlayed(level);
+    public static int decTimesPlayed(String levelId) {
+        int played = getTimesPlayed(levelId);
         if (played <= 0) { /* can't be negative or zero */
             return 0;
         }
         String playedStr = "" + (played - 1);
-        String key = keyTimesPlayed(level.getID());
+        String key = keyTimesPlayed(levelId);
         KeyValueStorage.setValue(key, playedStr);
 
         return played - 1;
     }
 
-    public static int getTimesPlayed(Level level) {
-        String key = keyTimesPlayed(level.getID());
+    public static int getTimesPlayed(String levelId) {
+        String key = keyTimesPlayed(levelId);
         String val = KeyValueStorage.getValue(key);
         return TextUtils.isEmpty(val) ? 0 : Integer.parseInt(val);
     }

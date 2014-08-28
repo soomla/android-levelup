@@ -16,9 +16,6 @@
 
 package com.soomla.levelup.events;
 
-import com.soomla.levelup.challenges.Challenge;
-import com.soomla.levelup.challenges.Mission;
-
 /**
  * This event is fired when a <code>Mission</code> has been completed.
  */
@@ -28,15 +25,13 @@ public class MissionCompletedEvent {
      * read-only Properties *
      */
 
-    public final boolean IsChallenge;
-    public final Mission Mission;
+    public final String MissionId;
 
 
     /**
-     * @param mission the mission that was completed
+     * @param missionId the id of the mission that was completed
      */
-    public MissionCompletedEvent(Mission mission) {
-        Mission = mission;
-        IsChallenge = Mission instanceof Challenge;
+    public MissionCompletedEvent(String missionId) {
+        MissionId = missionId;
     }
 }

@@ -16,8 +16,6 @@
 
 package com.soomla.levelup.events;
 
-import com.soomla.levelup.scoring.Score;
-
 /**
  * This event is fired when a score's record is changed.
  */
@@ -26,14 +24,14 @@ public class ScoreRecordChangedEvent {
     /**
      * read-only Properties *
      */
-    public final Score Score;
+    public final String ScoreId;
 
     /**
      * Constructor
      *
-     * @param score the score which has been changed
+     * @param scoreId the if of the score which has been changed
      */
-    public ScoreRecordChangedEvent(Score score) {
-        Score = score;
+    public ScoreRecordChangedEvent(String scoreId) {
+        ScoreId = scoreId;
     }
 }

@@ -16,8 +16,6 @@
 
 package com.soomla.levelup.events;
 
-import com.soomla.levelup.Level;
-
 /**
  * This event is fired when a <code>Level</code> has ended, i.e. when
  * <code>end()</code> is called on an instance of {@link com.soomla.levelup.Level}
@@ -28,14 +26,14 @@ public class LevelEndedEvent {
      * read-only Properties *
      */
 
-    public final Level Level;
+    public final String LevelId;
 
     /**
      * Constructor
      *
-     * @param level the level which just ended
+     * @param levelId the id of the level which just ended
      */
-    public LevelEndedEvent(Level level) {
-        Level = level;
+    public LevelEndedEvent(String levelId) {
+        LevelId = levelId;
     }
 }

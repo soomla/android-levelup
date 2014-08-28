@@ -21,7 +21,6 @@ import android.text.TextUtils;
 import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
-import com.soomla.levelup.World;
 import com.soomla.levelup.events.WorldAssignedRewardEvent;
 import com.soomla.levelup.events.WorldCompletedEvent;
 
@@ -43,13 +42,13 @@ public class WorldStorage {
     }
 
 
-    public static void setCompleted(World world, boolean completed) {
-        setCompleted(world, completed, true);
+    public static void setCompleted(String worldId, boolean completed) {
+        setCompleted(worldId, completed, true);
     }
 
-    public static void setCompleted(World world, boolean completed, boolean notify) {
+    public static void setCompleted(String worldId, boolean completed, boolean notify) {
 
-        boolean currentStatus = isCompleted(world);
+        boolean currentStatus = isCompleted(worldId);
         if (currentStatus == completed) {
 
             // we don't need to set the status of a world to the same status over and over again.
@@ -57,22 +56,21 @@ public class WorldStorage {
             return;
         }
 
-        String worldId = world.getID();
         String key = keyWorldCompleted(worldId);
 
         if (completed) {
             KeyValueStorage.setValue(key, "yes");
 
             if (notify) {
-                BusProvider.getInstance().post(new WorldCompletedEvent(world));
+                BusProvider.getInstance().post(new WorldCompletedEvent(worldId));
             }
         } else {
             KeyValueStorage.deleteKeyValue(key);
         }
     }
 
-    public static boolean isCompleted(World world) {
-        String key = keyWorldCompleted(world.getID());
+    public static boolean isCompleted(String worldId) {
+        String key = keyWorldCompleted(worldId);
         String val = KeyValueStorage.getValue(key);
         return !TextUtils.isEmpty(val);
     }
@@ -82,9 +80,9 @@ public class WorldStorage {
      * World Reward *
      */
 
-    public static void setReward(World world, String rewardId) {
+    public static void setReward(String worldId, String rewardId) {
 
-        String key = keyReward(world.getID());
+        String key = keyReward(worldId);
         if (!TextUtils.isEmpty(rewardId)) {
             KeyValueStorage.setValue(key, rewardId);
         } else {
@@ -92,11 +90,11 @@ public class WorldStorage {
         }
 
         // Notify world was assigned a reward
-        BusProvider.getInstance().post(new WorldAssignedRewardEvent(world));
+        BusProvider.getInstance().post(new WorldAssignedRewardEvent(worldId));
     }
 
-    public static String getAssignedReward(World world) {
-        String key = keyReward(world.getID());
+    public static String getAssignedReward(String worldId) {
+        String key = keyReward(worldId);
         return KeyValueStorage.getValue(key);
     }
 }

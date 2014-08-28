@@ -16,8 +16,6 @@
 
 package com.soomla.levelup.events;
 
-import com.soomla.levelup.World;
-
 /**
  * This event is fired when a <code>World</code> is being assigned a reward.
  */
@@ -27,14 +25,14 @@ public class WorldAssignedRewardEvent {
      * read-only Properties *
      */
 
-    public final World World;
+    public final String WorldId;
 
     /**
      * Constructor
      *
-     * @param world the World whose reward has changed
+     * @param worldId the if of the World whose reward has changed
      */
-    public WorldAssignedRewardEvent(World world) {
-        World = world;
+    public WorldAssignedRewardEvent(String worldId) {
+        WorldId = worldId;
     }
 }

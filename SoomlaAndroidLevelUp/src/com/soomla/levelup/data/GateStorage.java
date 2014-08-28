@@ -22,7 +22,6 @@ import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.events.GateOpenedEvent;
-import com.soomla.levelup.gates.Gate;
 
 /**
  * A utility class for persisting and querying the state of gates.
@@ -44,22 +43,22 @@ public class GateStorage {
     /**
      * Opens or closes the given gate.
      *
-     * @param gate the gate to change status
+     * @param gateId the id of the gate to change status
      * @param open the status (<code>true</code> for open,
      *             <code>false</code> for closed)
      */
-    public static void setOpen(Gate gate, boolean open) {
-        setOpen(gate, open, true);
+    public static void setOpen(String gateId, boolean open) {
+        setOpen(gateId, open, true);
     }
 
-    public static void setOpen(Gate gate, boolean open, boolean notify) {
-        String key = keyGateOpen(gate.getID());
+    public static void setOpen(String gateId, boolean open, boolean notify) {
+        String key = keyGateOpen(gateId);
 
         if (open) {
             KeyValueStorage.setValue(key, "yes");
 
             if (notify) {
-                BusProvider.getInstance().post(new GateOpenedEvent(gate));
+                BusProvider.getInstance().post(new GateOpenedEvent(gateId));
             }
         } else {
             KeyValueStorage.deleteKeyValue(key);
@@ -69,11 +68,11 @@ public class GateStorage {
     /**
      * Checks if the given gate is open.
      *
-     * @param gate the gate to check
+     * @param gateId the id of the gate to check
      * @return <code>true</code> if open, <code>false</code> otherwise
      */
-    public static boolean isOpen(Gate gate) {
-        String key = keyGateOpen(gate.getID());
+    public static boolean isOpen(String gateId) {
+        String key = keyGateOpen(gateId);
         String val = KeyValueStorage.getValue(key);
         return !TextUtils.isEmpty(val);
     }

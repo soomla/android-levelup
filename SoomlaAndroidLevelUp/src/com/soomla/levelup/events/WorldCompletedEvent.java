@@ -16,8 +16,6 @@
 
 package com.soomla.levelup.events;
 
-import com.soomla.levelup.World;
-
 /**
  * This event is fired when a <code>World</code> has been completed.
  */
@@ -27,14 +25,14 @@ public class WorldCompletedEvent {
      * read-only Properties *
      */
 
-    public final World World;
+    public final String WorldId;
 
     /**
      * Constructor
      *
-     * @param world the world which was completed
+     * @param worldId the id of the world which was completed
      */
-    public WorldCompletedEvent(World world) {
-        World = world;
+    public WorldCompletedEvent(String worldId) {
+        WorldId = worldId;
     }
 }

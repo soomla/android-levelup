@@ -23,7 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * A specific type of <code>Score</code> that has an associated range.
+ * A specific type of <code>ScoreId</code> that has an associated range.
  * The score's value can be only inside the range of values.  For example,
  * a shooting score can on a scale of 10 to 100 according to the user's
  * performance in the game.

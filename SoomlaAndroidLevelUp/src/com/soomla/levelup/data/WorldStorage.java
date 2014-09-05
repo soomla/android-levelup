@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
+import com.soomla.levelup.events.LevelUpInitializedEvent;
 import com.soomla.levelup.events.WorldAssignedRewardEvent;
 import com.soomla.levelup.events.WorldCompletedEvent;
 
@@ -41,6 +42,9 @@ public class WorldStorage {
         return keyWorlds(worldId, "assignedReward");
     }
 
+    public static void initLevelUp(String metadata) {
+        BusProvider.getInstance().post(new LevelUpInitializedEvent());
+    }
 
     public static void setCompleted(String worldId, boolean completed) {
         setCompleted(worldId, completed, true);

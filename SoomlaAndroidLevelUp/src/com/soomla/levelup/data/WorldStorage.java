@@ -43,7 +43,7 @@ public class WorldStorage {
     }
 
     public static void initLevelUp(String metadata) {
-        BusProvider.getInstance().post(new LevelUpInitializedEvent());
+        BusProvider.getInstance().post(new LevelUpInitializedEvent(metadata));
     }
 
     public static void setCompleted(String worldId, boolean completed) {

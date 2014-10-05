@@ -21,13 +21,4 @@ package com.soomla.levelup.events;
  */
 public class LevelUpInitializedEvent {
 
-    public final String metadata;
-
-    /**
-     * Constructor
-     * @param metadata
-     */
-    public LevelUpInitializedEvent(String metadata) {
-        this.metadata = metadata;
-    }
 }

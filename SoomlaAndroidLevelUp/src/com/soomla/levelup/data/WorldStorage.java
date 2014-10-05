@@ -42,8 +42,8 @@ public class WorldStorage {
         return keyWorlds(worldId, "assignedReward");
     }
 
-    public static void initLevelUp(String metadata) {
-        BusProvider.getInstance().post(new LevelUpInitializedEvent(metadata));
+    public static void initLevelUp() {
+        BusProvider.getInstance().post(new LevelUpInitializedEvent());
     }
 
     public static void setCompleted(String worldId, boolean completed) {

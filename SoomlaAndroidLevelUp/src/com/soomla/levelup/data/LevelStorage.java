@@ -45,6 +45,10 @@ public class LevelStorage {
         return keyLevels(levelId, "played");
     }
 
+    private static String keyTimesCompleted(String worldId) {
+        return keyLevels(worldId, "timesCompleted");
+    }
+
     private static String keySlowestDuration(String levelId) {
         return keyLevels(levelId, "slowest");
     }
@@ -154,6 +158,40 @@ public class LevelStorage {
 
     public static int getTimesPlayed(String levelId) {
         String key = keyTimesPlayed(levelId);
+        String val = KeyValueStorage.getValue(key);
+        return TextUtils.isEmpty(val) ? 0 : Integer.parseInt(val);
+    }
+
+    /**
+     * World Times Completed *
+     */
+
+    public static int incTimesCompleted(String worldId) {
+        int completed = getTimesCompleted(worldId);
+        if (completed < 0) { /* can't be negative */
+            completed = 0;
+        }
+        String completedStr = "" + (completed + 1);
+        String key = keyTimesCompleted(worldId);
+        KeyValueStorage.setValue(key, completedStr);
+
+        return completed + 1;
+    }
+
+    public static int decTimesCompleted(String worldId) {
+        int completed = getTimesCompleted(worldId);
+        if (completed <= 0) { /* can't be negative or zero */
+            return 0;
+        }
+        String completedStr = "" + (completed - 1);
+        String key = keyTimesCompleted(worldId);
+        KeyValueStorage.setValue(key, completedStr);
+
+        return completed - 1;
+    }
+
+    public static int getTimesCompleted(String worldId) {
+        String key = keyTimesCompleted(worldId);
         String val = KeyValueStorage.getValue(key);
         return TextUtils.isEmpty(val) ? 0 : Integer.parseInt(val);
     }

@@ -30,6 +30,7 @@ import com.soomla.levelup.events.WorldCompletedEvent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -119,15 +120,16 @@ public class WorldStorage {
     public static boolean isLevel(String worldId) {
         JSONObject model = LevelUp.getLevelUpModel();
         if (model != null) {
-            List<JSONObject> worlds = LevelUp.getWorlds(model);
-            for (JSONObject world : worlds) {
+            HashMap<String, JSONObject> worlds = LevelUp.getWorlds(model);
+            JSONObject world = worlds.get(worldId);
+            if (world != null) {
                 try {
-                    if (world.getString("itemId") == worldId) {
-                        return (world.getString("className") == "Level");
+                    if (world.getString("itemId").equals(worldId)) {
+                        return (world.getString("className").equals("Level"));
                     }
                 }
                 catch (JSONException ex) {
-                    SoomlaUtils.LogDebug(TAG, "Model JSON is mal-formed " + ex.getMessage());
+                    SoomlaUtils.LogDebug(TAG, "Model JSON is malformed " + ex.getMessage());
                 }
             }
         }

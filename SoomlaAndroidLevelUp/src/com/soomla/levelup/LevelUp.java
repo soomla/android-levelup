@@ -16,7 +16,6 @@
 
 package com.soomla.levelup;
 
-import com.soomla.Soomla;
 import com.soomla.SoomlaUtils;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.data.GateStorage;
@@ -29,7 +28,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -77,7 +75,7 @@ public class LevelUp {
         String model = KeyValueStorage.getValue(DB_KEY_PREFIX + "model");
         SoomlaUtils.LogDebug(TAG, "model: " + model);
         if (model == null) {
-            return modelJSON;
+            return null;
         }
 
         try {
@@ -89,19 +87,12 @@ public class LevelUp {
         return modelJSON;
     }
 
-    public static List<JSONObject> getWorlds(JSONObject model) {
-        List<JSONObject> worlds = new ArrayList<JSONObject>();
+    public static HashMap<String, JSONObject> getWorlds(JSONObject model) {
+        HashMap<String, JSONObject> worlds = new HashMap<String, JSONObject>();
 
         try {
             JSONObject mainWorld = model.getJSONObject("mainWorld");
-
-            worlds.add(mainWorld);
-
-            JSONArray worldsArr = mainWorld.getJSONArray("worlds");
-            for (int i=0; i<worldsArr.length(); i++) {
-                JSONObject innerWorldJSON = worldsArr.getJSONObject(i);
-                worlds.addAll(getWorlds(innerWorldJSON));
-            }
+            addWorldObjectToWorlds(worlds, mainWorld);
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "couldn't get something from worldJSON. error: " + e.getLocalizedMessage());
         }
@@ -111,7 +102,7 @@ public class LevelUp {
 
     public static HashMap<String, JSONObject> getMissions(JSONObject model) {
         HashMap<String, JSONObject> missions = getListFromWorlds(model, "missions");
-        findInternalLists(missions, new String[]{ "Challenge "}, "missions");
+        findInternalLists(missions, new String[]{ "Challenge" }, "missions");
 
         return missions;
     }
@@ -120,9 +111,9 @@ public class LevelUp {
         HashMap<String, JSONObject> resultHash = new HashMap<String, JSONObject>();
 
         try {
-            List<JSONObject> worldJSONs = getWorlds(model);
+            HashMap<String, JSONObject> worldJSONs = getWorlds(model);
 
-            for (JSONObject worldJSON : worldJSONs) {
+            for (JSONObject worldJSON : worldJSONs.values()) {
                 JSONObject gateJSON = worldJSON.getJSONObject("gate");
 
                 String objectId = gateJSON.getString("itemId");
@@ -141,13 +132,24 @@ public class LevelUp {
         return getListFromWorlds(model, "scores");
     }
 
+    private static void addWorldObjectToWorlds(HashMap<String, JSONObject> worlds, JSONObject worldJSON) throws JSONException {
+        String worldId = worldJSON.getString("itemId");
+        worlds.put(worldId, worldJSON);
+
+        JSONArray worldsArr = worldJSON.getJSONArray("worlds");
+        for (int i=0; i<worldsArr.length(); i++) {
+            JSONObject innerWorldJSON = worldsArr.getJSONObject(i);
+            addWorldObjectToWorlds(worlds, innerWorldJSON);
+        }
+    }
+
     private static HashMap<String, JSONObject> getListFromWorlds(JSONObject model, String listName) {
         HashMap<String, JSONObject> resultHash = new HashMap<String, JSONObject>();
 
         try {
-            List<JSONObject> worldJSONs = getWorlds(model);
+            HashMap<String, JSONObject> worldJSONs = getWorlds(model);
 
-            for (JSONObject worldJSON : worldJSONs) {
+            for (JSONObject worldJSON : worldJSONs.values()) {
                 JSONArray objectJSONs = worldJSON.getJSONArray(listName);
                 for(int i=0; i<objectJSONs.length(); i++) {
                     JSONObject objectJSON = objectJSONs.getJSONObject(i);
@@ -212,8 +214,8 @@ public class LevelUp {
         JSONObject worldsStateJSON = new JSONObject();
         JSONObject levelsStateJSON = new JSONObject();
 
-        List<JSONObject> worlds = getWorlds(modelJSON);
-        for (JSONObject worldJSON : worlds) {
+        HashMap<String, JSONObject> worlds = getWorlds(modelJSON);
+        for (JSONObject worldJSON : worlds.values()) {
             JSONObject worldValuesJSON = new JSONObject();
             try {
                 String worldId = worldJSON.getString("itemId");
@@ -222,7 +224,7 @@ public class LevelUp {
 
                 worldsStateJSON.put(worldId, worldValuesJSON);
 
-                if (worldJSON.getString("className") == "Level") {
+                if (worldJSON.getString("className").equals("Level")) {
                     JSONObject levelValuesJSON = new JSONObject();
                     levelValuesJSON.put("started", LevelStorage.getTimesStarted(worldId));
                     levelValuesJSON.put("played", LevelStorage.getTimesPlayed(worldId));

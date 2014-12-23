@@ -96,9 +96,8 @@ public class LevelStorage {
         if (started < 0) { /* can't be negative */
             started = 0;
         }
-        String startedStr = "" + (started + 1);
-        String key = keyTimesStarted(levelId);
-        KeyValueStorage.setValue(key, startedStr);
+
+        setTimesStarted(levelId, started + 1);
 
         // Notify level has started
         BusProvider.getInstance().post(new LevelStartedEvent(levelId));
@@ -111,11 +110,16 @@ public class LevelStorage {
         if (started <= 0) { /* can't be negative or zero */
             return 0;
         }
-        String startedStr = "" + (started - 1);
-        String key = keyTimesStarted(levelId);
-        KeyValueStorage.setValue(key, startedStr);
+
+        setTimesStarted(levelId, started - 1);
 
         return started - 1;
+    }
+
+    public static void setTimesStarted(String levelId, int started) {
+        String startedStr = "" + started;
+        String key = keyTimesStarted(levelId);
+        KeyValueStorage.setValue(key, startedStr);
     }
 
     public static int getTimesStarted(String levelId) {
@@ -134,9 +138,8 @@ public class LevelStorage {
         if (played < 0) { /* can't be negative */
             played = 0;
         }
-        String playedStr = "" + (played + 1);
-        String key = keyTimesPlayed(levelId);
-        KeyValueStorage.setValue(key, playedStr);
+
+        setTimesPlayed(levelId, played + 1);
 
         // Notify level has ended
         BusProvider.getInstance().post(new LevelEndedEvent(levelId));
@@ -149,11 +152,16 @@ public class LevelStorage {
         if (played <= 0) { /* can't be negative or zero */
             return 0;
         }
-        String playedStr = "" + (played - 1);
-        String key = keyTimesPlayed(levelId);
-        KeyValueStorage.setValue(key, playedStr);
+
+        setTimesPlayed(levelId, played - 1);
 
         return played - 1;
+    }
+
+    public static void setTimesPlayed(String levelId, int played) {
+        String playedStr = "" + played;
+        String key = keyTimesPlayed(levelId);
+        KeyValueStorage.setValue(key, playedStr);
     }
 
     public static int getTimesPlayed(String levelId) {
@@ -171,9 +179,8 @@ public class LevelStorage {
         if (completed < 0) { /* can't be negative */
             completed = 0;
         }
-        String completedStr = "" + (completed + 1);
-        String key = keyTimesCompleted(levelId);
-        KeyValueStorage.setValue(key, completedStr);
+
+        setTimesCompleted(levelId, completed + 1);
 
         return completed + 1;
     }
@@ -184,11 +191,16 @@ public class LevelStorage {
         if (completed <= 0) { /* can't be negative or zero */
             return 0;
         }
-        String completedStr = "" + (completed - 1);
-        String key = keyTimesCompleted(levelId);
-        KeyValueStorage.setValue(key, completedStr);
+
+        setTimesCompleted(levelId, completed - 1);
 
         return completed - 1;
+    }
+
+    public static void setTimesCompleted(String levelId, int completed) {
+        String completedStr = "" + completed;
+        String key = keyTimesCompleted(levelId);
+        KeyValueStorage.setValue(key, completedStr);
     }
 
     public static int getTimesCompleted(String levelId) {
@@ -196,5 +208,4 @@ public class LevelStorage {
         String val = KeyValueStorage.getValue(key);
         return TextUtils.isEmpty(val) ? 0 : Integer.parseInt(val);
     }
-
 }

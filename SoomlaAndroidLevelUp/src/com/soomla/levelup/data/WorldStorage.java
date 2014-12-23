@@ -19,11 +19,19 @@ package com.soomla.levelup.data;
 import android.text.TextUtils;
 
 import com.soomla.BusProvider;
+import com.soomla.Soomla;
+import com.soomla.SoomlaUtils;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
 import com.soomla.levelup.events.LevelUpInitializedEvent;
 import com.soomla.levelup.events.WorldAssignedRewardEvent;
 import com.soomla.levelup.events.WorldCompletedEvent;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by refaelos on 13/05/14.
@@ -85,6 +93,10 @@ public class WorldStorage {
      */
 
     public static void setReward(String worldId, String rewardId) {
+        setReward(worldId, rewardId, true);
+    }
+
+    public static void setReward(String worldId, String rewardId, boolean notify) {
 
         String key = keyReward(worldId);
         if (!TextUtils.isEmpty(rewardId)) {
@@ -93,12 +105,35 @@ public class WorldStorage {
             KeyValueStorage.deleteKeyValue(key);
         }
 
-        // Notify world was assigned a reward
-        BusProvider.getInstance().post(new WorldAssignedRewardEvent(worldId));
+        if (notify) {
+            // Notify world was assigned a reward
+            BusProvider.getInstance().post(new WorldAssignedRewardEvent(worldId));
+        }
     }
 
     public static String getAssignedReward(String worldId) {
         String key = keyReward(worldId);
         return KeyValueStorage.getValue(key);
     }
+
+    public static boolean isLevel(String worldId) {
+        JSONObject model = LevelUp.getLevelUpModel();
+        if (model != null) {
+            List<JSONObject> worlds = LevelUp.getWorlds(model);
+            for (JSONObject world : worlds) {
+                try {
+                    if (world.getString("itemId") == worldId) {
+                        return (world.getString("className") == "Level");
+                    }
+                }
+                catch (JSONException ex) {
+                    SoomlaUtils.LogDebug(TAG, "Model JSON is mal-formed " + ex.getMessage());
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static final String TAG = "SOOMLA WorldStorage";
 }

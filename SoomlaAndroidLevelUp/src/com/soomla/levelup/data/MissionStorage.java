@@ -96,4 +96,9 @@ public class MissionStorage {
         return Integer.parseInt(val);
     }
 
+    public static void setTimesCompleted(String missionId, int timesCompleted) {
+        String key = keyMissionTimesCompleted(missionId);
+        KeyValueStorage.setValue(key, String.valueOf(timesCompleted));
+    }
+
 }

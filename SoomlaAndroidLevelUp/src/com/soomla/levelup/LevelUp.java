@@ -63,10 +63,10 @@ public class LevelUp {
             return false;
         }
 
-        return applyGatesStateFromJSON(state) &&
-                applyWorldsStateFromJSON(state) &&
-                applyMissionsStateFromJSON(state) &&
-                applyScoresStateFromJSON(state);
+        return resetGatesStateFromJSON(state) &&
+                resetWorldsStateFromJSON(state) &&
+                resetMissionsStateFromJSON(state) &&
+                resetScoresStateFromJSON(state);
     }
 
     public static JSONObject getLevelUpModel() {
@@ -299,7 +299,7 @@ public class LevelUp {
         boolean applyState(String itemId, JSONObject itemValuesJSON);
     }
 
-    private static boolean applyStateFromJSON(JSONObject state, String targetListName, IItemStateApplier stateApplier) {
+    private static boolean resetStateFromJSON(JSONObject state, String targetListName, IItemStateApplier stateApplier) {
         if (!state.has(targetListName)) {
             return true;
         }
@@ -323,8 +323,8 @@ public class LevelUp {
         return true;
     }
 
-    private static boolean applyGatesStateFromJSON(JSONObject state) {
-        return applyStateFromJSON(state, "gates", new IItemStateApplier() {
+    private static boolean resetGatesStateFromJSON(JSONObject state) {
+        return resetStateFromJSON(state, "gates", new IItemStateApplier() {
             @Override
             public boolean applyState(String itemId, JSONObject itemValuesJSON) {
                 if (itemValuesJSON.has("open")) {
@@ -341,8 +341,8 @@ public class LevelUp {
         });
     }
 
-    private static boolean applyWorldsStateFromJSON(JSONObject state) {
-        boolean worldsApplyState =  applyStateFromJSON(state, "worlds", new IItemStateApplier() {
+    private static boolean resetWorldsStateFromJSON(JSONObject state) {
+        boolean worldsApplyState =  resetStateFromJSON(state, "worlds", new IItemStateApplier() {
             @Override
             public boolean applyState(String itemId, JSONObject itemValuesJSON) {
                 try {
@@ -355,8 +355,7 @@ public class LevelUp {
                         String assignedRewardId = itemValuesJSON.getString("assignedReward");
                         WorldStorage.setReward(itemId, assignedRewardId, false);
                     }
-                }
-                catch (JSONException e) {
+                } catch (JSONException e) {
                     SoomlaUtils.LogError(TAG, "Unable to set state for world " + itemId + ". error: " + e.getLocalizedMessage());
                     return false;
                 }
@@ -365,7 +364,7 @@ public class LevelUp {
             }
         });
 
-        boolean levelsApplyState =  applyStateFromJSON(state, "levels", new IItemStateApplier() {
+        boolean levelsApplyState =  resetStateFromJSON(state, "levels", new IItemStateApplier() {
             @Override
             public boolean applyState(String itemId, JSONObject itemValuesJSON) {
                 try {
@@ -393,8 +392,7 @@ public class LevelUp {
                         long fastest = itemValuesJSON.getLong("fastest");
                         LevelStorage.setFastestDurationMillis(itemId, fastest);
                     }
-                }
-                catch (JSONException e) {
+                } catch (JSONException e) {
                     SoomlaUtils.LogError(TAG, "Unable to set state for level " + itemId + ". error: " + e.getLocalizedMessage());
                     return false;
                 }
@@ -406,8 +404,8 @@ public class LevelUp {
         return worldsApplyState && levelsApplyState;
     }
 
-    private static boolean applyMissionsStateFromJSON(JSONObject state) {
-        return applyStateFromJSON(state, "missions", new IItemStateApplier() {
+    private static boolean resetMissionsStateFromJSON(JSONObject state) {
+        return resetStateFromJSON(state, "missions", new IItemStateApplier() {
             @Override
             public boolean applyState(String itemId, JSONObject itemValuesJSON) {
                 try {
@@ -415,8 +413,7 @@ public class LevelUp {
                         int timesCompleted = itemValuesJSON.getInt("timesCompleted");
                         MissionStorage.setTimesCompleted(itemId, timesCompleted);
                     }
-                }
-                catch (JSONException e) {
+                } catch (JSONException e) {
                     SoomlaUtils.LogError(TAG, "Unable to set state for level " + itemId + ". error: " + e.getLocalizedMessage());
                     return false;
                 }
@@ -426,8 +423,8 @@ public class LevelUp {
         });
     }
 
-    private static boolean applyScoresStateFromJSON(JSONObject state) {
-        return applyStateFromJSON(state, "scores", new IItemStateApplier() {
+    private static boolean resetScoresStateFromJSON(JSONObject state) {
+        return resetStateFromJSON(state, "scores", new IItemStateApplier() {
             @Override
             public boolean applyState(String itemId, JSONObject itemValuesJSON) {
                 try {
@@ -440,8 +437,7 @@ public class LevelUp {
                         double recordScore = itemValuesJSON.getInt("record");
                         ScoreStorage.setRecordScore(itemId, recordScore);
                     }
-                }
-                catch (JSONException e) {
+                } catch (JSONException e) {
                     SoomlaUtils.LogError(TAG, "Unable to set state for level " + itemId + ". error: " + e.getLocalizedMessage());
                     return false;
                 }

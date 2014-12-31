@@ -16,6 +16,7 @@
 
 package com.soomla.levelup;
 
+import com.soomla.Soomla;
 import com.soomla.SoomlaUtils;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.data.GateStorage;
@@ -28,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.Key;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -62,6 +64,12 @@ public class LevelUp {
         if (state == null) {
             return false;
         }
+
+        SoomlaUtils.LogDebug(TAG, "Resetting state with: " + state.toString());
+
+        clearCurrentState();
+
+        SoomlaUtils.LogDebug(TAG, "Current state was cleared");
 
         return resetGatesStateFromJSON(state) &&
                 resetWorldsStateFromJSON(state) &&
@@ -130,6 +138,19 @@ public class LevelUp {
 
     public static HashMap<String, JSONObject> getScores(JSONObject model) {
         return getListFromWorlds(model, "scores");
+    }
+
+    private static void clearCurrentState() {
+        List<String> allKeys = KeyValueStorage.getEncryptedKeys();
+        for (String key : allKeys) {
+            if (key.startsWith(GateStorage.DB_GATE_KEY_PREFIX) ||
+                    key.startsWith(LevelStorage.DB_LEVEL_KEY_PREFIX) ||
+                    key.startsWith(MissionStorage.DB_MISSION_KEY_PREFIX) ||
+                    key.startsWith(ScoreStorage.DB_SCORE_KEY_PREFIX) ||
+                    key.startsWith(WorldStorage.DB_WORLD_KEY_PREFIX)) {
+                KeyValueStorage.deleteKeyValue(key);
+            }
+        }
     }
 
     private static void addWorldObjectToWorlds(HashMap<String, JSONObject> worlds, JSONObject worldJSON) throws JSONException {
@@ -303,6 +324,8 @@ public class LevelUp {
         if (!state.has(targetListName)) {
             return true;
         }
+
+        SoomlaUtils.LogDebug(TAG, "Resetting state for " + targetListName);
 
         try {
             JSONObject itemsJSON = state.getJSONObject(targetListName);

@@ -35,7 +35,7 @@ import com.soomla.levelup.events.MissionCompletionRevokedEvent;
 public class MissionStorage {
 
     private static String keyMissions(String missionId, String postfix) {
-        return LevelUp.DB_KEY_PREFIX + "missions." + missionId + "." + postfix;
+        return DB_MISSION_KEY_PREFIX + missionId + "." + postfix;
     }
 
     private static String keyMissionTimesCompleted(String missionId) {
@@ -101,4 +101,5 @@ public class MissionStorage {
         KeyValueStorage.setValue(key, String.valueOf(timesCompleted));
     }
 
+    public static final String DB_MISSION_KEY_PREFIX = LevelUp.DB_KEY_PREFIX + "missions.";
 }

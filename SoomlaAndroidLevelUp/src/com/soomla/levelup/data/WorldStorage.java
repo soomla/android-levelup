@@ -34,13 +34,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Created by refaelos on 13/05/14.
- */
 public class WorldStorage {
 
     private static String keyWorlds(String worldId, String postfix) {
-        return LevelUp.DB_KEY_PREFIX + "worlds." + worldId + "." + postfix;
+        return DB_WORLD_KEY_PREFIX + worldId + "." + postfix;
     }
 
     private static String keyWorldCompleted(String worldId) {
@@ -137,5 +134,6 @@ public class WorldStorage {
         return false;
     }
 
+    public static final String DB_WORLD_KEY_PREFIX = LevelUp.DB_KEY_PREFIX + "worlds.";
     private static final String TAG = "SOOMLA WorldStorage";
 }

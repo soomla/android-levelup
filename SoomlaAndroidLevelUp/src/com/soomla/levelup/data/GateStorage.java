@@ -33,7 +33,7 @@ import com.soomla.levelup.events.GateOpenedEvent;
 public class GateStorage {
 
     private static String keyGates(String gateId, String postfix) {
-        return LevelUp.DB_KEY_PREFIX + "gates." + gateId + "." + postfix;
+        return DB_GATE_KEY_PREFIX + gateId + "." + postfix;
     }
 
     private static String keyGateOpen(String gateId) {
@@ -76,4 +76,6 @@ public class GateStorage {
         String val = KeyValueStorage.getValue(key);
         return !TextUtils.isEmpty(val);
     }
+
+    public static final String DB_GATE_KEY_PREFIX = LevelUp.DB_KEY_PREFIX + "gates.";
 }

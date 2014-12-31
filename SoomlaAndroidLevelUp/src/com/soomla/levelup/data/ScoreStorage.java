@@ -33,7 +33,7 @@ import com.soomla.levelup.events.ScoreRecordChangedEvent;
 public class ScoreStorage {
 
     private static String keyScores(String scoreId, String postfix) {
-        return LevelUp.DB_KEY_PREFIX + "scores." + scoreId + "." + postfix;
+        return DB_SCORE_KEY_PREFIX + scoreId + "." + postfix;
     }
 
     private static String keyLatestScore(String scoreId) {
@@ -99,4 +99,5 @@ public class ScoreStorage {
         return TextUtils.isEmpty(val) ? -1 : Double.parseDouble(val);
     }
 
+    public static final String DB_SCORE_KEY_PREFIX = LevelUp.DB_KEY_PREFIX + "scores.";
 }

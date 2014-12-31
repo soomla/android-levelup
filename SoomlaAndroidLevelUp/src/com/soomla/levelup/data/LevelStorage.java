@@ -34,7 +34,7 @@ import com.soomla.levelup.events.LevelStartedEvent;
 public class LevelStorage {
 
     private static String keyLevels(String levelId, String postfix) {
-        return LevelUp.DB_KEY_PREFIX + "levels." + levelId + "." + postfix;
+        return DB_LEVEL_KEY_PREFIX + levelId + "." + postfix;
     }
 
     private static String keyTimesStarted(String levelId) {
@@ -208,4 +208,6 @@ public class LevelStorage {
         String val = KeyValueStorage.getValue(key);
         return TextUtils.isEmpty(val) ? 0 : Integer.parseInt(val);
     }
+
+    public static final String DB_LEVEL_KEY_PREFIX = LevelUp.DB_KEY_PREFIX + "levels.";
 }

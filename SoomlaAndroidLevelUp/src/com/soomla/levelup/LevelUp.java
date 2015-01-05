@@ -122,10 +122,23 @@ public class LevelUp {
             HashMap<String, JSONObject> worldJSONs = getWorlds(model);
 
             for (JSONObject worldJSON : worldJSONs.values()) {
-                JSONObject gateJSON = worldJSON.getJSONObject("gate");
+                JSONObject gateJSON = worldJSON.optJSONObject("gate");
 
-                String objectId = gateJSON.getString("itemId");
-                resultHash.put(objectId, gateJSON);
+                if (gateJSON != null) {
+                    String objectId = gateJSON.getString("itemId");
+                    resultHash.put(objectId, gateJSON);
+                }
+            }
+
+
+            HashMap<String, JSONObject> missionJSONs = getMissions(model);
+            for (JSONObject missionJSON : missionJSONs.values()) {
+                JSONObject gateJSON = missionJSON.optJSONObject("gate");
+
+                if (gateJSON != null) {
+                    String objectId = gateJSON.getString("itemId");
+                    resultHash.put(objectId, gateJSON);
+                }
             }
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "couldn't get gates from worldJSON. error: " + e.getLocalizedMessage());
@@ -171,11 +184,15 @@ public class LevelUp {
             HashMap<String, JSONObject> worldJSONs = getWorlds(model);
 
             for (JSONObject worldJSON : worldJSONs.values()) {
-                JSONArray objectJSONs = worldJSON.getJSONArray(listName);
-                for(int i=0; i<objectJSONs.length(); i++) {
-                    JSONObject objectJSON = objectJSONs.getJSONObject(i);
-                    String objectId = objectJSON.getString("itemId");
-                    resultHash.put(objectId, objectJSON);
+                JSONArray objectJSONs = worldJSON.optJSONArray(listName);
+                if (objectJSONs != null) {
+                    for (int i = 0; i < objectJSONs.length(); i++) {
+                        JSONObject objectJSON = objectJSONs.optJSONObject(i);
+                        if (objectJSON != null) {
+                            String objectId = objectJSON.getString("itemId");
+                            resultHash.put(objectId, objectJSON);
+                        }
+                    }
                 }
             }
         } catch (JSONException e) {
@@ -197,7 +214,7 @@ public class LevelUp {
     }
 
     private static void findInternalLists(HashMap<String, JSONObject> objects, List<String> listClasses, String listName, JSONObject checkJSON) throws JSONException {
-        if (listClasses.contains(checkJSON.getString("className"))) {
+        if (listClasses.contains(checkJSON.optString("className"))) {
             JSONArray internalList = checkJSON.getJSONArray(listName);
             for (int i = 0; i < internalList.length(); i++) {
                 JSONObject targetObject = internalList.getJSONObject(i);
@@ -458,7 +475,7 @@ public class LevelUp {
 
                     if (itemValuesJSON.has("record")) {
                         double recordScore = itemValuesJSON.getInt("record");
-                        ScoreStorage.setRecordScore(itemId, recordScore);
+                        ScoreStorage.setRecordScore(itemId, recordScore, false);
                     }
                 } catch (JSONException e) {
                     SoomlaUtils.LogError(TAG, "Unable to set state for level " + itemId + ". error: " + e.getLocalizedMessage());

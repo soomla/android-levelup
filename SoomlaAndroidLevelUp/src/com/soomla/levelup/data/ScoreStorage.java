@@ -74,17 +74,24 @@ public class ScoreStorage {
 
     /** Record ScoreId **/
 
+    public static void setRecordScore(String scoreId, double record) {
+        setRecordScore(scoreId, record, true);
+    }
+
     /**
      * Sets a new record for the given score.
      *
      * @param scoreId the id of the score who's record to change
      * @param record the new record value
      */
-    public static void setRecordScore(String scoreId, double record) {
+    public static void setRecordScore(String scoreId, double record, boolean notify) {
         String key = keyRecordScore(scoreId);
         String val = String.valueOf(record);
         KeyValueStorage.setValue(key, val);
-        BusProvider.getInstance().post(new ScoreRecordChangedEvent(scoreId));
+
+        if (notify) {
+            BusProvider.getInstance().post(new ScoreRecordChangedEvent(scoreId));
+        }
     }
 
     /**

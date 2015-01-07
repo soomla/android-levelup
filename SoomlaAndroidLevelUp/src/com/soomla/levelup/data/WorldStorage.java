@@ -58,14 +58,6 @@ public class WorldStorage {
 
     public static void setCompleted(String worldId, boolean completed, boolean notify) {
 
-        boolean currentStatus = isCompleted(worldId);
-        if (currentStatus == completed) {
-
-            // we don't need to set the status of a world to the same status over and over again.
-            // couldn't only cause trouble.
-            return;
-        }
-
         String key = keyWorldCompleted(worldId);
 
         if (completed) {

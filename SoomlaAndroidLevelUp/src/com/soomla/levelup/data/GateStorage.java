@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
+import com.soomla.levelup.events.GateClosedEvent;
 import com.soomla.levelup.events.GateOpenedEvent;
 
 /**
@@ -62,6 +63,10 @@ public class GateStorage {
             }
         } else {
             KeyValueStorage.deleteKeyValue(key);
+
+            if (notify) {
+                BusProvider.getInstance().post(new GateClosedEvent(gateId));
+            }
         }
     }
 

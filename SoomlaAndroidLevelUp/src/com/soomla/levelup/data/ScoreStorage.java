@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import com.soomla.BusProvider;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
+import com.soomla.levelup.events.LatestScoreChangedEvent;
 import com.soomla.levelup.events.ScoreRecordChangedEvent;
 
 /**
@@ -54,9 +55,16 @@ public class ScoreStorage {
      * @param latest the latest value to save
      */
     public static void setLatestScore(String scoreId, double latest) {
+        setLatestScore(scoreId, latest, true);
+    }
+    public static void setLatestScore(String scoreId, double latest, boolean notify) {
         String key = keyLatestScore(scoreId);
         String val = String.valueOf(latest);
         KeyValueStorage.setValue(key, val);
+
+        if (notify) {
+            BusProvider.getInstance().post(new LatestScoreChangedEvent(scoreId));
+        }
     }
 
     /**

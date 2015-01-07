@@ -16,6 +16,8 @@
 
 package com.soomla.levelup;
 
+import android.text.TextUtils;
+
 import com.soomla.Soomla;
 import com.soomla.SoomlaUtils;
 import com.soomla.data.KeyValueStorage;
@@ -102,7 +104,7 @@ public class LevelUp {
             JSONObject mainWorld = model.getJSONObject("mainWorld");
             addWorldObjectToWorlds(worlds, mainWorld);
         } catch (JSONException e) {
-            SoomlaUtils.LogError(TAG, "couldn't get something from worldJSON. error: " + e.getLocalizedMessage());
+            SoomlaUtils.LogError(TAG, "couldn't get something from model. error: " + e.getLocalizedMessage());
         }
 
         return worlds;
@@ -118,30 +120,30 @@ public class LevelUp {
     public static HashMap<String, JSONObject> getGates(JSONObject model) {
         HashMap<String, JSONObject> resultHash = new HashMap<String, JSONObject>();
 
-        try {
-            HashMap<String, JSONObject> worldJSONs = getWorlds(model);
+        HashMap<String, JSONObject> worldJSONs = getWorlds(model);
 
-            for (JSONObject worldJSON : worldJSONs.values()) {
-                JSONObject gateJSON = worldJSON.optJSONObject("gate");
+        for (JSONObject worldJSON : worldJSONs.values()) {
+            JSONObject gateJSON = worldJSON.optJSONObject("gate");
 
-                if (gateJSON != null) {
-                    String objectId = gateJSON.getString("itemId");
+            if (gateJSON != null) {
+                String objectId = gateJSON.optString("itemId");
+                if (!TextUtils.isEmpty(objectId)) {
                     resultHash.put(objectId, gateJSON);
                 }
             }
+        }
 
 
-            HashMap<String, JSONObject> missionJSONs = getMissions(model);
-            for (JSONObject missionJSON : missionJSONs.values()) {
-                JSONObject gateJSON = missionJSON.optJSONObject("gate");
+        HashMap<String, JSONObject> missionJSONs = getMissions(model);
+        for (JSONObject missionJSON : missionJSONs.values()) {
+            JSONObject gateJSON = missionJSON.optJSONObject("gate");
 
-                if (gateJSON != null) {
-                    String objectId = gateJSON.getString("itemId");
+            if (gateJSON != null) {
+                String objectId = gateJSON.optString("itemId");
+                if (!TextUtils.isEmpty(objectId)) {
                     resultHash.put(objectId, gateJSON);
                 }
             }
-        } catch (JSONException e) {
-            SoomlaUtils.LogError(TAG, "couldn't get gates from worldJSON. error: " + e.getLocalizedMessage());
         }
 
         findInternalLists(resultHash, new String[] {"GatesListAND", "GatesListOR"}, "gates");
@@ -180,23 +182,21 @@ public class LevelUp {
     private static HashMap<String, JSONObject> getListFromWorlds(JSONObject model, String listName) {
         HashMap<String, JSONObject> resultHash = new HashMap<String, JSONObject>();
 
-        try {
-            HashMap<String, JSONObject> worldJSONs = getWorlds(model);
+        HashMap<String, JSONObject> worldJSONs = getWorlds(model);
 
-            for (JSONObject worldJSON : worldJSONs.values()) {
-                JSONArray objectJSONs = worldJSON.optJSONArray(listName);
-                if (objectJSONs != null) {
-                    for (int i = 0; i < objectJSONs.length(); i++) {
-                        JSONObject objectJSON = objectJSONs.optJSONObject(i);
-                        if (objectJSON != null) {
-                            String objectId = objectJSON.getString("itemId");
+        for (JSONObject worldJSON : worldJSONs.values()) {
+            JSONArray objectJSONs = worldJSON.optJSONArray(listName);
+            if (objectJSONs != null) {
+                for (int i = 0; i < objectJSONs.length(); i++) {
+                    JSONObject objectJSON = objectJSONs.optJSONObject(i);
+                    if (objectJSON != null) {
+                        String objectId = objectJSON.optString("itemId");
+                        if (!TextUtils.isEmpty(objectId)) {
                             resultHash.put(objectId, objectJSON);
                         }
                     }
                 }
             }
-        } catch (JSONException e) {
-            SoomlaUtils.LogError(TAG, "couldn't get " + listName + " from worldJSON. error: " + e.getLocalizedMessage());
         }
 
         return resultHash;

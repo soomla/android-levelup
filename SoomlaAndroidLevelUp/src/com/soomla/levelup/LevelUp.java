@@ -470,7 +470,7 @@ public class LevelUp {
                 try {
                     if (itemValuesJSON.has("latest")) {
                         double latestScore = itemValuesJSON.getInt("latest");
-                        ScoreStorage.setLatestScore(itemId, latestScore);
+                        ScoreStorage.setLatestScore(itemId, latestScore, false);
                     }
 
                     if (itemValuesJSON.has("record")) {

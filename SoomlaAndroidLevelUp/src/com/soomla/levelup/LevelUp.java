@@ -259,6 +259,7 @@ public class LevelUp {
                 String worldId = worldJSON.getString("itemId");
                 worldValuesJSON.put("completed", WorldStorage.isCompleted(worldId));
                 worldValuesJSON.put("assignedReward", WorldStorage.getAssignedReward(worldId));
+                worldValuesJSON.put("lastCompletedInnerWorld", WorldStorage.getLastCompletedInnerWorld(worldId));
 
                 worldsStateJSON.put(worldId, worldValuesJSON);
 
@@ -394,6 +395,11 @@ public class LevelUp {
                     if (itemValuesJSON.has("assignedReward")) {
                         String assignedRewardId = itemValuesJSON.getString("assignedReward");
                         WorldStorage.setReward(itemId, assignedRewardId, false);
+                    }
+
+                    if (itemValuesJSON.has("lastCompletedInnerWorld")) {
+                        String innerWorldId = itemValuesJSON.getString("lastCompletedInnerWorld");
+                        WorldStorage.setLastCompletedInnerWorld(itemId, innerWorldId, false);
                     }
                 } catch (JSONException e) {
                     SoomlaUtils.LogError(TAG, "Unable to set state for world " + itemId + ". error: " + e.getLocalizedMessage());

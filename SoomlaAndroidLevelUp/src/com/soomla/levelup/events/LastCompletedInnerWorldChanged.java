@@ -19,7 +19,7 @@ package com.soomla.levelup.events;
 /**
  * Fired when the last completed world inside a world has changed
  */
-public class LastCompletedWorldChanged {
+public class LastCompletedInnerWorldChanged {
 
     /**
      * World ID which had last completed world changed
@@ -33,11 +33,11 @@ public class LastCompletedWorldChanged {
 
     /**
      * Constructor
-     * 
+     *
      * @param worldId World ID which had last completed world changed
      * @param innerWorldId The inner world which was last completed
      */
-    public LastCompletedWorldChanged(String worldId, String innerWorldId) {
+    public LastCompletedInnerWorldChanged(String worldId, String innerWorldId) {
         WorldId = worldId;
         InnerWorldId = innerWorldId;
     }

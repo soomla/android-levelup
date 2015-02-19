@@ -134,7 +134,7 @@ public class WorldStorage {
     }
 
     public static String getLastCompletedInnerWorld(String worldId) {
-        String key = keyReward(worldId);
+        String key = keyLastCompletedInnerWorld(worldId);
         return KeyValueStorage.getValue(key);
     }
 

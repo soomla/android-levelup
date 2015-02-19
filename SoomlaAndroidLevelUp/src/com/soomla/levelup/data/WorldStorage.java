@@ -23,6 +23,7 @@ import com.soomla.Soomla;
 import com.soomla.SoomlaUtils;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
+import com.soomla.levelup.events.LastCompletedInnerWorldChanged;
 import com.soomla.levelup.events.LevelUpInitializedEvent;
 import com.soomla.levelup.events.WorldAssignedRewardEvent;
 import com.soomla.levelup.events.WorldCompletedEvent;
@@ -129,7 +130,7 @@ public class WorldStorage {
 
         if (notify) {
             // Notify world had inner level complete
-            BusProvider.getInstance().post(new WorldAssignedRewardEvent(worldId));
+            BusProvider.getInstance().post(new LastCompletedInnerWorldChanged(worldId, innerWorldId));
         }
     }
 

@@ -23,6 +23,7 @@ import com.soomla.Soomla;
 import com.soomla.SoomlaUtils;
 import com.soomla.data.KeyValueStorage;
 import com.soomla.levelup.LevelUp;
+import com.soomla.levelup.events.LastCompletedInnerWorldChanged;
 import com.soomla.levelup.events.LevelUpInitializedEvent;
 import com.soomla.levelup.events.WorldAssignedRewardEvent;
 import com.soomla.levelup.events.WorldCompletedEvent;
@@ -46,6 +47,10 @@ public class WorldStorage {
 
     private static String keyReward(String worldId) {
         return keyWorlds(worldId, "assignedReward");
+    }
+
+    private static String keyLastCompletedInnerWorld(String worldId) {
+        return keyWorlds(worldId, "lastCompletedInnerWorld");
     }
 
     public static void initLevelUp() {
@@ -103,6 +108,34 @@ public class WorldStorage {
 
     public static String getAssignedReward(String worldId) {
         String key = keyReward(worldId);
+        return KeyValueStorage.getValue(key);
+    }
+
+    /**
+     * Last Completed Inner World  *
+     */
+
+    public static void setLastCompletedInnerWorld(String worldId, String innerWorldId) {
+        setLastCompletedInnerWorld(worldId, innerWorldId, true);
+    }
+
+    public static void setLastCompletedInnerWorld(String worldId, String innerWorldId, boolean notify) {
+
+        String key = keyLastCompletedInnerWorld(worldId);
+        if (!TextUtils.isEmpty(innerWorldId)) {
+            KeyValueStorage.setValue(key, innerWorldId);
+        } else {
+            KeyValueStorage.deleteKeyValue(key);
+        }
+
+        if (notify) {
+            // Notify world had inner level complete
+            BusProvider.getInstance().post(new LastCompletedInnerWorldChanged(worldId, innerWorldId));
+        }
+    }
+
+    public static String getLastCompletedInnerWorld(String worldId) {
+        String key = keyLastCompletedInnerWorld(worldId);
         return KeyValueStorage.getValue(key);
     }
 

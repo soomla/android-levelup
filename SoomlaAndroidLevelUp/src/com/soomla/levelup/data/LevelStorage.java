@@ -49,6 +49,10 @@ public class LevelStorage {
         return keyLevels(worldId, "timesCompleted");
     }
 
+    private static String keyLastDuration(String levelId) {
+        return keyLevels(levelId, "last");
+    }
+
     private static String keySlowestDuration(String levelId) {
         return keyLevels(levelId, "slowest");
     }
@@ -61,6 +65,18 @@ public class LevelStorage {
     /**
      * Level Duration *
      */
+
+    public static void setLastDurationMillis(String levelId, long duration) {
+        String key = keyLastDuration(levelId);
+        String val = String.valueOf(duration);
+        KeyValueStorage.setValue(key, val);
+    }
+
+    public static long getLastDurationMillis(String levelId) {
+        String key = keyLastDuration(levelId);
+        String val = KeyValueStorage.getValue(key);
+        return TextUtils.isEmpty(val) ? 0 : Long.parseLong(val);
+    }
 
     public static void setSlowestDurationMillis(String levelId, long duration) {
         String key = keySlowestDuration(levelId);

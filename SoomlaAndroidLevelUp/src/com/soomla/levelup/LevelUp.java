@@ -269,6 +269,7 @@ public class LevelUp {
                     levelValuesJSON.put("started", LevelStorage.getTimesStarted(worldId));
                     levelValuesJSON.put("played", LevelStorage.getTimesPlayed(worldId));
                     levelValuesJSON.put("timesCompleted", LevelStorage.getTimesCompleted(worldId));
+                    levelValuesJSON.put("last", LevelStorage.getLastDurationMillis(worldId));
                     levelValuesJSON.put("slowest", LevelStorage.getSlowestDurationMillis(worldId));
                     levelValuesJSON.put("fastest", LevelStorage.getFastestDurationMillis(worldId));
 
@@ -428,6 +429,11 @@ public class LevelUp {
                     if (itemValuesJSON.has("timesCompleted")) {
                         int timesCompleted = itemValuesJSON.getInt("timesCompleted");
                         LevelStorage.setTimesCompleted(itemId, timesCompleted);
+                    }
+
+                    if (itemValuesJSON.has("last")) {
+                        long last = itemValuesJSON.getLong("last");
+                        LevelStorage.setLastDurationMillis(itemId, last);
                     }
 
                     if (itemValuesJSON.has("slowest")) {

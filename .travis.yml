@@ -1,0 +1,8 @@
+language: android
+sudo: false
+install: true
+script:
+    - cd submodules/soomla-android-core
+    - ant -buildfile soomla-android-core.xml -Dsoomla.filename="SoomlaAndroidCore" all
+    - cd ../../SoomlaAndroidLevelUp
+    - ant -buildfile soomla-android-levelup.xml -Dsoomla.filename="AndroidLevelUp" all

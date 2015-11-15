@@ -171,12 +171,13 @@ public class LevelUp {
 
     private static void addWorldObjectToWorlds(HashMap<String, JSONObject> worlds, JSONObject worldJSON) throws JSONException {
         String worldId = worldJSON.getString("itemId");
-        worlds.put(worldId, worldJSON);
+        HashMap<String, JSONObject> worldsInternal = new HashMap<String, JSONObject>(worlds);
+        worldsInternal.put(worldId, worldJSON);
 
         JSONArray worldsArr = worldJSON.getJSONArray("worlds");
         for (int i=0; i<worldsArr.length(); i++) {
             JSONObject innerWorldJSON = worldsArr.getJSONObject(i);
-            addWorldObjectToWorlds(worlds, innerWorldJSON);
+            addWorldObjectToWorlds(worldsInternal, innerWorldJSON);
         }
     }
 
@@ -215,13 +216,14 @@ public class LevelUp {
     }
 
     private static void findInternalLists(HashMap<String, JSONObject> objects, List<String> listClasses, String listName, JSONObject checkJSON) throws JSONException {
+        HashMap<String, JSONObject> objectsInternal = new HashMap<String, JSONObject>(objects);
         if (listClasses.contains(checkJSON.optString("className"))) {
             JSONArray internalList = checkJSON.getJSONArray(listName);
             for (int i = 0; i < internalList.length(); i++) {
                 JSONObject targetObject = internalList.getJSONObject(i);
                 String itemId = targetObject.getString("itemId");
-                objects.put(itemId, targetObject);
-                findInternalLists(objects, listClasses, listName, targetObject);
+                objectsInternal.put(itemId, targetObject);
+                findInternalLists(objectsInternal, listClasses, listName, targetObject);
             }
         }
     }

@@ -171,13 +171,12 @@ public class LevelUp {
 
     private static void addWorldObjectToWorlds(HashMap<String, JSONObject> worlds, JSONObject worldJSON) throws JSONException {
         String worldId = worldJSON.getString("itemId");
-        HashMap<String, JSONObject> worldsInternal = new HashMap<String, JSONObject>(worlds);
-        worldsInternal.put(worldId, worldJSON);
+        worlds.put(worldId, worldJSON);
 
         JSONArray worldsArr = worldJSON.getJSONArray("worlds");
         for (int i=0; i<worldsArr.length(); i++) {
             JSONObject innerWorldJSON = worldsArr.getJSONObject(i);
-            addWorldObjectToWorlds(worldsInternal, innerWorldJSON);
+            addWorldObjectToWorlds(worlds, innerWorldJSON);
         }
     }
 
@@ -208,7 +207,7 @@ public class LevelUp {
         try {
             List<String> classes = Arrays.asList(listClasses);
             for (JSONObject objectJSON : objects.values()) {
-                findInternalLists(objects, classes, listName, objectJSON);
+                findInternalLists(new HashMap<String, JSONObject>(objects), classes, listName, objectJSON);
             }
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "couldn't get internal lists for " + listName + ". error: " + e.getLocalizedMessage());
@@ -216,14 +215,13 @@ public class LevelUp {
     }
 
     private static void findInternalLists(HashMap<String, JSONObject> objects, List<String> listClasses, String listName, JSONObject checkJSON) throws JSONException {
-        HashMap<String, JSONObject> objectsInternal = new HashMap<String, JSONObject>(objects);
         if (listClasses.contains(checkJSON.optString("className"))) {
             JSONArray internalList = checkJSON.getJSONArray(listName);
             for (int i = 0; i < internalList.length(); i++) {
                 JSONObject targetObject = internalList.getJSONObject(i);
                 String itemId = targetObject.getString("itemId");
-                objectsInternal.put(itemId, targetObject);
-                findInternalLists(objectsInternal, listClasses, listName, targetObject);
+                objects.put(itemId, targetObject);
+                findInternalLists(objects, listClasses, listName, targetObject);
             }
         }
     }

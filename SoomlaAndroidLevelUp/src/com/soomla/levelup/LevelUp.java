@@ -32,10 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * The top level container for the android-levelup model and definitions.
@@ -205,8 +202,10 @@ public class LevelUp {
 
     private static void findInternalLists(HashMap<String, JSONObject> objects, String[] listClasses, String listName) {
         try {
+
             List<String> classes = Arrays.asList(listClasses);
-            for (JSONObject objectJSON : objects.values()) {
+            Set<JSONObject> valuesSet = new HashSet<JSONObject>(objects.values());
+            for (JSONObject objectJSON : valuesSet) {
                 findInternalLists(objects, classes, listName, objectJSON);
             }
         } catch (JSONException e) {

@@ -206,7 +206,7 @@ public class LevelUp {
             List<String> classes = Arrays.asList(listClasses);
             Set<JSONObject> valuesSet = new HashSet<JSONObject>(objects.values());
             for (JSONObject objectJSON : valuesSet) {
-                findInternalLists(new HashMap<String, JSONObject>(objects), classes, listName, objectJSON);
+                findInternalLists(objects, classes, listName, objectJSON);
             }
         } catch (JSONException e) {
             SoomlaUtils.LogError(TAG, "couldn't get internal lists for " + listName + ". error: " + e.getLocalizedMessage());
